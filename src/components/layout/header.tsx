@@ -26,6 +26,7 @@ import { doc } from "firebase/firestore";
 
 
 const navLinks = [
+  { href: "/", label: "Accueil", exact: true },
   { href: "/artisans", label: "Artisans" },
   { href: "/e-market", label: "Boutique" },
   { href: "/training", label: "Formations" },
@@ -48,6 +49,13 @@ export function Header() {
     await signOut(auth);
     router.push('/');
   };
+  
+  const checkIsActive = (href: string, exact = false) => {
+    if (exact) {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg border-b">
@@ -61,7 +69,7 @@ export function Header() {
               href={link.href}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                pathname.startsWith(link.href) ? "text-primary font-semibold" : "text-muted-foreground"
+                checkIsActive(link.href, link.exact) ? "text-primary font-semibold" : "text-muted-foreground"
               )}
             >
               {link.label}
@@ -138,7 +146,7 @@ export function Header() {
                       href={link.href}
                       className={cn(
                         "text-lg font-medium transition-colors hover:text-primary",
-                         pathname.startsWith(link.href) ? "text-primary font-semibold" : "text-muted-foreground"
+                         checkIsActive(link.href, link.exact) ? "text-primary font-semibold" : "text-muted-foreground"
                       )}
                     >
                       {link.label}

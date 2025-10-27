@@ -12,21 +12,21 @@ const laureates = [
     year: 2023,
     name: "Aline Niyonsaba",
     category: "Vannerie d'Excellence",
-    profileImageId: "artisan-1",
+    profileImageId: "award-laureate-1",
     achievement: "Pour sa contribution exceptionnelle à la préservation des techniques de tressage traditionnelles et son approche innovante du design."
   },
   {
     year: 2023,
     name: "Jean-Claude Bizimana",
     category: "Innovation en Maroquinerie",
-    profileImageId: "artisan-2",
+    profileImageId: "award-laureate-2",
     achievement: "Pour l'introduction de designs modernes dans la maroquinerie burundaise tout en maintenant une qualité de fabrication artisanale."
   },
   {
     year: 2022,
     name: "Marie Goretti Uwizeye",
     category: "Maîtrise de la Poterie",
-    profileImageId: "artisan-3",
+    profileImageId: "award-laureate-3",
     achievement: "Récompensée pour sa maîtrise technique et l'originalité de ses créations en céramique, inspirées de la nature du Burundi."
   }
 ];

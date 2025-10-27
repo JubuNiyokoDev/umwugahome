@@ -25,6 +25,30 @@
       "imageHint": "wood carver"
     },
     {
+      "id": "artisan-5",
+      "description": "Artisane bijoutière africaine souriante.",
+      "imageUrl": "https://images.unsplash.com/photo-1596280141662-341e3d0e1b5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxBbGFjaSUyMGZlbWFsZSUyMGpld2Vscnl8ZW58MHx8fHwxNzYzOTQxOTIzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "jewelry maker"
+    },
+    {
+      "id": "artisan-6",
+      "description": "Ferronnier africain travaillant dans son atelier.",
+      "imageUrl": "https://images.unsplash.com/photo-1645524888880-9280b1353381?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMGJyb3duJTIwbWV0YWx3b3JrZXJ8ZW58MHx8fHwxNzYzOTQyMDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "metal worker"
+    },
+    {
+      "id": "artisan-7",
+      "description": "Femme africaine travaillant sur un métier à tisser.",
+      "imageUrl": "https://images.unsplash.com/photo-1602093375372-872a449079a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxBbGFjaSUyMHdvbWFuJTIwd2VhdmluZ3xlbnwwfHx8fDE3NjM5NDIwODJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman weaving"
+    },
+    {
+      "id": "artisan-8",
+      "description": "Homme africain jouant d'un instrument de musique traditionnel.",
+      "imageUrl": "https://images.unsplash.com/photo-1623862243448-84c810f13515?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMG1hbiUyMHBsYXlpbmclMjB0cmFkaXRpb25hbCUyMGluc3RydW1lbnR8ZW58MHx8fHwxNzYzOTQyMTQ0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "traditional musician"
+    },
+    {
       "id": "product-1",
       "description": "Panier coloré tressé à la main au Burundi.",
       "imageUrl": "https://images.unsplash.com/photo-1611987583184-1ddc69fbd5ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d292ZW4lMjBiYXNrZXR8ZW58MHx8fHwxNzYxNTM0MDQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -73,6 +97,30 @@
       "imageHint": "wooden mask"
     },
     {
+      "id": "product-9",
+      "description": "Collier africain en perles colorées.",
+      "imageUrl": "https://images.unsplash.com/photo-1588974558230-e160acb28a27?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxBbGFjaSUyMGJlYWRlZCUyMG5lY2tsYWNlfGVufDB8fHx8MTczOTQyMjYzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "beaded necklace"
+    },
+    {
+      "id": "product-10",
+      "description": "Porte-plante décoratif en fer forgé.",
+      "imageUrl": "https://images.unsplash.com/photo-1533692328991-0e1291b53589?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3cm91Z2h0JTIwaXJvbiUyMHBsYW50JTIwc3RhbmR8ZW58MHx8fHwxNzYzOTQyMzM3fDA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "wrought iron"
+    },
+    {
+      "id": "product-11",
+      "description": "Tissu africain coloré avec des motifs traditionnels.",
+      "imageUrl": "https://images.unsplash.com/photo-1524675545933-e04b4d061c16?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxBbGFjaSUyMGZvbGslMjB0ZXh0aWxlfGVufDB8fHx8MTczOTQyNDEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "african textile"
+    },
+    {
+      "id": "product-12",
+      "description": "Instrument de musique Inanga.",
+      "imageUrl": "https://images.unsplash.com/photo-1728514231990-ea42a56c7a87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxpbmFuZ2ElMjBpbnN0cnVtZW50fGVufDB8fHx8MTc2MTYwNDAxNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "inanga instrument"
+    },
+    {
       "id": "training-center-1",
       "description": "Des étudiants africains dans une salle de formation technique.",
       "imageUrl": "https://images.unsplash.com/photo-1620743364356-950592d0178b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmFpbmluZyUyMGNlbnRlcnxlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -83,6 +131,18 @@
       "description": "Un atelier d'artisanat animé au Burundi.",
       "imageUrl": "https://images.unsplash.com/photo-1500472141701-084e6fa44840?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcnRpc2FuJTIwd29ya3Nob3B8ZW58MHx8fHwxNzYxNTQ4NjEyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "artisan workshop"
+    },
+    {
+      "id": "training-center-3",
+      "description": "Femme africaine donnant une leçon de poterie.",
+      "imageUrl": "https://images.unsplash.com/photo-1558985121-82d52f643f88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMHdvbWFuJTIwdGVhY2hpbmclMjBwb3R0ZXJ5fGVufDB8fHx8MTczOTQyNjMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pottery class"
+    },
+    {
+      "id": "training-center-4",
+      "description": "Personnes dans un cours de codage dans un environnement moderne.",
+      "imageUrl": "https://images.unsplash.com/photo-1555066931-4365d14694dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb2RpbmclMjBib290Y2FtcHxlbnwwfHx8fDE3NjM5NDI3OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coding class"
     },
     {
       "id": "course-1",
@@ -109,15 +169,39 @@
       "imageHint": "marketing class"
     },
     {
+      "id": "course-5",
+      "description": "Vue de dessus de mains façonnant de l'argile sur un tour.",
+      "imageUrl": "https://images.unsplash.com/photo-1553881651-4334731b315a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwb3R0ZXJ5JTIwd2hlZWx8ZW58MHx8fHwxNzYzOTQyOTQ0fDA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "pottery wheel"
+    },
+    {
+      "id": "course-6",
+      "description": "Personne tenant de la terre fraîche dans ses mains dans une ferme.",
+      "imageUrl": "https://images.unsplash.com/photo-1492496913980-501348b61469?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZ3JpY3VsdHVyZXxlbnwwfHx8fDE3NjM5NDMwMDB8MA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "agriculture"
+    },
+    {
+      "id": "course-7",
+      "description": "Une imprimante 3D en action, créant un objet.",
+      "imageUrl": "https://images.unsplash.com/photo-1617791160536-595a724029a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHwzZCUyMHByaW50ZXJ8ZW58MHx8fHwxNzYzOTQzMDQwfDA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "3d printer"
+    },
+    {
+      "id": "course-8",
+      "description": "Écran d'ordinateur montrant du code HTML.",
+      "imageUrl": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxIVE1MJTIwY29kZXxlbnwwfHx8fDE3NjM5NDMwNzd8MA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "html code"
+    },
+    {
       "id": "hero-background",
       "description": "Un arrière-plan vibrant d'artisanat africain.",
-      "imageUrl": "https://images.unsplash.com/photo-1758188408858-0f5389c35f50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhZnJpY2FuJTIwY3JhZnR8ZW58MHx8fHwxNzYxNTQ4NjEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1758188408858-0f5389c35f50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhZnJpY2FuJTIwY3JhZnR8ZW58MHx8fHwxNzYxNTQ4NjEzfDA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "african craft"
     },
     {
       "id": "map-burundi",
       "description": "Une carte du Burundi.",
-      "imageUrl": "https://images.unsplash.com/photo-1588551385347-4bacb1e18f22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXJ1bmRpJTIwbWFwfGVufDB8fHx8MTc2MTU0ODYxMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1588551385347-4bacb1e18f22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXJ1bmRpJTIwbWFwfGVufDB8fHx8MTc2MTU0ODYxMnww&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "burundi map"
     },
     {
@@ -129,26 +213,44 @@
     {
       "id": "student-profile-2",
       "description": "Portrait d'un jeune étudiant africain souriant.",
-      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGFmcmljYW4lMjBtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNzQ3MjMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGFmcmljYW4lMjBtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNzQ3MjMwfDA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "student portrait"
     },
     {
       "id": "mentor-profile-1",
       "description": "Portrait d'un mentor africain expérimenté.",
-      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZnJpY2FuJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkyOTc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZnJpY2FuJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkyOTc3fDA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "mentor portrait"
     },
     {
       "id": "mentor-profile-2",
       "description": "Portrait d'une femme d'affaires africaine servant de mentor.",
-      "imageUrl": "https://images.unsplash.com/photo-1582233479526-d9a0a049969d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwZmVtYWxlJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkzMDI1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1582233479526-d9a0a049969d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwZmVtYWxlJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkzMDI1fDA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "mentor portrait"
     },
     {
       "id": "admin-profile",
       "description": "Portrait d'un administrateur africain.",
-      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhZnJpY2FuJTIwYnVzaW5lc3MlMjBwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIxOTMwNjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhZnJpY2FuJTIwYnVzaW5lc3MlMjBwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIxOTMwNjd8MA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "admin portrait"
+    },
+    {
+      "id": "award-laureate-1",
+      "description": "Portrait d'une femme africaine fière.",
+      "imageUrl": "https://images.unsplash.com/photo-1610482613586-3476c5f7c74d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMHByb3VkJTIwd29tYW58ZW58MHx8fHwxNzYzOTQzNTkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "proud woman"
+    },
+    {
+      "id": "award-laureate-2",
+      "description": "Portrait d'un homme africain confiant.",
+      "imageUrl": "https://images.unsplash.com/photo-1565336125950-5f17a77e5243?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMGNvbmZpZGVudCUyMG1hbnxlbnwwfHx8fDE3NjM5NDM2NDR8MA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "confident man"
+    },
+    {
+      "id": "award-laureate-3",
+      "description": "Portrait d'une jeune femme africaine créative.",
+      "imageUrl": "https://images.unsplash.com/photo-1533264696099-b3c9405b0674?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxZb3VuZyUyMEJsYWNrJTIwY3JlYXRpdmUlMjB3b21hbnxlbnwwfHx8fDE3NjM5NDM2ODd8MA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageHint": "creative woman"
     }
   ]
 }

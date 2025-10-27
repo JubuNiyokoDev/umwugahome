@@ -28,8 +28,8 @@ export default function Home() {
 
   useEffect(() => {
     // Simulate fetching data from seed
-    setArtisans(seedData.artisans.slice(0, 4));
-    setTrainingCenters(seedData.trainingCenters.slice(0, 2));
+    setArtisans(seedData.artisans.slice(0, 8));
+    setTrainingCenters(seedData.trainingCenters.slice(0, 4));
     setAllArtisans(seedData.artisans);
     setAllCourses(seedData.courses);
     setAllCenters(seedData.trainingCenters);
@@ -136,7 +136,7 @@ export default function Home() {
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {isLoading ? (
-              Array.from({ length: 4 }).map((_, i) => <motion.div key={i} variants={itemVariants}><ArtisanCard artisan={null} /></motion.div>)
+              Array.from({ length: 8 }).map((_, i) => <motion.div key={i} variants={itemVariants}><ArtisanCard artisan={null} /></motion.div>)
             ) : (
               artisans?.map(artisan => (
                 <motion.div key={artisan.id} variants={itemVariants}>
@@ -176,9 +176,9 @@ export default function Home() {
               </p>
             </div>
           </motion.div>
-          <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 lg:grid-cols-2" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+          <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {isLoading ? (
-              Array.from({ length: 2 }).map((_, i) => <motion.div key={i} variants={itemVariants}><TrainingCenterCard center={null} /></motion.div>)
+              Array.from({ length: 4 }).map((_, i) => <motion.div key={i} variants={itemVariants}><TrainingCenterCard center={null} /></motion.div>)
             ) : (
               trainingCenters?.map(center => (
                 <motion.div key={center.id} variants={itemVariants}>
