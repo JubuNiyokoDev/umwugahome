@@ -9,8 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan, TrainingCenter, UserProfile } from "@/lib/types";
-import { collection } from "firebase/firestore";
-import { Users } from "lucide-react";
+import { collection, limit, orderBy, query } from "firebase/firestore";
+import { Briefcase, School, Users, Wallet } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -33,6 +33,7 @@ const chartConfig = {
 export default function AdminDashboardPage() {
   const firestore = useFirestore();
 
+  // Query for all documents to get counts
   const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
   const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
 
@@ -42,15 +43,21 @@ export default function AdminDashboardPage() {
   const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
   const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
 
+  // Query for recent users
+  const recentUsersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), orderBy('name'), limit(5)) : null, [firestore]);
+  const { data: recentUsers, isLoading: isLoadingRecentUsers } = useCollection<UserProfile>(recentUsersQuery);
+
+  const isLoadingStats = isLoadingUsers || isLoadingArtisans || isLoadingCenters;
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold font-headline">Tableau de Bord Administrateur</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Utilisateurs" value={isLoadingUsers ? '...' : (users?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Artisans" value={isLoadingArtisans ? '...' : (artisans?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Centres" value={isLoadingCenters ? '...' : (trainingCenters?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Revenu (30j)" value="1,250,000 FBU" icon={<Users className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Utilisateurs" value={isLoadingStats ? '...' : (users?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Artisans" value={isLoadingStats ? '...' : (artisans?.length ?? 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Centres" value={isLoadingStats ? '...' : (trainingCenters?.length ?? 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Revenu (30j)" value="1,250,000 FBU" icon={<Wallet className="h-4 w-4 text-muted-foreground" />} description="+5% vs mois dernier"/>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
@@ -68,8 +75,9 @@ export default function AdminDashboardPage() {
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
+                  fontSize={12}
                 />
-                <YAxis />
+                <YAxis tickLine={false} axisLine={false} tickMargin={10} />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent indicator="dot" />}
@@ -87,18 +95,17 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {isLoadingUsers ? 
+              {isLoadingRecentUsers ? 
                 Array.from({length: 5}).map((_, i) => (
                     <div key={i} className="flex items-center gap-4">
                         <Skeleton className="h-9 w-9 rounded-full" />
-                        <div className="flex-1 space-y-1">
+                        <div className="flex-1 space-y-2">
                             <Skeleton className="h-4 w-3/4" />
                             <Skeleton className="h-3 w-1/2" />
                         </div>
-                        <Skeleton className="h-6 w-16 rounded-full" />
                     </div>
                 ))
-               : users?.slice(0, 5).map((user) => {
+               : recentUsers?.map((user) => {
                   const userImage = PlaceHolderImages.find(img => img.id === user.profileImageId);
                   return (
                     <div key={user.id} className="flex items-center gap-4">
@@ -106,11 +113,11 @@ export default function AdminDashboardPage() {
                         {userImage && <AvatarImage src={userImage?.imageUrl} alt="Avatar" />}
                         <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium leading-none">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <div className="flex-1 overflow-hidden">
+                        <p className="text-sm font-medium leading-none truncate">{user.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{user.email}</p>
                       </div>
-                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>{user.role}</Badge>
+                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="capitalize">{user.role.replace('_', ' ')}</Badge>
                     </div>
                   );
                 })}
