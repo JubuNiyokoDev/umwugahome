@@ -31,6 +31,27 @@ const laureates = [
     category: "Maîtrise de la Poterie",
     profileImageId: "award-laureate-3",
     achievement: "Récompensée pour sa maîtrise technique et l'originalité de ses créations en céramique, inspirées de la nature du Burundi."
+  },
+   {
+    year: 2022,
+    name: "Didier Nkurunziza",
+    category: "Sculpture sur Bois Moderne",
+    profileImageId: "award-laureate-4",
+    achievement: "Son travail a été salué pour sa capacité à fusionner les motifs traditionnels avec des formes abstraites et contemporaines."
+  },
+  {
+    year: 2021,
+    name: "Ornella Kaneza",
+    category: "Création Textile",
+    profileImageId: "award-laureate-5",
+    achievement: "Pionnière dans l'utilisation de teintures naturelles locales pour créer des tissus aux motifs uniques et écologiques."
+  },
+  {
+    year: 2021,
+    name: "Chris Iradukunda",
+    category: "Bijouterie et Orfèvrerie",
+    profileImageId: "award-laureate-6",
+    achievement: "Pour son talent à transformer des matériaux recyclés en bijoux d'une finesse et d'une élégance remarquables."
   }
 ];
 
@@ -41,6 +62,9 @@ const galleryImages = [
   PlaceHolderImages.find(p => p.id === 'event-4'),
   PlaceHolderImages.find(p => p.id === 'event-5'),
   PlaceHolderImages.find(p => p.id === 'event-6'),
+  PlaceHolderImages.find(p => p.id === 'event-7'),
+  PlaceHolderImages.find(p => p.id === 'event-8'),
+  PlaceHolderImages.find(p => p.id === 'event-9'),
 ].filter(Boolean) as typeof PlaceHolderImages;
 
 
@@ -99,7 +123,7 @@ export default function AwardPage() {
                         <CardTitle className="font-headline text-2xl">L'Histoire de l'Umwuga Award</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 text-muted-foreground">
-                        <p>Lancé en 2022, l'Umwuga Award est une initiative visant à reconnaître et à célébrer les artisans les plus talentueux et innovants du Burundi. Notre mission est de mettre en lumière le savoir-faire exceptionnel, d'encourager la créativité et de promouvoir l'artisanat burundais sur la scène nationale et internationale.</p>
+                        <p>Lancé en 2021, l'Umwuga Award est une initiative visant à reconnaître et à célébrer les artisans les plus talentueux et innovants du Burundi. Notre mission est de mettre en lumière le savoir-faire exceptionnel, d'encourager la créativité et de promouvoir l'artisanat burundais sur la scène nationale et internationale.</p>
                         <p>Chaque année, un jury d'experts se réunit pour récompenser les artisans qui se sont distingués par leur excellence technique, l'originalité de leurs créations et leur impact sur la communauté. L'Umwuga Award est plus qu'un prix, c'est un label de qualité et un tremplin pour les artisans d'exception.</p>
                     </CardContent>
                 </Card>
@@ -139,7 +163,7 @@ export default function AwardPage() {
         </TabsContent>
 
          <TabsContent value="gallery" className="mt-8">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
                 <Card>
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl">Galerie des Cérémonies</CardTitle>
@@ -171,18 +195,22 @@ export default function AwardPage() {
                         <CardTitle className="font-headline text-2xl">Actualités</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                    <div className="border-b pb-4">
+                        <div className="border-b pb-4">
                             <h3 className="font-semibold">Lancement des inscriptions pour l'édition 2024</h3>
                             <p className="text-sm text-muted-foreground">Les candidatures pour la prochaine édition de l'Umwuga Award sont maintenant ouvertes. Date limite : 31 Octobre 2024.</p>
-                    </div>
+                        </div>
                         <div className="border-b pb-4">
                             <h3 className="font-semibold">Retour sur la cérémonie de 2023</h3>
                             <p className="text-sm text-muted-foreground">Revivez les moments forts de la dernière cérémonie qui a vu couronner Aline Niyonsaba et Jean-Claude Bizimana.</p>
-                    </div>
+                        </div>
+                         <div className="border-b pb-4">
+                            <h3 className="font-semibold">Les lauréats 2022 à la une</h3>
+                            <p className="text-sm text-muted-foreground">Découvrez les parcours inspirants de Marie Goretti Uwizeye et Didier Nkurunziza dans le dernier numéro du magazine "Artisanat & Avenir".</p>
+                        </div>
                         <div>
                             <h3 className="font-semibold">Partenariat avec la Chambre de Commerce</h3>
                             <p className="text-sm text-muted-foreground">L'Umwuga Award est fier d'annoncer un nouveau partenariat pour accompagner les lauréats à l'export.</p>
-                    </div>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
