@@ -35,42 +35,37 @@ export default function LoginPage() {
   const firestore = getFirestore();
 
   useEffect(() => {
+    // This effect redirects the user if they are already logged in.
     if (user && !isUserLoading) {
-      router.push('/profile');
+      // Pass the role as a query parameter in case the profile needs to be created.
+      const docRef = doc(firestore, "users", user.uid);
+      getDoc(docRef).then(docSnap => {
+        if(docSnap.exists()){
+          router.push('/profile');
+        } else {
+           // This is a new user, pass role info to profile page
+           const searchParams = new URLSearchParams();
+           // For email signup, we know the role. For Google, we default to 'student'
+           searchParams.set('role', isSigningUp ? role : 'student');
+           router.push(`/profile?${searchParams.toString()}`);
+        }
+      });
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, firestore, isSigningUp, role]);
 
-  const createProfileIfNotExists = async (userCred: UserCredential, selectedRole: UserProfile['role']) => {
-    const user = userCred.user;
-    const userRef = doc(firestore, "users", user.uid);
-    const docSnap = await getDoc(userRef);
-
-    if (!docSnap.exists()) {
-        await setDoc(userRef, {
-            id: user.uid,
-            name: user.displayName || user.email?.split('@')[0] || "Nouvel utilisateur",
-            email: user.email,
-            role: selectedRole,
-            profileImageId: 'student-profile-1', // default image
-            interests: []
-        });
-    }
-    // Return true to indicate success
-    return true;
-  };
 
   const handleAuthAction = async () => {
+    if (!auth) return;
     setIsLoading(true);
     try {
       if (isSigningUp) {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await createProfileIfNotExists(userCred, role);
-        toast({ title: "Compte créé", description: "Vous êtes maintenant connecté." });
-        // The useEffect will handle the redirect now that the user object is available
+        // Just create the user. The useEffect will handle redirection.
+        await createUserWithEmailAndPassword(auth, email, password);
+        toast({ title: "Compte créé avec succès", description: "Veuillez compléter votre profil." });
       } else {
+        // Just sign in. The useEffect will handle redirection.
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: "Connexion réussie", description: "Bienvenue !" });
-        // The useEffect will handle the redirect
       }
     } catch (error: any) {
       toast({
@@ -78,28 +73,28 @@ export default function LoginPage() {
         title: "Erreur d'authentification",
         description: error.message,
       });
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Ensure loading is stopped on error
     }
+    // Don't set loading to false here; let the useEffect handle redirection which unmounts the component.
   };
 
   const handleGoogleSignIn = async () => {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     setIsGoogleLoading(true);
     try {
-      const userCred = await signInWithPopup(auth, provider);
-      await createProfileIfNotExists(userCred, 'student'); // Default role for Google sign-in
+       // Just sign in with Google. The useEffect will handle redirection.
+      await signInWithPopup(auth, provider);
       toast({ title: "Connexion réussie", description: "Bienvenue !" });
-      // The useEffect will handle the redirect
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erreur de connexion Google",
         description: error.message,
       });
-    } finally {
-      setIsGoogleLoading(false);
+       setIsGoogleLoading(false); // Ensure loading is stopped on error
     }
+    // Don't set loading to false here; let the useEffect handle redirection which unmounts the component.
   };
 
   if (isUserLoading || user) {
