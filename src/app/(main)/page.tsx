@@ -14,6 +14,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { seedData } from "@/lib/seed";
 import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
@@ -102,6 +103,21 @@ export default function Home() {
           </motion.div>
         </div>
       </motion.section>
+
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-transparent z-20">
+        <div className="container px-4 md:px-6">
+          <Card className="bg-card/80">
+            <CardContent className="p-10 text-center">
+              <h3 className="text-xl font-semibold text-muted-foreground mb-4">Un projet soutenu par</h3>
+              <div className="flex justify-center items-center gap-8 md:gap-12 flex-wrap">
+                  <p className="text-2xl font-bold text-foreground">Enabel</p>
+                  <p className="text-2xl font-bold text-foreground">MENRS</p>
+                  <p className="text-2xl font-bold text-foreground">CFCIB</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
       
       <section className="w-full py-12 md:py-24 lg:py-32 bg-transparent z-20">
         <div className="container px-4 md:px-6">

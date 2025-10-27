@@ -5,7 +5,7 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Menu, User, LogOut, Loader2, ShieldCheck } from "lucide-react";
+import { Menu, User, LogOut, Loader2, ShieldCheck, Award } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeSwitcher } from "../theme-switcher";
@@ -30,6 +30,7 @@ const navLinks = [
   { href: "/e-market", label: "Boutique" },
   { href: "/training", label: "Formations" },
   { href: "/mentors", label: "Mentors" },
+  { href: "/award", label: "Umwuga Award" },
 ];
 
 export function Header() {
