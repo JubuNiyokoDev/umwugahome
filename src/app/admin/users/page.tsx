@@ -4,26 +4,67 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { useCollection, useFirestore, useMemoFirebase, deleteDocumentNonBlocking } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { UserProfile } from "@/lib/types";
-import { collection, orderBy, query } from "firebase/firestore";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { collection, doc, orderBy, query, writeBatch } from "firebase/firestore";
+import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+
+async function deleteUserAndProfile(firestore: any, userId: string, role: UserProfile['role']) {
+    if (!firestore) return;
+
+    const batch = writeBatch(firestore);
+
+    // Delete from users collection
+    const userRef = doc(firestore, 'users', userId);
+    batch.delete(userRef);
+
+    // Delete from role-specific collection
+    let profileRef;
+    if (role === 'artisan') {
+        profileRef = doc(firestore, 'artisans', userId);
+    } else if (role === 'mentor') {
+        profileRef = doc(firestore, 'mentors', userId);
+    } else if (role === 'training_center') {
+        profileRef = doc(firestore, 'training-centers', userId);
+    }
+    // 'student' role doesn't have a separate collection in this structure
+    if (profileRef) {
+        batch.delete(profileRef);
+    }
+    
+    // Non-blocking commit
+    batch.commit().catch(error => {
+        console.error("Failed to delete user profile:", error);
+    });
+}
+
 
 export default function AdminUsersPage() {
     const firestore = useFirestore();
+    const { toast } = useToast();
 
     const usersRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), orderBy('name')) : null, [firestore]);
     const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
+
+    const handleDeleteUser = async (user: UserProfile) => {
+        await deleteUserAndProfile(firestore, user.id, user.role);
+        toast({
+            title: "Utilisateur supprimé",
+            description: `L'utilisateur ${user.name} a été supprimé avec succès.`,
+        });
+    };
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold font-headline">Gestion des Utilisateurs</h1>
-                <Button>
+                <Button disabled>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Ajouter un utilisateur
                 </Button>
@@ -81,18 +122,38 @@ export default function AdminUsersPage() {
                                                 <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="capitalize">{user.role.replace('_', ' ')}</Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                                            <span className="sr-only">Ouvrir le menu</span>
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem>Modifier</DropdownMenuItem>
-                                                        <DropdownMenuItem className="text-destructive">Supprimer</DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <AlertDialog>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                                <span className="sr-only">Ouvrir le menu</span>
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem disabled>Modifier</DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <AlertDialogTrigger asChild>
+                                                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                                    Supprimer
+                                                                </DropdownMenuItem>
+                                                            </AlertDialogTrigger>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                        <AlertDialogTitle>Êtes-vous absolument sûr?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Cette action est irréversible. Elle supprimera définitivement l'utilisateur <span className="font-bold">{user.name}</span> et toutes les données associées à son compte.
+                                                        </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDeleteUser(user)} className={buttonVariants({ variant: "destructive" })}>Supprimer</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </TableCell>
                                         </TableRow>
                                     )
