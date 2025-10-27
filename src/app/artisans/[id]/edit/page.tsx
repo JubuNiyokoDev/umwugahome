@@ -25,6 +25,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Save } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AiProfileSuggestions } from "@/components/ai-profile-suggestions";
 
 const profileFormSchema = z.object({
   name: z
@@ -68,6 +69,8 @@ export default function EditArtisanProfilePage() {
         },
         mode: "onChange",
     });
+    
+    const artisanDataForAI = form.watch();
 
     // Populate form with artisan data once loaded
     useMemo(() => {
@@ -103,130 +106,151 @@ export default function EditArtisanProfilePage() {
     if (isUserLoading || isLoadingArtisan) {
         return (
             <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
-                <Card className="max-w-2xl mx-auto">
-                    <CardHeader>
-                        <Skeleton className="h-8 w-1/2" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                             <Skeleton className="h-4 w-1/4" />
-                             <Skeleton className="h-10 w-full" />
-                        </div>
-                         <div className="space-y-2">
-                             <Skeleton className="h-4 w-1/4" />
-                             <Skeleton className="h-10 w-full" />
-                        </div>
-                         <div className="space-y-2">
-                             <Skeleton className="h-4 w-1/4" />
-                             <Skeleton className="h-24 w-full" />
-                        </div>
-                        <Skeleton className="h-10 w-full" />
-                    </CardContent>
-                </Card>
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="md:col-span-2">
+                        <Card>
+                            <CardHeader>
+                                <Skeleton className="h-8 w-1/2" />
+                                <Skeleton className="h-4 w-3/4" />
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-1/4" />
+                                    <Skeleton className="h-10 w-full" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-1/4" />
+                                    <Skeleton className="h-10 w-full" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-1/4" />
+                                    <Skeleton className="h-24 w-full" />
+                                </div>
+                                <Skeleton className="h-10 w-full" />
+                            </CardContent>
+                        </Card>
+                    </div>
+                     <div className="md:col-span-1">
+                        <Card>
+                             <CardHeader>
+                                <Skeleton className="h-6 w-3/4" />
+                             </CardHeader>
+                             <CardContent>
+                                <Skeleton className="h-10 w-full" />
+                             </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         )
     }
 
     // Security check: ensure the logged-in user is the owner of this profile
     if (!user || user.uid !== id) {
-        // You could redirect or show a 'not authorized' page
         notFound();
     }
     
     if (!artisan) {
-        // This case is if the artisan profile doesn't exist for this ID
         notFound();
     }
 
     return (
         <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
-            <Card className="max-w-2xl mx-auto shadow-lg bg-card/80 backdrop-blur-sm">
-                 <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Modifier mon profil d'artisan</CardTitle>
-                    <CardDescription>Mettez à jour vos informations pour qu'elles soient visibles par les clients.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel>Nom</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Votre nom complet" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <FormField
-                                    control={form.control}
-                                    name="craft"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Métier</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Ex: Maroquinier" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="province"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Province</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Ex: Bujumbura Mairie" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <FormField
-                                control={form.control}
-                                name="bio"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormLabel>Biographie</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Parlez-nous de votre parcours, de votre passion..."
-                                            className="resize-none"
-                                            {...field}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                    <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl">Modifier mon profil d'artisan</CardTitle>
+                            <CardDescription>Mettez à jour vos informations pour qu'elles soient visibles par les clients.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Nom</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Votre nom complet" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <FormField
+                                            control={form.control}
+                                            name="craft"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                <FormLabel>Métier</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Ex: Maroquinier" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                                </FormItem>
+                                            )}
                                         />
-                                    </FormControl>
-                                    <FormDescription>
-                                       C'est votre histoire. Rendez-la intéressante !
-                                    </FormDescription>
-                                    <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button type="submit" disabled={form.formState.isSubmitting}>
-                                {form.formState.isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Sauvegarde...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="mr-2 h-4 w-4" />
-                                        Sauvegarder les modifications
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
+                                        <FormField
+                                            control={form.control}
+                                            name="province"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                <FormLabel>Province</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Ex: Bujumbura Mairie" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <FormField
+                                        control={form.control}
+                                        name="bio"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Biographie</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Parlez-nous de votre parcours, de votre passion..."
+                                                    className="resize-none"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                            C'est votre histoire. Rendez-la intéressante !
+                                            </FormDescription>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                                        {form.formState.isSubmitting ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Sauvegarde...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Save className="mr-2 h-4 w-4" />
+                                                Sauvegarder les modifications
+                                            </>
+                                        )}
+                                    </Button>
+                                </form>
+                            </Form>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="lg:col-span-1">
+                    <AiProfileSuggestions 
+                        artisanProfile={{...artisanDataForAI, ...artisan}}
+                    />
+                </div>
+            </div>
         </div>
     );
 }
