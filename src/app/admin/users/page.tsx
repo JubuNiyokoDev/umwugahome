@@ -166,3 +166,11 @@ export default function AdminUsersPage() {
                                         </TableRow>
                                     )
                                 })
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
