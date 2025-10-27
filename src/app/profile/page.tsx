@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase } from "@/firebase";
-import { UserProfile } from "@/lib/types";
-import { BookMarked, LogOut, User as UserIcon, Loader2, Save } from "lucide-react";
+import { Artisan, TrainingCenter, UserProfile } from "@/lib/types";
+import { BookMarked, LogOut, User as UserIcon, Loader2, Save, Building, Paintbrush, Edit } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { doc, setDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<typeof useUser>['user']>, role: UserProfile['role'] }) {
     const firestore = useFirestore();
@@ -28,6 +29,8 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
             toast({ variant: 'destructive', title: "Le nom ne peut pas être vide." });
             return;
         }
+        if (!firestore) return;
+
         setIsLoading(true);
 
         try {
@@ -42,6 +45,34 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
             
             // This is a crucial write, so we can block for it.
             await setDoc(userRef, newUserProfile);
+
+            // Create specific profile based on role
+            if (role === 'artisan') {
+                const artisanRef = doc(firestore, "artisans", user.uid);
+                const newArtisan: Artisan = {
+                    id: user.uid,
+                    userId: user.uid,
+                    name: name.trim(),
+                    craft: "À définir",
+                    province: "À définir",
+                    bio: "Bio à compléter.",
+                    rating: 0,
+                    profileImageId: 'artisan-1'
+                };
+                await setDoc(artisanRef, newArtisan);
+            } else if (role === 'training_center') {
+                const centerRef = doc(firestore, "training-centers", user.uid);
+                const newCenter: TrainingCenter = {
+                    id: user.uid,
+                    userId: user.uid,
+                    name: name.trim(),
+                    province: "À définir",
+                    description: "Description à compléter.",
+                    rating: 0,
+                    imageId: 'training-center-1'
+                };
+                await setDoc(centerRef, newCenter);
+            }
             
             toast({ title: "Profil créé !", description: "Bienvenue sur UmwugaHome." });
             // The profile page will automatically re-render with the new data.
@@ -69,12 +100,12 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
                             <Input id="email" value={user.email || ''} disabled />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nom complet</Label>
-                            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Votre nom complet" required />
+                            <Label htmlFor="name">Nom complet ou nom du centre</Label>
+                            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Votre nom" required />
                         </div>
                          <div className="space-y-2">
                             <Label>Rôle</Label>
-                            <Input value={role} disabled className="capitalize" />
+                            <Input value={role.replace('_', ' ')} disabled className="capitalize" />
                         </div>
                         <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
@@ -87,6 +118,98 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
     );
 }
 
+function ProfileDashboard({ userProfile }: { userProfile: UserProfile }) {
+    const router = useRouter();
+
+    if (userProfile.role === 'admin') {
+        return (
+             <Card className="bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline">Tableau de bord Administrateur</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Button onClick={() => router.push('/admin')}>Accéder au panneau d'administration</Button>
+                </CardContent>
+            </Card>
+        )
+    }
+
+     if (userProfile.role === 'artisan') {
+        return (
+             <Card className="bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline flex items-center gap-2"><Paintbrush /> Tableau de bord Artisan</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <p>Gérez votre boutique, vos produits et votre profil public.</p>
+                    <div className="flex gap-2">
+                        <Button onClick={() => router.push(`/artisans/${userProfile.id}`)}>Voir mon profil public</Button>
+                        <Button variant="outline" onClick={() => router.push(`/artisans/${userProfile.id}/edit`)}>
+                            <Edit className="mr-2 h-4 w-4"/>
+                            Modifier mon profil
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
+
+     if (userProfile.role === 'training_center') {
+        return (
+             <Card className="bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline flex items-center gap-2"><Building/> Tableau de bord Centre</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <p>Gérez vos informations, vos programmes et vos inscriptions.</p>
+                     <div className="flex gap-2">
+                        <Button onClick={() => router.push(`/training/${userProfile.id}`)}>Voir le profil public</Button>
+                        <Button variant="outline" onClick={() => router.push(`/training/${userProfile.id}/edit`)}>
+                            <Edit className="mr-2 h-4 w-4"/>
+                            Modifier le profil
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
+
+    // Default for student/mentor
+    return (
+        <>
+            <Card className="bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline">Mes Intérêts</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                    {userProfile.interests?.map(interest => (
+                        <Badge key={interest} variant="secondary">{interest}</Badge>
+                    ))}
+                     {(!userProfile.interests || userProfile.interests.length === 0) && (
+                        <p className="text-muted-foreground text-sm">Ajoutez vos centres d'intérêt pour obtenir des recommandations.</p>
+                    )}
+                </CardContent>
+            </Card>
+            <Card className="mt-8 bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline flex items-center gap-2">
+                        <BookMarked className="h-5 w-5" />
+                        Formations et Mentorat
+                    </CardTitle>
+                    <CardDescription>
+                        Suivez vos progrès dans les formations et les sessions de mentorat.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                   <div className="text-center py-12 text-muted-foreground">
+                    <p>Vous n'êtes inscrit à aucune formation pour le moment.</p>
+                    <Button variant="link" className="mt-2" onClick={() => router.push('/training')}>Explorer les formations</Button>
+                   </div>
+                </CardContent>
+            </Card>
+        </>
+    );
+}
 
 export default function ProfilePage() {
     const { user, isUserLoading } = useUser();
@@ -94,11 +217,12 @@ export default function ProfilePage() {
     const auth = useAuth();
     const router = useRouter();
 
-    // We need to fetch the role from the redirect, if it exists
     const roleFromQuery = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('role') as UserProfile['role'] | null : null;
     
     const userProfileRef = useMemoFirebase(() => (firestore && user) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
+    const profileImage = user?.photoURL ? null : PlaceHolderImages.find(p => p.id === 'student-profile-1');
+
 
     const handleSignOut = async () => {
         if (!auth) return;
@@ -125,16 +249,12 @@ export default function ProfilePage() {
         );
     }
 
-    // If user is logged in, but profile doc doesn't exist, show completion form
     if (user && !userProfile) {
-        // Use role from query param, fallback to 'student'
         const roleToCreate = roleFromQuery || 'student';
         return <ProfileCompletionForm user={user} role={roleToCreate} />;
     }
 
-    // This should now only be hit if userProfile exists.
     if (!userProfile) {
-        // Fallback just in case, should not be reached.
         router.push('/login?error=profile_creation_failed');
         return null;
     }
@@ -152,9 +272,9 @@ export default function ProfilePage() {
                                     <UserIcon className="h-16 w-16 text-muted-foreground" />
                                 </AvatarFallback>
                             </Avatar>
-                            <h1 className="text-2xl font-bold font-headline">{user.displayName || userProfile.name}</h1>
+                            <h1 className="text-2xl font-bold font-headline">{userProfile.name}</h1>
                             <p className="text-muted-foreground">{user.email}</p>
-                            <Badge className="mt-2 capitalize" variant="outline">{userProfile.role}</Badge>
+                            <Badge className="mt-2 capitalize" variant="outline">{userProfile.role.replace('_', ' ')}</Badge>
                             <Button className="mt-4 w-full" variant="secondary" onClick={handleSignOut}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Se déconnecter
@@ -163,36 +283,7 @@ export default function ProfilePage() {
                     </Card>
                 </div>
                 <div className="md:col-span-2">
-                    <Card className="bg-card/80 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="font-headline">Mes Intérêts</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex flex-wrap gap-2">
-                            {userProfile.interests?.map(interest => (
-                                <Badge key={interest} variant="secondary">{interest}</Badge>
-                            ))}
-                             {(!userProfile.interests || userProfile.interests.length === 0) && (
-                                <p className="text-muted-foreground text-sm">Ajoutez vos centres d'intérêt pour obtenir des recommandations.</p>
-                            )}
-                        </CardContent>
-                    </Card>
-                    <Card className="mt-8 bg-card/80 backdrop-blur-sm">
-                        <CardHeader>
-                            <CardTitle className="font-headline flex items-center gap-2">
-                                <BookMarked className="h-5 w-5" />
-                                Formations et Mentorat
-                            </CardTitle>
-                            <CardDescription>
-                                Suivez vos progrès dans les formations et les sessions de mentorat.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                           <div className="text-center py-12 text-muted-foreground">
-                            <p>Vous n'êtes inscrit à aucune formation pour le moment.</p>
-                            <Button variant="link" className="mt-2" onClick={() => router.push('/training')}>Explorer les formations</Button>
-                           </div>
-                        </CardContent>
-                    </Card>
+                    <ProfileDashboard userProfile={userProfile} />
                 </div>
             </div>
         </div>

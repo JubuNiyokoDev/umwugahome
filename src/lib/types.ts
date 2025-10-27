@@ -1,5 +1,6 @@
 export type Artisan = {
   id: string;
+  userId: string; // Link to UserProfile
   name: string;
   craft: string;
   province: string;
@@ -19,6 +20,7 @@ export type Product = {
 
 export type TrainingCenter = {
   id: string;
+  userId: string; // Link to UserProfile
   name:string;
   province: string;
   description: string;
@@ -40,7 +42,7 @@ export type UserProfile = {
   id: string;
   name: string;
   email: string | null;
-  role: 'artisan' | 'student' | 'mentor' | 'admin';
+  role: 'artisan' | 'student' | 'mentor' | 'admin' | 'training_center';
   profileImageId?: string;
   interests: string[];
 };

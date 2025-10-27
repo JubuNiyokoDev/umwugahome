@@ -37,64 +37,85 @@ export default function LoginPage() {
   useEffect(() => {
     // This effect redirects the user if they are already logged in.
     if (user && !isUserLoading) {
-      // Pass the role as a query parameter in case the profile needs to be created.
-      const docRef = doc(firestore, "users", user.uid);
-      getDoc(docRef).then(docSnap => {
-        if(docSnap.exists()){
-          router.push('/profile');
-        } else {
-           // This is a new user, pass role info to profile page
-           const searchParams = new URLSearchParams();
-           // For email signup, we know the role. For Google, we default to 'student'
-           searchParams.set('role', isSigningUp ? role : 'student');
-           router.push(`/profile?${searchParams.toString()}`);
-        }
-      });
+        router.push('/profile');
     }
-  }, [user, isUserLoading, router, firestore, isSigningUp, role]);
+  }, [user, isUserLoading, router]);
 
 
   const handleAuthAction = async () => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     setIsLoading(true);
+    
     try {
-      if (isSigningUp) {
-        // Just create the user. The useEffect will handle redirection.
-        await createUserWithEmailAndPassword(auth, email, password);
-        toast({ title: "Compte créé avec succès", description: "Veuillez compléter votre profil." });
-      } else {
-        // Just sign in. The useEffect will handle redirection.
-        await signInWithEmailAndPassword(auth, email, password);
-        toast({ title: "Connexion réussie", description: "Bienvenue !" });
-      }
+        let userCredential: UserCredential;
+        if (isSigningUp) {
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Immediately create the user profile document
+            const userRef = doc(firestore, "users", user.uid);
+            await setDoc(userRef, { 
+                id: user.uid,
+                name: user.displayName || email.split('@')[0],
+                email: user.email,
+                role: role,
+                interests: []
+            });
+            
+            toast({ title: "Compte créé avec succès", description: "Bienvenue ! Redirection..." });
+
+        } else {
+            userCredential = await signInWithEmailAndPassword(auth, email, password);
+            toast({ title: "Connexion réussie", description: "Bienvenue !" });
+        }
+        // Redirect to profile page after the action is complete
+        // The useEffect will handle this, but we can also push directly
+        router.push('/profile');
+
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erreur d'authentification",
-        description: error.message,
-      });
-      setIsLoading(false); // Ensure loading is stopped on error
+        toast({
+            variant: "destructive",
+            title: "Erreur d'authentification",
+            description: error.message,
+        });
+        setIsLoading(false);
     }
-    // Don't set loading to false here; let the useEffect handle redirection which unmounts the component.
   };
 
   const handleGoogleSignIn = async () => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     const provider = new GoogleAuthProvider();
     setIsGoogleLoading(true);
     try {
-       // Just sign in with Google. The useEffect will handle redirection.
-      await signInWithPopup(auth, provider);
-      toast({ title: "Connexion réussie", description: "Bienvenue !" });
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if user profile already exists, if not, create it
+      const docRef = doc(firestore, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        const newUserProfile: UserProfile = {
+          id: user.uid,
+          name: user.displayName || user.email?.split('@')[0] || 'Utilisateur',
+          email: user.email,
+          role: 'student', // Default role for Google Sign-in
+          interests: []
+        };
+        await setDoc(docRef, newUserProfile);
+        toast({ title: "Compte créé avec succès", description: "Bienvenue sur UmwugaHome." });
+      } else {
+        toast({ title: "Connexion réussie", description: "Bienvenue !" });
+      }
+      router.push('/profile');
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erreur de connexion Google",
         description: error.message,
       });
-       setIsGoogleLoading(false); // Ensure loading is stopped on error
+       setIsGoogleLoading(false);
     }
-    // Don't set loading to false here; let the useEffect handle redirection which unmounts the component.
   };
 
   if (isUserLoading || user) {
@@ -142,6 +163,7 @@ export default function LoginPage() {
                   <SelectItem value="student">Jeune / Étudiant</SelectItem>
                   <SelectItem value="artisan">Artisan</SelectItem>
                   <SelectItem value="mentor">Mentor</SelectItem>
+                  <SelectItem value="training_center">Centre de Formation</SelectItem>
                 </SelectContent>
               </Select>
             </div>
