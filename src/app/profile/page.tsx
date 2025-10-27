@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { UserProfile } from "@/lib/types";
-import { BookMarked, UserPlus, LogOut } from "lucide-react";
+import { BookMarked, UserPlus, LogOut, User as UserIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { doc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
@@ -27,8 +27,12 @@ export default function ProfilePage() {
         router.push('/');
     };
 
-    if (isUserLoading || isProfileLoading) {
-        return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement...</div>;
+    if (isUserLoading || (user && isProfileLoading)) {
+        return (
+            <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
     }
 
     if (!user) {
@@ -37,13 +41,12 @@ export default function ProfilePage() {
         return null;
     }
     
+    // This state can happen briefly when a user is created in Auth but the Firestore doc is not yet available.
     if (!userProfile) {
-        // Handle case where user exists in Auth but not in Firestore
-        // Maybe create a profile for them? For now, show an error/message.
         return (
-            <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">
-                <p>Profil non trouvé. Veuillez compléter votre inscription.</p>
-                <Button onClick={handleSignOut} className="mt-4">Se déconnecter</Button>
+            <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                 <p className="ml-4">Finalisation de la configuration du profil...</p>
             </div>
         );
     }
@@ -57,12 +60,14 @@ export default function ProfilePage() {
                     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
                         <CardContent className="flex flex-col items-center p-6 text-center">
                             <Avatar className="w-32 h-32 mb-4">
-                                {profileImage && <AvatarImage src={user.photoURL || profileImage.imageUrl} alt={userProfile.name} />}
-                                <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={user.photoURL || profileImage?.imageUrl} alt={userProfile.name} />
+                                <AvatarFallback>
+                                    <UserIcon className="h-16 w-16 text-muted-foreground" />
+                                </AvatarFallback>
                             </Avatar>
                             <h1 className="text-2xl font-bold font-headline">{user.displayName || userProfile.name}</h1>
                             <p className="text-muted-foreground">{user.email}</p>
-                            <Badge className="mt-2" variant="outline">{userProfile.role}</Badge>
+                            <Badge className="mt-2 capitalize" variant="outline">{userProfile.role}</Badge>
                             <Button className="mt-4 w-full" variant="secondary" onClick={handleSignOut}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Se déconnecter

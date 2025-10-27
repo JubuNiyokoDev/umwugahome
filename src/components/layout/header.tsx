@@ -4,7 +4,7 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Menu, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeSwitcher } from "../theme-switcher";
@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { User as UserIcon } from "lucide-react";
 
 
 const navLinks = [
@@ -34,6 +35,7 @@ export function Header() {
   const router = useRouter();
 
   const handleSignOut = async () => {
+    if (!auth) return;
     await signOut(auth);
     router.push('/');
   };
@@ -41,7 +43,7 @@ export function Header() {
   const userImage = user ? PlaceHolderImages.find(i => i.id === 'student-profile-1') : null;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Logo />
 
@@ -63,14 +65,18 @@ export function Header() {
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
           {isUserLoading ? (
-            <div className="h-10 w-24 animate-pulse rounded-md bg-muted"></div>
+            <div className="h-10 w-10 flex items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin" />
+            </div>
           ) : user ? (
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar className="h-10 w-10">
                      <AvatarImage src={user.photoURL || userImage?.imageUrl} alt={user.displayName || 'User'} />
-                    <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>
+                      <UserIcon className="h-5 w-5 text-muted-foreground" />
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -98,7 +104,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild variant="default" className="hidden md:flex gap-2">
+            <Button asChild variant="outline" className="hidden md:flex gap-2">
               <Link href="/login">
                 <User className="h-4 w-4"/>
                 Connexion
@@ -108,7 +114,7 @@ export function Header() {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Ouvrir le menu</span>
               </Button>
