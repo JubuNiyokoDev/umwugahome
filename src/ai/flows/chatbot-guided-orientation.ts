@@ -10,6 +10,113 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { getFirestore, collection, getDocs, query, where, DocumentData } from 'firebase/firestore';
+import { initializeFirebase } from '@/firebase/config'; // Assuming you have a way to get firestore instance
+
+
+// Helper to get Firestore instance
+function getDb() {
+  // This is a simplification. In a real app, you'd want to manage the instance properly.
+  const { firestore } = initializeFirebase();
+  return firestore;
+}
+
+const searchArtisansTool = ai.defineTool(
+    {
+        name: 'searchArtisans',
+        description: 'Search for artisans based on craft or location.',
+        inputSchema: z.object({
+            query: z.string().describe('The craft or name of the artisan to search for.'),
+            location: z.string().optional().describe('The province to filter artisans by.'),
+        }),
+        outputSchema: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            craft: z.string(),
+            province: z.string(),
+        })),
+    },
+    async ({ query: craftQuery, location }) => {
+        console.log(`Searching artisans with query: ${craftQuery} in ${location}`);
+        const db = getDb();
+        const artisansRef = collection(db, 'artisans');
+        
+        let q = query(artisansRef, where('craft', '>=', craftQuery), where('craft', '<=', craftQuery + '\uf8ff'));
+
+        if (location) {
+            q = query(artisansRef, where('craft', '>=', craftQuery), where('craft', '<=', craftQuery + '\uf8ff'), where('province', '==', location));
+        }
+
+        const snapshot = await getDocs(q);
+        if (snapshot.empty) {
+            // Fallback search by name if craft search yields no results
+             let nameQuery = query(artisansRef, where('name', '>=', craftQuery), where('name', '<=', craftQuery + '\uf8ff'));
+             if(location){
+                nameQuery = query(artisansRef, where('name', '>=', craftQuery), where('name', '<=', craftQuery + '\uf8ff'), where('province', '==', location));
+             }
+             const nameSnapshot = await getDocs(nameQuery);
+             return nameSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+        }
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+    }
+);
+
+const searchTrainingCentersTool = ai.defineTool(
+    {
+        name: 'searchTrainingCenters',
+        description: 'Search for training centers.',
+        inputSchema: z.object({
+            query: z.string().describe('The name of the training center to search for.'),
+            location: z.string().optional().describe('The province to filter training centers by.'),
+        }),
+        outputSchema: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            province: z.string(),
+            description: z.string(),
+        })),
+    },
+    async ({ query: nameQuery, location }) => {
+        console.log(`Searching training centers with query: ${nameQuery} in ${location}`);
+        const db = getDb();
+        const centersRef = collection(db, 'training-centers');
+
+        let q = query(centersRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'));
+        if(location){
+            q = query(centersRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'), where('province', '==', location));
+        }
+        
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+    }
+);
+
+const searchProductsTool = ai.defineTool(
+    {
+        name: 'searchProducts',
+        description: 'Search for products.',
+        inputSchema: z.object({
+            query: z.string().describe('The name of the product to search for.'),
+        }),
+        outputSchema: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            price: z.number(),
+            description: z.string(),
+        })),
+    },
+    async ({ query: nameQuery }) => {
+        console.log(`Searching products with query: ${nameQuery}`);
+        const db = getDb();
+        const productsRef = collection(db, 'products');
+
+        const q = query(productsRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'));
+        
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+    }
+);
+
 
 const ChatbotGuidedOrientationInputSchema = z.object({
   query: z.string().describe('The user query or question for the chatbot.'),
@@ -29,17 +136,23 @@ const chatbotGuidedOrientationPrompt = ai.definePrompt({
   name: 'chatbotGuidedOrientationPrompt',
   input: {schema: ChatbotGuidedOrientationInputSchema},
   output: {schema: ChatbotGuidedOrientationOutputSchema},
+  tools: [searchArtisansTool, searchTrainingCentersTool, searchProductsTool],
   prompt: `You are a helpful chatbot on the UmwugaHome platform, designed to guide new users.
 
   Your goal is to help users discover relevant artisan profiles, training programs, and market opportunities based on their interests and skills.
+  Use the available tools to search the platform's data for artisans, training centers, and products.
   
   You must detect the language of the user's query and respond in the SAME language. You must support English, French, Swahili, and pure Kirundi (do not mix with Kinyarwanda).
+
+  When you find information, present it clearly. For example, if you find an artisan, provide their name, craft, and province.
+  If you find multiple items, present them as a list.
+  If you don't find anything, say so politely.
 
   Respond to the following user query:
   {{query}}
 
   Be concise and helpful.
-  If the query is not related to the platform, politely indicate that you can only answer questions about UmwugaHome.
+  If the query is not related to the platform or the tools cannot help, politely indicate that you can only answer questions about UmwugaHome.
   `,
 });
 
