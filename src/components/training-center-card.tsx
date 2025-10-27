@@ -14,7 +14,7 @@ export function TrainingCenterCard({ center }: TrainingCenterCardProps) {
   const image = PlaceHolderImages.find(p => p.id === center.imageId);
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border-0">
        <CardHeader className="p-0">
         <div className="relative h-48 w-full">
           {image && (
