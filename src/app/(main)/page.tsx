@@ -89,7 +89,7 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               <Button asChild size="lg">
-                <Link href="/marketplace">Découvrir</Link>
+                <Link href="/artisans">Découvrir</Link>
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link href="/training">Contact</Link>
@@ -144,7 +144,7 @@ export default function Home() {
           </motion.div>
           <div className="flex justify-center">
             <Button asChild variant="outline">
-                <Link href="/marketplace">Voir tous les artisans</Link>
+                <Link href="/artisans">Voir tous les artisans</Link>
             </Button>
           </div>
         </div>
