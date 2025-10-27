@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,7 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { getFirestore, collection, getDocs, query, where, DocumentData } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where, DocumentData, limit } from 'firebase/firestore';
 import { firebaseApp } from '@/firebase/config'; 
 
 
@@ -110,9 +111,9 @@ const searchProductsTool = ai.defineTool(
 
         let q;
         if (nameQuery) {
-            q = query(productsRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'));
+            q = query(productsRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'), limit(10));
         } else {
-            q = query(productsRef);
+            q = query(productsRef, limit(10));
         }
         
         const snapshot = await getDocs(q);
@@ -152,8 +153,14 @@ const chatbotGuidedOrientationPrompt = ai.definePrompt({
   If a user asks a general question to see items (like "show me products" or "nshaka ibidandazwa"), use the appropriate tool without a specific query argument to show them available items.
   If you don't find anything, say so politely.
 
+  When providing lists, format them nicely using markdown. For products, always include the price in FBU.
+  For example:
+  "Voici quelques produits qui pourraient vous intéresser :
+  - **Panier en jonc 'Umuco'** - 25000 FBU
+  - **Sac en cuir 'Kazoza'** - 75000 FBU"
+
   Respond to the following user query:
-  {{query}}
+  {{{query}}}
 
   Be concise and helpful.
   If the query is not related to the platform or the tools cannot help, politely indicate that you can only answer questions about UmwugaHome.
@@ -171,3 +178,5 @@ const chatbotGuidedOrientationFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
