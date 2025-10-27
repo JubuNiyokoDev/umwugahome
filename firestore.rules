@@ -1,69 +1,78 @@
 /**
- * @description This ruleset enforces a strict user-ownership model for user profiles and their associated data (artisans, training centers, youths, mentors, products, and programs).
- * All data is nested under /users/{userId}, providing path-based ownership. Orders are stored at the top level but include customerId for filtering.
- * @dataStructure
- * - /users/{userId}: Stores user profile information, using the user's UID as the document ID.
- * - /users/{userId}/artisan: Stores artisan profile data linked to the user.
- * - /users/{userId}/training_center: Stores training center profile data linked to the user.
- * - /users/{userId}/youth: Stores youth profile data linked to the user.
- * - /users/{userId}/mentor: Stores mentor profile data linked to the user.
- * - /users/{userId}/artisan/products/{productId}: Stores product information for a specific artisan.
- * - /users/{userId}/training_center/programs/{programId}: Stores program information for a specific training center.
- * - /orders/{orderId}: Stores order information, including artisanId and customerId.
- * @keySecurityDecisions
- * - User listing is disallowed for privacy.
- * - All write operations are protected by authorization checks based on ownership.
- * - Read operations on the "artisans" collection are allowed for all users
- * @denormalizationForAuthorization
- * - No denormalization is explicitly required as the data structure leverages path-based ownership. The userId is inherently available in the path.
- * @structuralSegregation
- * - User profiles and related data are stored under /users/{userId} for private access.
- * - Orders are stored in a top-level collection to facilitate more open queries while still enabling filtering by artisan or customer.
+ * @file Firebase Security Rules for UmwugaHome Platform
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles and associated data (artisans, training centers, youths, mentors).
+ * Top-level collections such as `orders` are secured with checks against `customerId` and `artisanId`.
+ * Public listing of artisans is permitted.
+ *
+ * Data Structure:
+ * Data is primarily nested under `/users/{userId}`, creating a clear ownership hierarchy.
+ * Artisans, Training Centers, Youths, and Mentors are subcollections of `/users/{userId}`.
+ * Products and Programs are subcollections of their respective owners (artisans and training centers).
+ * Orders are stored in a top-level collection.
+ *
+ * Key Security Decisions:
+ * User profiles and associated data are strictly private to the owning user.
+ * Public listing of artisans is allowed.
+ * Orders are accessible with authorization checks on customerId and artisanId.
+ * Data validation is limited to ownership and relational integrity for rapid prototyping.
+ *
+ * Denormalization for Authorization:
+ * The data structure is designed to minimize the need for `get()` calls within security rules.  For example, the `Order` document contains both `artisanId` and `customerId`, allowing rules to validate access without needing to fetch related user or artisan documents.
+ *
+ * Structural Segregation:
+ * User-specific data is stored under the `/users/{userId}` path to ensure private access.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    /**
+     * @description Checks if the user is signed in.
+     */
     function isSignedIn() {
       return request.auth != null;
     }
 
+    /**
+     * @description Checks if the authenticated user is the owner of the resource.
+     */
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
 
+    /**
+     * @description Checks if the authenticated user is the owner of the resource and the resource exists.
+     */
     function isExistingOwner(userId) {
       return isOwner(userId) && resource != null;
     }
 
     /**
-     * @description Controls access to user profile documents.
+     * @description Rules for user documents.
      * @path /users/{userId}
-     * @allow (create) User with UID 'user123' can create their profile if request.auth.uid == 'user123'.
-     * @deny (create) User with UID 'user456' cannot create a profile with document ID 'user123'.
-     * @allow (get) User with UID 'user123' can read their profile.
-     * @allow (list) User with UID 'user123' cannot list all users. Listing is denied for privacy.
-     * @allow (update) User with UID 'user123' can update their own profile.
-     * @allow (delete) User with UID 'user123' can delete their own profile.
-     * @principle Enforces document ownership for writes and restricts listing for privacy.
+     * @allow (create) - Authenticated user can create their own user document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own user document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
-      allow get: if isSignedIn();
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == request.auth.uid;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id; // Enforce immutability of userId
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to artisan profile documents.
+     * @description Rules for artisan documents.
      * @path /users/{userId}/artisan
-     * @allow (create) User with UID 'user123' can create their artisan profile under /users/user123/artisan.
-     * @deny (create) User with UID 'user456' cannot create an artisan profile under /users/user123/artisan.
-     * @allow (get) User with UID 'user123' can read their artisan profile.
-     * @allow (list) User with UID 'user123' can list their own artisan profiles.
-     * @allow (update) User with UID 'user123' can update their own artisan profile.
-     * @allow (delete) User with UID 'user123' can delete their own artisan profile.
+     * @allow (create) - Authenticated user can create their own artisan document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own artisan document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/artisan {
@@ -74,15 +83,13 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
-    /**
-     * @description Controls access to training center profile documents.
+   /**
+     * @description Rules for training_center documents.
      * @path /users/{userId}/training_center
-     * @allow (create) User with UID 'user123' can create their training center profile under /users/user123/training_center.
-     * @deny (create) User with UID 'user456' cannot create a training center profile under /users/user123/training_center.
-     * @allow (get) User with UID 'user123' can read their training center profile.
-     * @allow (list) User with UID 'user123' can list their training center profiles.
-     * @allow (update) User with UID 'user123' can update their own training center profile.
-     * @allow (delete) User with UID 'user123' can delete their own training center profile.
+     * @allow (create) - Authenticated user can create their own training_center document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own training_center document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/training_center {
@@ -94,14 +101,12 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to youth profile documents.
+     * @description Rules for youth documents.
      * @path /users/{userId}/youth
-     * @allow (create) User with UID 'user123' can create their youth profile under /users/user123/youth.
-     * @deny (create) User with UID 'user456' cannot create a youth profile under /users/user123/youth.
-     * @allow (get) User with UID 'user123' can read their youth profile.
-     * @allow (list) User with UID 'user123' can list their youth profiles.
-     * @allow (update) User with UID 'user123' can update their own youth profile.
-     * @allow (delete) User with UID 'user123' can delete their own youth profile.
+     * @allow (create) - Authenticated user can create their own youth document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own youth document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/youth {
@@ -113,14 +118,12 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to mentor profile documents.
+     * @description Rules for mentor documents.
      * @path /users/{userId}/mentor
-     * @allow (create) User with UID 'user123' can create their mentor profile under /users/user123/mentor.
-     * @deny (create) User with UID 'user456' cannot create a mentor profile under /users/user123/mentor.
-     * @allow (get) User with UID 'user123' can read their mentor profile.
-     * @allow (list) User with UID 'user123' can list their mentor profiles.
-     * @allow (update) User with UID 'user123' can update their own mentor profile.
-     * @allow (delete) User with UID 'user123' can delete their own mentor profile.
+     * @allow (create) - Authenticated user can create their own mentor document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own mentor document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/mentor {
@@ -132,14 +135,12 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to product documents under an artisan's profile.
+     * @description Rules for product documents under an artisan.
      * @path /users/{userId}/artisan/products/{productId}
-     * @allow (create) User with UID 'user123' can create a product under their artisan profile.
-     * @deny (create) User with UID 'user456' cannot create a product under /users/user123/artisan/products/{productId}.
-     * @allow (get) User with UID 'user123' can read a product under their artisan profile.
-     * @allow (list) User with UID 'user123' can list products under their own artisan profile.
-     * @allow (update) User with UID 'user123' can update a product under their artisan profile.
-     * @allow (delete) User with UID 'user123' can delete a product under their artisan profile.
+     * @allow (create) - Authenticated user can create a product document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own product document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/artisan/products/{productId} {
@@ -151,14 +152,29 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to program documents under a training center's profile.
+     * @description Rules for order documents.
+     * @path /orders/{orderId}
+     * @allow (get) - Anyone can read an order.
+     * @allow (create) - Anyone can create an order if they are signed in.
+     * @allow (update, delete) - Only the customer or artisan associated with the order can update or delete it.
+     * @deny (create) - User cannot create a document if they are not signed in.
+     * @principle Orders are accessible with authorization checks on customerId and artisanId.
+     */
+    match /orders/{orderId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isSignedIn();
+      allow update: if resource != null && (resource.data.customerId == request.auth.uid || resource.data.artisanId == request.auth.uid);
+      allow delete: if resource != null && (resource.data.customerId == request.auth.uid || resource.data.artisanId == request.auth.uid);
+    }
+
+    /**
+     * @description Rules for program documents under a training center.
      * @path /users/{userId}/training_center/programs/{programId}
-     * @allow (create) User with UID 'user123' can create a program under their training center profile.
-     * @deny (create) User with UID 'user456' cannot create a program under /users/user123/training_center/programs/{programId}.
-     * @allow (get) User with UID 'user123' can read a program under their training center profile.
-     * @allow (list) User with UID 'user123' can list programs under their own training center profile.
-     * @allow (update) User with UID 'user123' can update a program under their training center profile.
-     * @allow (delete) User with UID 'user123' can delete a program under their training center profile.
+     * @allow (create) - Authenticated user can create a program document if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can read/write their own program document if the userId matches their auth.uid.
+     * @deny (create) - User cannot create a document with a userId that doesn't match their auth.uid.
+     * @deny (get, update, delete) - User cannot read/write a document if the userId doesn't match their auth.uid.
      * @principle Enforces document ownership for writes.
      */
     match /users/{userId}/training_center/programs/{programId} {
@@ -169,41 +185,18 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
-    /**
-     * @description Controls access to order documents.
-     * @path /orders/{orderId}
-     * @allow (create) Any authenticated user can create an order.
-     * @deny (create) Unauthenticated users cannot create an order.
-     * @allow (get) Any authenticated user can read an order.
-     * @allow (list) Any authenticated user can list orders.
-     * @allow (update) Only the user who created the order (customerId) or the artisan (artisanId) can update the order.
-     * @allow (delete) Only the user who created the order (customerId) or the artisan (artisanId) can delete the order.
-     * @principle Allows orders to be created by any signed-in user but restricts updates and deletes to the customer and artisan involved.
-     */
-    match /orders/{orderId} {
-        allow get: if isSignedIn();
-        allow list: if isSignedIn();
-        allow create: if isSignedIn();
-        allow update: if isSignedIn() && (request.auth.uid == resource.data.customerId || request.auth.uid == resource.data.artisanId) && resource != null;
-        allow delete: if isSignedIn() && (request.auth.uid == resource.data.customerId || request.auth.uid == resource.data.artisanId) && resource != null;
-    }
-
-    /**
-     * @description Controls access to artisan documents at the top level
-     * @path /artisans
-     * @allow (get) Any user can get an artisan
-     * @allow (list) Any user can list all artisans.
-     * @deny (create) No user can create artisans at the top level.
-     * @deny (update) No user can update artisans at the top level.
-     * @deny (delete) No user can delete artisans at the top level.
-     * @principle Artisans are public. Write actions are denied as they should be created under the user profile.
-     */
-    match /artisans {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-    }
+     /**
+      * @description Rules for artisans documents (Top level to allow public listing).
+      * @path /artisans
+      * @allow (get, list) - Allow anyone to read artisans documents.
+      *
+      */
+     match /artisans {
+       allow get: if true;
+       allow list: if true;
+       allow create: if false;
+       allow update: if false;
+       allow delete: if false;
+     }
   }
 }
