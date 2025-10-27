@@ -84,7 +84,7 @@ export default function AwardPage() {
       </motion.div>
 
        <Tabs defaultValue="laureates" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 max-w-2xl mx-auto">
           <TabsTrigger value="history"><Calendar className="mr-2 h-4 w-4"/>Historique</TabsTrigger>
           <TabsTrigger value="laureates"><Award className="mr-2 h-4 w-4"/>Lauréats</TabsTrigger>
           <TabsTrigger value="gallery"><Camera className="mr-2 h-4 w-4"/>Galerie</TabsTrigger>
@@ -93,15 +93,17 @@ export default function AwardPage() {
         </TabsList>
         
         <TabsContent value="history" className="mt-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">L'Histoire de l'Umwuga Award</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground">
-                    <p>Lancé en 2022, l'Umwuga Award est une initiative visant à reconnaître et à célébrer les artisans les plus talentueux et innovants du Burundi. Notre mission est de mettre en lumière le savoir-faire exceptionnel, d'encourager la créativité et de promouvoir l'artisanat burundais sur la scène nationale et internationale.</p>
-                    <p>Chaque année, un jury d'experts se réunit pour récompenser les artisans qui se sont distingués par leur excellence technique, l'originalité de leurs créations et leur impact sur la communauté. L'Umwuga Award est plus qu'un prix, c'est un label de qualité et un tremplin pour les artisans d'exception.</p>
-                </CardContent>
-            </Card>
+            <div className="max-w-4xl mx-auto">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">L'Histoire de l'Umwuga Award</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 text-muted-foreground">
+                        <p>Lancé en 2022, l'Umwuga Award est une initiative visant à reconnaître et à célébrer les artisans les plus talentueux et innovants du Burundi. Notre mission est de mettre en lumière le savoir-faire exceptionnel, d'encourager la créativité et de promouvoir l'artisanat burundais sur la scène nationale et internationale.</p>
+                        <p>Chaque année, un jury d'experts se réunit pour récompenser les artisans qui se sont distingués par leur excellence technique, l'originalité de leurs créations et leur impact sur la communauté. L'Umwuga Award est plus qu'un prix, c'est un label de qualité et un tremplin pour les artisans d'exception.</p>
+                    </CardContent>
+                </Card>
+            </div>
         </TabsContent>
 
         <TabsContent value="laureates" className="mt-8">
@@ -109,7 +111,7 @@ export default function AwardPage() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-12"
+            className="space-y-12 max-w-4xl mx-auto"
           >
             {laureates.map((laureate, index) => {
               const profileImage = PlaceHolderImages.find(p => p.id === laureate.profileImageId);
@@ -141,69 +143,73 @@ export default function AwardPage() {
         </TabsContent>
 
          <TabsContent value="gallery" className="mt-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Galerie des Cérémonies</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {galleryImages.map((image, index) => (
-                           <motion.div key={index} variants={itemVariants} className="overflow-hidden rounded-lg">
-                             <Image 
-                                src={image.imageUrl} 
-                                alt={image.description} 
-                                width={400} 
-                                height={400} 
-                                className="object-cover aspect-square w-full h-full hover:scale-105 transition-transform duration-300"
-                                data-ai-hint={image.imageHint}
-                             />
-                           </motion.div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="max-w-4xl mx-auto">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Galerie des Cérémonies</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {galleryImages.map((image, index) => (
+                            <motion.div key={index} variants={itemVariants} className="overflow-hidden rounded-lg">
+                                <Image 
+                                    src={image.imageUrl} 
+                                    alt={image.description} 
+                                    width={400} 
+                                    height={400} 
+                                    className="object-cover aspect-square w-full h-full hover:scale-105 transition-transform duration-300"
+                                    data-ai-hint={image.imageHint}
+                                />
+                            </motion.div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </TabsContent>
         
          <TabsContent value="news" className="mt-8">
-             <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl">Actualités</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                   <div className="border-b pb-4">
-                        <h3 className="font-semibold">Lancement des inscriptions pour l'édition 2024</h3>
-                        <p className="text-sm text-muted-foreground">Les candidatures pour la prochaine édition de l'Umwuga Award sont maintenant ouvertes. Date limite : 31 Octobre 2024.</p>
-                   </div>
+            <div className="max-w-4xl mx-auto">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">Actualités</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
                     <div className="border-b pb-4">
-                        <h3 className="font-semibold">Retour sur la cérémonie de 2023</h3>
-                        <p className="text-sm text-muted-foreground">Revivez les moments forts de la dernière cérémonie qui a vu couronner Aline Niyonsaba et Jean-Claude Bizimana.</p>
-                   </div>
-                    <div>
-                        <h3 className="font-semibold">Partenariat avec la Chambre de Commerce</h3>
-                        <p className="text-sm text-muted-foreground">L'Umwuga Award est fier d'annoncer un nouveau partenariat pour accompagner les lauréats à l'export.</p>
-                   </div>
-                </CardContent>
-            </Card>
+                            <h3 className="font-semibold">Lancement des inscriptions pour l'édition 2024</h3>
+                            <p className="text-sm text-muted-foreground">Les candidatures pour la prochaine édition de l'Umwuga Award sont maintenant ouvertes. Date limite : 31 Octobre 2024.</p>
+                    </div>
+                        <div className="border-b pb-4">
+                            <h3 className="font-semibold">Retour sur la cérémonie de 2023</h3>
+                            <p className="text-sm text-muted-foreground">Revivez les moments forts de la dernière cérémonie qui a vu couronner Aline Niyonsaba et Jean-Claude Bizimana.</p>
+                    </div>
+                        <div>
+                            <h3 className="font-semibold">Partenariat avec la Chambre de Commerce</h3>
+                            <p className="text-sm text-muted-foreground">L'Umwuga Award est fier d'annoncer un nouveau partenariat pour accompagner les lauréats à l'export.</p>
+                    </div>
+                    </CardContent>
+                </Card>
+            </div>
         </TabsContent>
 
         <TabsContent value="register" className="mt-8">
-             <Card>
-                <CardHeader className="text-center">
-                    <CardTitle className="font-headline text-2xl">Participez à l'édition 2024</CardTitle>
-                    <p className="text-muted-foreground max-w-lg mx-auto">Vous êtes un artisan talentueux ? Vous repoussez les limites de votre art ? Tentez votre chance et devenez le prochain lauréat de l'Umwuga Award.</p>
-                </CardHeader>
-                <CardContent className="text-center">
-                    <Button size="lg">
-                        <Edit className="mr-2 h-5 w-5" />
-                        Soumettre ma candidature
-                    </Button>
-                </CardContent>
-            </Card>
+            <div className="max-w-4xl mx-auto">
+                <Card>
+                    <CardHeader className="text-center">
+                        <CardTitle className="font-headline text-2xl">Participez à l'édition 2024</CardTitle>
+                        <p className="text-muted-foreground max-w-lg mx-auto">Vous êtes un artisan talentueux ? Vous repoussez les limites de votre art ? Tentez votre chance et devenez le prochain lauréat de l'Umwuga Award.</p>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                        <Button size="lg">
+                            <Edit className="mr-2 h-5 w-5" />
+                            Soumettre ma candidature
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
         </TabsContent>
 
       </Tabs>
     </div>
   );
 }
-
-    
