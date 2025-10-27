@@ -9,8 +9,7 @@ import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import { useRouter } from "next/navigation";
-import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase";
-import { collection, doc, serverTimestamp } from "firebase/firestore";
+import { useUser } from "@/firebase";
 
 interface ProductCardProps {
   product: Product | null;
@@ -20,14 +19,6 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const router = useRouter();
-  const firestore = useFirestore();
-
-  const artisanRef = useMemoFirebase(() => {
-    if (!firestore || !product?.artisanId) return null;
-    return doc(firestore, 'artisans', product.artisanId);
-  }, [firestore, product?.artisanId]);
-
-  const { data: artisan } = useDoc<Artisan>(artisanRef);
 
   if (!product) {
     return (
@@ -46,32 +37,18 @@ export function ProductCard({ product }: ProductCardProps) {
   }
   
   const handleAddToCart = () => {
-    if (!user || !user.displayName) {
+    if (!user) {
       toast({
         variant: "destructive",
         title: "Connexion requise",
         description: "Vous devez être connecté pour passer une commande.",
       });
-      if(!user) router.push('/login');
+      router.push('/login');
       return;
     }
-    
-    if(!firestore) return;
-
-    const ordersCollection = collection(firestore, 'orders');
-    addDocumentNonBlocking(ordersCollection, {
-        artisanId: product.artisanId,
-        productId: product.id,
-        productName: product.name,
-        customerId: user.uid,
-        customerName: user.displayName,
-        orderDate: serverTimestamp(),
-        status: 'pending',
-    });
-
 
     toast({
-      title: "Commande passée !",
+      title: "Commande passée (Démo)",
       description: `Votre commande pour "${product.name}" a été enregistrée.`,
     });
   };
@@ -97,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="font-bold text-lg mt-2 text-primary">{product.price.toLocaleString('fr-FR')} FBU</p>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full" onClick={handleAddToCart} disabled={!artisan}>
+        <Button className="w-full" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Commander
         </Button>

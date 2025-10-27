@@ -8,13 +8,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { UserProfile } from "@/lib/types";
+import { UserProfile, Artisan, TrainingCenter } from "@/lib/types";
 import { Briefcase, School, Users, Wallet } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
 
 const chartData = [
   { month: "Janvier", users: 186 },
@@ -33,23 +32,20 @@ const chartConfig = {
 };
 
 export default function AdminDashboardPage() {
-    const firestore = useFirestore();
+    const [users, setUsers] = useState<UserProfile[]>([]);
+    const [artisans, setArtisans] = useState<Artisan[]>([]);
+    const [centers, setCenters] = useState<TrainingCenter[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
-    const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
-    
-    const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
-    const { data: artisans, isLoading: isLoadingArtisans } = useCollection(artisansRef);
-
-    const centersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-    const { data: centers, isLoading: isLoadingCenters } = useCollection(centersRef);
-
-    const isLoading = isLoadingUsers || isLoadingArtisans || isLoadingCenters;
+    useEffect(() => {
+      setUsers(seedData.users);
+      setArtisans(seedData.artisans);
+      setCenters(seedData.trainingCenters);
+      setIsLoading(false);
+    }, []);
 
     const recentUsers = useMemo(() => {
         if (!users) return [];
-        // Assuming users are ordered by creation date, which is not guaranteed without an explicit order.
-        // For this demo, we'll just slice the array.
         return users.slice(0, 5);
     }, [users]);
 

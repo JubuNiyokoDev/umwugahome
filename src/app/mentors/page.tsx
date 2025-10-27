@@ -7,17 +7,21 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mentor } from "@/lib/types";
 import { Search } from "lucide-react";
-import { useState, useMemo } from "react";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { useState, useMemo, useEffect } from "react";
+import { seedData } from "@/lib/seed";
 
 export default function MentorsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expertise, setExpertise] = useState('all');
-  const firestore = useFirestore();
+  
+  const [allMentors, setAllMentors] = useState<Mentor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const mentorsRef = useMemoFirebase(() => firestore ? collection(firestore, 'mentors') : null, [firestore]);
-  const { data: allMentors, isLoading } = useCollection<Mentor>(mentorsRef);
+  useEffect(() => {
+    setAllMentors(seedData.mentors);
+    setIsLoading(false);
+  }, []);
+
 
   const filteredMentors = useMemo(() => {
     if (!allMentors) return [];

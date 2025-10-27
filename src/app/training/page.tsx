@@ -7,23 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Course, TrainingCenter } from "@/lib/types";
 import { Search } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { seedData } from "@/lib/seed";
 
 export default function TrainingPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [province, setProvince] = useState('all');
-  const firestore = useFirestore();
+  
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [allTrainingCenters, setAllTrainingCenters] = useState<TrainingCenter[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const coursesRef = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
-  const { data: allCourses, isLoading: isLoadingCourses } = useCollection<Course>(coursesRef);
-
-  const centersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-  const { data: allTrainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(centersRef);
-
-  const isLoading = isLoadingCourses || isLoadingCenters;
+  useEffect(() => {
+    setAllCourses(seedData.courses);
+    setAllTrainingCenters(seedData.trainingCenters);
+    setIsLoading(false);
+  }, []);
 
   const centersById = useMemo(() => {
     if (!allTrainingCenters) return new Map();

@@ -9,23 +9,25 @@ import { Course, TrainingCenter } from "@/lib/types";
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { useCollection, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, doc, query, where } from "firebase/firestore";
+import { seedData } from "@/lib/seed";
+import { useEffect, useState } from "react";
 
 export default function TrainingCenterPage({ params }: { params: { id: string } }) {
-  const firestore = useFirestore();
+  const [center, setCenter] = useState<TrainingCenter | undefined | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const centerRef = useMemoFirebase(() => firestore ? doc(firestore, 'training-centers', params.id) : null, [firestore, params.id]);
-  const { data: center, isLoading: isLoadingCenter } = useDoc<TrainingCenter>(centerRef);
-
-  const coursesRef = useMemoFirebase(() => {
-      if (!firestore || !params.id) return null;
-      return query(collection(firestore, 'courses'), where('centerId', '==', params.id));
-  }, [firestore, params.id]);
-  const { data: courses, isLoading: isLoadingCourses } = useCollection<Course>(coursesRef);
+  useEffect(() => {
+      setIsLoading(true);
+      const foundCenter = seedData.trainingCenters.find(c => c.id === params.id);
+      setCenter(foundCenter);
+      if (foundCenter) {
+          const foundCourses = seedData.courses.filter(c => c.centerId === foundCenter.id);
+          setCourses(foundCourses);
+      }
+      setIsLoading(false);
+  }, [params.id]);
   
-  const isLoading = isLoadingCenter || isLoadingCourses;
-
   if (isLoading) {
     return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement du centre...</div>
   }
@@ -74,14 +76,14 @@ export default function TrainingCenterPage({ params }: { params: { id: string } 
 
       <div className="mt-12">
         <h2 className="text-2xl md:text-3xl font-bold font-headline mb-6 text-center">Programmes de Formation</h2>
-        {isLoadingCourses && <p>Chargement des formations...</p>}
+        {isLoading && <p>Chargement des formations...</p>}
         {courses && courses.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {courses.map(course => (
               <CourseCard key={course.id} course={course} />
             ))}
           </div>
-        ) : !isLoadingCourses && (
+        ) : !isLoading && (
             <Card className="text-center py-12 text-muted-foreground lg:col-span-2">
                 <CardContent>
                  <p>Aucune formation disponible pour le moment.</p>

@@ -12,29 +12,29 @@ import { Award, Briefcase, School, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, limit, query } from "firebase/firestore";
+import { seedData } from "@/lib/seed";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
-  const firestore = useFirestore();
-
-  const featuredArtisansRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'artisans'), limit(4)) : null, [firestore]);
-  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(featuredArtisansRef);
   
-  const featuredCentersRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'training-centers'), limit(2)) : null, [firestore]);
-  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(featuredCentersRef);
-  
-  const allArtisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
-  const {data: allArtisans, isLoading: isLoadingAllArtisans} = useCollection<Artisan>(allArtisansRef);
+  const [artisans, setArtisans] = useState<Artisan[]>([]);
+  const [trainingCenters, setTrainingCenters] = useState<TrainingCenter[]>([]);
+  const [allArtisans, setAllArtisans] = useState<Artisan[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+  const [allCenters, setAllCenters] = useState<TrainingCenter[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const allCoursesRef = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
-  const {data: allCourses, isLoading: isLoadingAllCourses} = useCollection<Course>(allCoursesRef);
+  useEffect(() => {
+    // Simulate fetching data from seed
+    setArtisans(seedData.artisans.slice(0, 4));
+    setTrainingCenters(seedData.trainingCenters.slice(0, 2));
+    setAllArtisans(seedData.artisans);
+    setAllCourses(seedData.courses);
+    setAllCenters(seedData.trainingCenters);
+    setIsLoading(false);
+  }, []);
 
-  const allCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-  const {data: allCenters, isLoading: isLoadingAllCenters} = useCollection<TrainingCenter>(allCentersRef);
-
-  const isLoadingStats = isLoadingAllArtisans || isLoadingAllCourses || isLoadingAllCenters;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -56,8 +56,6 @@ export default function Home() {
       },
     },
   };
-  
-  const isLoading = isLoadingArtisans || isLoadingCenters;
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -107,9 +105,9 @@ export default function Home() {
       >
         <div className="container px-4 md:px-6">
           <motion.div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8" variants={containerVariants}>
-            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoadingStats ? '...' : (allArtisans?.length || 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoadingStats ? '...' : (allCourses?.length || 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoadingStats ? '...' : (allCenters?.length || 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoading ? '...' : (allArtisans?.length || 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoading ? '...' : (allCourses?.length || 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoading ? '...' : (allCenters?.length || 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
             <motion.div variants={itemVariants}><StatCard title="Lauréats Umwuga Award" value="30+" icon={<Award className="h-4 w-4 text-muted-foreground" />} /></motion.div>
           </motion.div>
         </div>

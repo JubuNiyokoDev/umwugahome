@@ -10,14 +10,20 @@ import { Mentor } from "@/lib/types";
 import { Award, Briefcase, GraduationCap, MapPin, MessageCircle, Star } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { seedData } from "@/lib/seed";
+import { useEffect, useState } from "react";
 
 export default function MentorProfilePage({ params }: { params: { id: string } }) {
-  const firestore = useFirestore();
-  
-  const mentorRef = useMemoFirebase(() => firestore ? doc(firestore, 'mentors', params.id) : null, [firestore, params.id]);
-  const { data: mentor, isLoading } = useDoc<Mentor>(mentorRef);
+  const [mentor, setMentor] = useState<Mentor | undefined | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const foundMentor = seedData.mentors.find(m => m.id === params.id);
+    setMentor(foundMentor);
+    setIsLoading(false);
+  }, [params.id]);
+
 
    if (isLoading) {
     return (
