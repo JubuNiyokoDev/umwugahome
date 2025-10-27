@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ProductCard } from "@/components/product-card";
@@ -5,15 +6,81 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDoc, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Artisan, Product } from "@/lib/types";
-import { collection, doc, query, where } from "firebase/firestore";
+import { Artisan, Order, Product } from "@/lib/types";
+import { collection, doc, query, where, Timestamp } from "firebase/firestore";
 import { MapPin, MessageCircle, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+function ArtisanOrders({ artisanId }: { artisanId: string }) {
+  const firestore = useFirestore();
+  const ordersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'orders'), where('artisanId', '==', artisanId)) : null, [firestore, artisanId]);
+  const { data: orders, isLoading: isLoadingOrders } = useCollection<Order>(ordersQuery);
+
+  if (isLoadingOrders) {
+    return <p>Chargement des commandes...</p>
+  }
+
+  if (!orders || orders.length === 0) {
+    return (
+      <Card className="text-center py-12 text-muted-foreground">
+        <CardContent>
+          <p>Aucune commande pour le moment.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-headline">Commandes Reçues</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Produit</TableHead>
+              <TableHead>Client</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orders.map(order => {
+                let formattedDate = 'Date invalide';
+                // Firestore timestamp can be a string or a Timestamp object
+                if (order.orderDate) {
+                     try {
+                        const date = (order.orderDate as any).toDate ? (order.orderDate as any).toDate() : new Date(order.orderDate);
+                        formattedDate = format(date, 'd MMM yyyy', { locale: fr });
+                     } catch (e) {
+                        console.error("Error formatting date: ", order.orderDate)
+                     }
+                }
+               return(
+                  <TableRow key={order.id}>
+                    <TableCell className="font-medium">{order.productName}</TableCell>
+                    <TableCell>{order.customerName}</TableCell>
+                    <TableCell>{formattedDate}</TableCell>
+                    <TableCell><Badge variant={order.status === 'pending' ? 'default' : 'secondary'}>{order.status}</Badge></TableCell>
+                  </TableRow>
+               )
+            })}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function ArtisanProfilePage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
@@ -87,8 +154,9 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
       
       <div className="mt-8">
         <Tabs defaultValue="shop">
-          <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto">
+          <TabsList className="grid grid-cols-4 w-full max-w-lg mx-auto">
             <TabsTrigger value="shop">Boutique ({isLoadingProducts ? '...' : products?.length || 0})</TabsTrigger>
+            <TabsTrigger value="orders">Commandes</TabsTrigger>
             <TabsTrigger value="about">À Propos</TabsTrigger>
             <TabsTrigger value="reviews">Avis</TabsTrigger>
           </TabsList>
@@ -108,6 +176,9 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
                    </CardContent>
                 </Card>
             )}
+          </TabsContent>
+           <TabsContent value="orders" className="mt-6">
+            <ArtisanOrders artisanId={params.id} />
           </TabsContent>
           <TabsContent value="about" className="mt-6">
             <Card>
@@ -139,3 +210,5 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
     </div>
   );
 }
+
+    

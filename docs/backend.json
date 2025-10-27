@@ -288,9 +288,17 @@
           "type": "string",
           "description": "Reference to Product. (Relationship: Order 1:1 Product)"
         },
+        "productName": {
+            "type": "string",
+            "description": "Name of the product ordered."
+        },
         "customerId": {
           "type": "string",
           "description": "Reference to User. (Relationship: User 1:N Order).  The ID of the customer who placed the order. Assuming users can place orders."
+        },
+        "customerName": {
+            "type": "string",
+            "description": "Name of the customer who placed the order."
         },
         "orderDate": {
           "type": "string",
@@ -306,7 +314,9 @@
         "id",
         "artisanId",
         "productId",
+        "productName",
         "customerId",
+        "customerName",
         "orderDate",
         "status"
       ]
@@ -400,3 +410,5 @@
     }
   }
 }
+
+    

@@ -60,11 +60,25 @@ export type UserProfile = {
   interests: string[];
 };
 
+export type Order = {
+    id: string;
+    artisanId: string;
+    productId: string;
+    productName: string;
+    customerId: string;
+    customerName: string;
+    orderDate: string; 
+    status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+}
+
 export type SeedData = {
     users: UserProfile[],
     artisans: Artisan[],
     trainingCenters: TrainingCenter[],
     products: Product[],
     courses: Course[],
-    mentors: Mentor[]
+    mentors: Mentor[],
+    orders?: Order[],
 }
+
+    
