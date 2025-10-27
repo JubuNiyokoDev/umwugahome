@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-transparent">
+    <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8 md:px-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex flex-col items-center gap-2 text-center md:items-start md:text-left">
@@ -25,7 +25,7 @@ export function Footer() {
             </Link>
           </div>
         </div>
-        <div className="mt-8 border-t border-white/10 pt-4 text-center text-sm text-muted-foreground">
+        <div className="mt-8 border-t pt-4 text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} UmwugaHome. Tous droits réservés.
         </div>
       </div>

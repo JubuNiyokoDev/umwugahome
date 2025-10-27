@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface StatCardProps {
@@ -11,14 +11,17 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon, description, className }: StatCardProps) {
   return (
-    <Card className={cn("transform transition-transform duration-300 hover:scale-105 hover:shadow-xl bg-transparent border-0 shadow-none", className)}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-0">
-        <CardTitle className="text-sm font-medium text-muted-foreground font-body">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="text-2xl font-bold font-headline text-primary">{value}</div>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+    <Card className={cn("bg-card text-card-foreground p-6 rounded-lg", className)}>
+      <CardContent className="p-0 flex flex-col items-start gap-4">
+        <div className="p-3 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5">
+            <div className="p-2 rounded-md bg-primary/20 text-primary">
+                {icon}
+            </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="text-3xl font-bold font-headline text-primary">{value}</div>
+          <p className="text-base text-muted-foreground">{title}</p>
+        </div>
       </CardContent>
     </Card>
   );

@@ -68,7 +68,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl font-headline text-primary drop-shadow-lg">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl font-headline text-foreground drop-shadow-lg">
               UmwugaHome
             </h1>
             <p className="max-w-[700px] text-foreground/80 md:text-xl font-body">
@@ -95,10 +95,10 @@ export default function Home() {
       >
         <div className="container px-4 md:px-6">
           <motion.div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8" variants={containerVariants}>
-            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoading ? '...' : (allArtisans?.length || 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoading ? '...' : (allCourses?.length || 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoading ? '...' : (allCenters?.length || 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Lauréats Umwuga Award" value="30+" icon={<Award className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoading ? '...' : (allArtisans?.length || 0).toString()} icon={<Users className="h-6 w-6" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoading ? '...' : (allCourses?.length || 0).toString()} icon={<School className="h-6 w-6" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoading ? '...' : (allCenters?.length || 0).toString()} icon={<Briefcase className="h-6 w-6" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Lauréats Umwuga Award" value="30+" icon={<Award className="h-6 w-6" />} /></motion.div>
           </motion.div>
         </div>
       </motion.section>
