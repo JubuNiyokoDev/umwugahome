@@ -30,9 +30,9 @@ export default function RootLayout({
       <body className={cn("font-body antialiased")}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
         >
           <NProgressProvider>
             <MotionProvider>
