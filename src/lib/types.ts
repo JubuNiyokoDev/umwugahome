@@ -4,7 +4,7 @@ export type Artisan = {
   craft: string;
   province: string;
   bio: string;
-  profileImageId: string;
+  profileImageId?: string;
   rating: number;
 };
 
@@ -41,6 +41,8 @@ export type UserProfile = {
   name: string;
   email: string | null;
   role: 'artisan' | 'student' | 'mentor' | 'admin';
-  profileImageId: string;
+  profileImageId?: string;
   interests: string[];
 };
+
+    

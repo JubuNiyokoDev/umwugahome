@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase } from "@/firebase";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { UserProfile } from "@/lib/types";
 import { BookMarked, LogOut, User as UserIcon, Loader2, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,7 +37,6 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
                 name: name.trim(),
                 email: user.email,
                 role: role,
-                profileImageId: 'student-profile-1', // Default image
                 interests: []
             };
             
@@ -142,8 +140,6 @@ export default function ProfilePage() {
     }
 
 
-    const profileImage = PlaceHolderImages.find(img => img.id === userProfile.profileImageId);
-
     return (
         <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
             <div className="grid gap-8 md:grid-cols-3">
@@ -151,7 +147,7 @@ export default function ProfilePage() {
                     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
                         <CardContent className="flex flex-col items-center p-6 text-center">
                             <Avatar className="w-32 h-32 mb-4">
-                                <AvatarImage src={user.photoURL || profileImage?.imageUrl} alt={userProfile.name} />
+                                {user.photoURL && <AvatarImage src={user.photoURL} alt={userProfile.name} />}
                                 <AvatarFallback>
                                     <UserIcon className="h-16 w-16 text-muted-foreground" />
                                 </AvatarFallback>
@@ -202,3 +198,5 @@ export default function ProfilePage() {
         </div>
     );
 }
+
+    
