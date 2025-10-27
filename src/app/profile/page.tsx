@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<typeof useUser>['user']>, role: UserProfile['role'] }) {
     const firestore = useFirestore();
@@ -221,8 +220,6 @@ export default function ProfilePage() {
     
     const userProfileRef = useMemoFirebase(() => (firestore && user) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
-    const profileImage = user?.photoURL ? null : PlaceHolderImages.find(p => p.id === 'student-profile-1');
-
 
     const handleSignOut = async () => {
         if (!auth) return;
@@ -267,7 +264,7 @@ export default function ProfilePage() {
                     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
                         <CardContent className="flex flex-col items-center p-6 text-center">
                             <Avatar className="w-32 h-32 mb-4">
-                                {user.photoURL && <AvatarImage src={user.photoURL} alt={userProfile.name} />}
+                                <AvatarImage src={user.photoURL || undefined} alt={userProfile.name} />
                                 <AvatarFallback>
                                     <UserIcon className="h-16 w-16 text-muted-foreground" />
                                 </AvatarFallback>
@@ -289,5 +286,3 @@ export default function ProfilePage() {
         </div>
     );
 }
-
-    
