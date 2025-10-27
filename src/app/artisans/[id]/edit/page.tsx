@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,7 +55,7 @@ export default function EditArtisanProfilePage() {
 
     const artisanRef = useMemo(() => {
         if (!firestore || typeof id !== 'string') return null;
-        return doc(firestore, 'artisans', id);
+        return doc(firestore, 'artisans', id as string);
     }, [firestore, id]);
 
     const { data: artisan, isLoading: isLoadingArtisan } = useDoc<Artisan>(artisanRef);

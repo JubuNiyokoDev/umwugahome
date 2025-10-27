@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,7 +53,7 @@ export default function EditTrainingCenterProfilePage() {
 
     const centerRef = useMemo(() => {
         if (!firestore || typeof id !== 'string') return null;
-        return doc(firestore, 'training-centers', id);
+        return doc(firestore, 'training-centers', id as string);
     }, [firestore, id]);
 
     const { data: center, isLoading: isLoadingCenter } = useDoc<TrainingCenter>(centerRef);

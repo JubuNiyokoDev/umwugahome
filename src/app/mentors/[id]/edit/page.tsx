@@ -54,7 +54,7 @@ export default function EditMentorProfilePage() {
 
     const mentorRef = useMemo(() => {
         if (!firestore || typeof id !== 'string') return null;
-        return doc(firestore, 'mentors', id);
+        return doc(firestore, 'mentors', id as string);
     }, [firestore, id]);
 
     const { data: mentor, isLoading: isLoadingMentor } = useDoc<Mentor>(mentorRef);
