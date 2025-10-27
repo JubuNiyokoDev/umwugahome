@@ -88,12 +88,6 @@ export default function SeedPage() {
                 requestResourceData: 'seed data'
             });
             errorEmitter.emit('permission-error', permissionError);
-            console.error("Error seeding database:", error);
-            toast({
-                variant: 'destructive',
-                title: "Erreur lors du seeding",
-                description: "Vérifiez les règles de sécurité Firestore et la console du navigateur pour plus de détails."
-            });
         } finally {
             setIsSeeding(false);
         }

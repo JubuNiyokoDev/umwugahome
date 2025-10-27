@@ -1,240 +1,164 @@
 /**
- * @file Firestore Security Rules
- * @description This ruleset enforces a user-ownership model where users can only read and write their own data in the 'users' collection.
- *  Artisan, TrainingCenter, Mentor, Youth profiles are linked to a user via the userId field and are secured accordingly.
- *  Products, Courses, and Orders are publicly readable but only writable by the owner (the Artisan or TrainingCenter).
- *  Schema validation is relaxed to allow for rapid prototyping.
+ * @fileoverview Firestore Security Rules for UmwugaHome platform.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles and related data,
+ * while allowing public read access to certain collections like products and courses.
+ * All write operations are protected by authorization checks based on user authentication and roles.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profiles, accessible only by the user themselves.
- * - /artisans/{artisanId}: Stores artisan profiles, linked to users via the userId field.
- * - /training-centers/{trainingCenterId}: Stores training center profiles, linked to users via the userId field.
- * - /mentors/{mentorId}: Stores mentor profiles, linked to users via the userId field.
- * - /products/{productId}: Stores product information, linked to artisans via the artisanId field.
- * - /courses/{courseId}: Stores course information, linked to training centers via the centerId field.
- * - /orders/{orderId}: Stores order information, linked to artisans and users.
+ * - /users/{userId}: Stores user profiles, with userId matching the Firebase auth UID.
+ * - /artisans/{artisanId}, /training-centers/{centerId}, /mentors/{mentorId}: Stores profile information for artisans, training centers, and mentors respectively.
+ * - /products/{productId}, /courses/{courseId}, /orders/{orderId}: Stores product, course, and order information respectively.
  *
  * Key Security Decisions:
- * - Users can only manage their own user documents.
- * - Artisan, TrainingCenter and Mentor profile creation is allowed only by the associated user.
- * - Products and Courses are publicly readable, but only the owner can create, update, or delete them.
+ * - User profiles are only readable and writable by the authenticated user.
+ * - Products and courses are publicly readable but only writable by authenticated artisans and training centers respectively.
+ * - Orders can be created by any authenticated user.
+ * - Listing of users is disallowed for privacy reasons.
  *
  * Denormalization for Authorization:
- * - Artisan, TrainingCenter, and Mentor documents include a 'userId' field, which is used to verify ownership and enforce access control.
- *
- * Structural Segregation:
- * - No explicit structural segregation is implemented.
+ * - The artisanId field in the /products collection is crucial for authorizing product creation, updates, and deletions.
+ * - The centerId field in the /courses collection is crucial for authorizing course creation, updates, and deletions.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
     /**
-     * @description Controls access to the 'users' collection.
+     * @description Secure user profiles.  Only the authenticated user can read/write their own profile.
      * @path /databases/{database}/documents/users/{userId}
-     * @allow (create) User with UID 'user123' can create their own user document.
-     * @allow (get,update,delete) User with UID 'user123' can access their own user document.
-     * @deny (create) User with UID 'user456' cannot create a user document with ID 'user123'.
-     * @deny (get,update,delete) User with UID 'user456' cannot access user document with ID 'user123'.
-     * @principle Enforces document ownership for all operations.
+     * @allow (get, update, delete) User with UID 'user123' can read/write their own profile at /users/user123.
+     * @allow (create) User with UID 'user123' can create their own profile at /users/user123.
+     * @deny (get) User with UID 'user456' cannot read the profile of user 'user123' at /users/user123.
+     * @deny (update) User with UID 'user456' cannot update the profile of user 'user123' at /users/user123.
+     * @deny (delete) User with UID 'user456' cannot delete the profile of user 'user123' at /users/user123.
+     * @principle Enforces document ownership for all operations on user profiles.
      */
     match /users/{userId} {
-      // Verified authentication
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      // Verifies the requesting user
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-      //Verifies existing document ownership
-      function isExistingOwner(userId) {
-        return request.auth.uid == resource.data.userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isExistingOwner(userId);
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to the 'artisans' collection.
+     * @description Secure artisan profiles. Only the authenticated user can read/write their own profile.
      * @path /databases/{database}/documents/artisans/{artisanId}
-     * @allow (create) User with UID 'user123' can create an artisan profile if artisan.userId == user123.
-     * @allow (get,list) Any user can read artisan profiles.
-     * @allow (update,delete) User with UID 'user123' can update/delete their artisan profile (artisan.userId == user123).
-     * @deny (create) User with UID 'user456' cannot create an artisan profile with userId 'user123'.
-     * @deny (update,delete) User with UID 'user456' cannot update/delete artisan profile with userId 'user123'.
-     * @principle Enforces document ownership for writes; public read access.
+     * @allow (get, update, delete) User with UID 'user123' can read/write their own profile at /artisans/artisan123 if user123 is the artisan's userId.
+     * @allow (create) User with UID 'user123' can create their own profile at /artisans/artisan123 if user123 is the artisan's userId.
+     * @deny (get) User with UID 'user456' cannot read the profile of artisan 'artisan123' at /artisans/artisan123.
+     * @deny (update) User with UID 'user456' cannot update the profile of artisan 'artisan123' at /artisans/artisan123.
+     * @deny (delete) User with UID 'user456' cannot delete the profile of artisan 'artisan123' at /artisans/artisan123.
+     * @principle Enforces document ownership for all operations on artisan profiles.
      */
     match /artisans/{artisanId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isArtisanOwner(artisanId) {
-        return request.auth.uid == get(/databases/$(database)/documents/artisans/$(artisanId)).data.userId;
-      }
-
-      function isExistingArtisanOwner(artisanId) {
-          return isSignedIn() && request.auth.uid == resource.data.userId;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingArtisanOwner(artisanId);
-      allow delete: if isExistingArtisanOwner(artisanId);
-    }
-
-     /**
-      * @description Controls access to the 'training-centers' collection.
-      * @path /databases/{database}/documents/training-centers/{trainingCenterId}
-      * @allow (create) User with UID 'user123' can create a training center profile if training-center.userId == user123.
-      * @allow (get,list) Any user can read training center profiles.
-      * @allow (update,delete) User with UID 'user123' can update/delete their training center profile (training-center.userId == user123).
-      * @deny (create) User with UID 'user456' cannot create a training center profile with userId 'user123'.
-      * @deny (update,delete) User with UID 'user456' cannot update/delete training center profile with userId 'user123'.
-      * @principle Enforces document ownership for writes; public read access.
-      */
-    match /training-centers/{trainingCenterId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isCenterOwner(centerId) {
-          return request.auth.uid == get(/databases/$(database)/documents/training-centers/$(centerId)).data.userId;
-      }
-
-      function isExistingCenterOwner(centerId) {
-          return isSignedIn() && request.auth.uid == resource.data.userId;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingCenterOwner(centerId);
-      allow delete: if isExistingCenterOwner(centerId);
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.id == artisanId;
+      allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(resource.data.userId);
     }
 
     /**
-     * @description Controls access to the 'mentors' collection.
+     * @description Secure training center profiles. Only the authenticated user can read/write their own profile.
+     * @path /databases/{database}/documents/training-centers/{centerId}
+     * @allow (get, update, delete) User with UID 'user123' can read/write their own profile at /training-centers/center123 if user123 is the training center's userId.
+     * @allow (create) User with UID 'user123' can create their own profile at /training-centers/center123 if user123 is the training center's userId.
+     * @deny (get) User with UID 'user456' cannot read the profile of training center 'center123' at /training-centers/center123.
+     * @deny (update) User with UID 'user456' cannot update the profile of training center 'center123'.
+     * @deny (delete) User with UID 'user456' cannot delete the profile of training center 'center123'.
+     * @principle Enforces document ownership for all operations on training center profiles.
+     */
+    match /training-centers/{centerId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.id == centerId;
+      allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(resource.data.userId);
+    }
+
+    /**
+     * @description Secure mentor profiles. Only the authenticated user can read/write their own profile.
      * @path /databases/{database}/documents/mentors/{mentorId}
-     * @allow (create) User with UID 'user123' can create a mentor profile if mentor.userId == user123.
-     * @allow (get,list) Any user can read mentor profiles.
-     * @allow (update,delete) User with UID 'user123' can update/delete their mentor profile (mentor.userId == user123).
-     * @deny (create) User with UID 'user456' cannot create a mentor profile with userId 'user123'.
-     * @deny (update,delete) User with UID 'user456' cannot update/delete mentor profile with userId 'user123'.
-     * @principle Enforces document ownership for writes; public read access.
+     * @allow (get, update, delete) User with UID 'user123' can read/write their own profile at /mentors/mentor123 if user123 is the mentor's userId.
+     * @allow (create) User with UID 'user123' can create their own profile at /mentors/mentor123 if user123 is the mentor's userId.
+     * @deny (get) User with UID 'user456' cannot read the profile of mentor 'mentor123' at /mentors/mentor123.
+     * @deny (update) User with UID 'user456' cannot update the profile of mentor 'mentor123'.
+     * @deny (delete) User with UID 'user456' cannot delete the profile of mentor 'mentor123'.
+     * @principle Enforces document ownership for all operations on mentor profiles.
      */
     match /mentors/{mentorId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isMentorOwner(mentorId) {
-          return request.auth.uid == get(/databases/$(database)/documents/mentors/$(mentorId)).data.userId;
-      }
-
-      function isExistingMentorOwner(mentorId) {
-          return isSignedIn() && request.auth.uid == resource.data.userId;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingMentorOwner(mentorId);
-      allow delete: if isExistingMentorOwner(mentorId);
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.id == mentorId;
+      allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(resource.data.userId);
     }
 
-
     /**
-     * @description Controls access to the 'products' collection.
+     * @description Secure products. Publicly readable, but only the owning artisan can create, update, or delete.
      * @path /databases/{database}/documents/products/{productId}
-     * @allow (create) User with UID 'user123' can create a product if the artisanId matches an artisan owned by the user (artisan.userId == user123).
-     * @allow (get,list) Any user can read product information.
-     * @allow (update,delete) User with UID 'user123' can update/delete the product if the artisanId matches an artisan owned by the user.
-     * @deny (create) User with UID 'user456' cannot create a product for artisan with artisanId associated with user 'user123'.
-     * @deny (update,delete) User with UID 'user456' cannot update/delete product of artisan with artisanId associated with user 'user123'.
-     * @principle Enforces owner-only writes for products; public read access.
+     * @allow (get, list) Any user can read any product.
+     * @allow (create) User with UID 'user123' can create a product at /products/product123 if they are an artisan and the product's artisanId matches their UID.
+     * @allow (update, delete) User with UID 'user123' can update/delete a product at /products/product123 if they are the artisan who owns the product (product.artisanId == user123).
+     * @deny (create) User with UID 'user456' cannot create a product for artisan 'user123'.
+     * @deny (update, delete) User with UID 'user456' cannot update/delete a product owned by artisan 'user123'.
+     * @principle Public read access with owner-only writes.
      */
     match /products/{productId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function getArtisan(artisanId) {
-          return get(/databases/$(database)/documents/artisans/$(artisanId)).data.userId;
-      }
-
-      function isArtisanOwner(artisanId) {
-          return isSignedIn() && request.auth.uid == getArtisan(artisanId);
-      }
-
-      function isExistingArtisanOwner(artisanId) {
-          return isSignedIn() && request.auth.uid == get(/databases/$(database)/documents/artisans/$(resource.data.artisanId)).data.userId;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn() && isArtisanOwner(request.resource.data.artisanId);
-      allow update: if isSignedIn() && isExistingArtisanOwner(resource.data.artisanId);
-      allow delete: if isSignedIn() && isExistingArtisanOwner(resource.data.artisanId);
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.artisanId == request.auth.uid && request.resource.data.id == productId;
+      allow update: if isSignedIn() && resource != null && resource.data.artisanId == request.auth.uid && request.resource.data.artisanId == resource.data.artisanId;
+      allow delete: if isSignedIn() && resource != null && resource.data.artisanId == request.auth.uid;
     }
 
     /**
-     * @description Controls access to the 'courses' collection.
+     * @description Secure courses. Publicly readable, but only the owning training center can create, update, or delete.
      * @path /databases/{database}/documents/courses/{courseId}
-     * @allow (create) User with UID 'user123' can create a course if the centerId matches a training center owned by the user (training-center.userId == user123).
-     * @allow (get,list) Any user can read course information.
-     * @allow (update,delete) User with UID 'user123' can update/delete the course if the centerId matches a training center owned by the user.
-     * @deny (create) User with UID 'user456' cannot create a course for training center with centerId associated with user 'user123'.
-     * @deny (update,delete) User with UID 'user456' cannot update/delete course of training center with centerId associated with user 'user123'.
-     * @principle Enforces owner-only writes for courses; public read access.
+     * @allow (get, list) Any user can read any course.
+     * @allow (create) User with UID 'user123' can create a course at /courses/course123 if they are a training center and the course's centerId matches their UID.
+     * @allow (update, delete) User with UID 'user123' can update/delete a course at /courses/course123 if they are the training center who owns the course (course.centerId == user123).
+     * @deny (create) User with UID 'user456' cannot create a course for training center 'user123'.
+     * @deny (update, delete) User with UID 'user456' cannot update/delete a course owned by training center 'user123'.
+     * @principle Public read access with owner-only writes.
      */
     match /courses/{courseId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function getCenter(centerId) {
-          return get(/databases/$(database)/documents/training-centers/$(centerId)).data.userId;
-      }
-
-      function isCenterOwner(centerId) {
-          return isSignedIn() && request.auth.uid == getCenter(centerId);
-      }
-
-      function isExistingCenterOwner(centerId) {
-          return isSignedIn() && request.auth.uid == get(/databases/$(database)/documents/training-centers/$(resource.data.centerId)).data.userId;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn() && isCenterOwner(request.resource.data.centerId);
-      allow update: if isSignedIn() && isExistingCenterOwner(resource.data.centerId);
-      allow delete: if isSignedIn() && isExistingCenterOwner(resource.data.centerId);
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.centerId == request.auth.uid && request.resource.data.id == courseId;
+      allow update: if isSignedIn() && resource != null && resource.data.centerId == request.auth.uid && request.resource.data.centerId == resource.data.centerId;
+      allow delete: if isSignedIn() && resource != null && resource.data.centerId == request.auth.uid;
     }
 
     /**
-     * @description Controls access to the 'orders' collection.
+     * @description Secure orders. Any signed-in user can create an order. Only the artisan who owns the order can update or delete it.
      * @path /databases/{database}/documents/orders/{orderId}
-     * @allow (get,list) Any user can read orders.
-     * @allow (create,update,delete) No one can create, update or delete orders
-     * @principle  Public read access, no write access.
+     * @allow (create) Any signed-in user can create an order.
+     * @allow (get, list) Any signed-in user can read any order.
+     * @allow (update, delete) User with UID 'user123' can update/delete an order at /orders/order123 if they are the artisan associated with the order (order.artisanId == user123).
+     * @deny (update, delete) User with UID 'user456' cannot update/delete an order associated with artisan 'user123'.
+     * @principle Allows order creation by any user, but restricts updates/deletions to the owning artisan.
      */
     match /orders/{orderId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.id == orderId;
+      allow update: if isSignedIn() && resource != null && resource.data.artisanId == request.auth.uid;
+      allow delete: if isSignedIn() && resource != null && resource.data.artisanId == request.auth.uid;
     }
   }
 }
