@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Logo } from "@/components/logo";
@@ -27,7 +28,7 @@ import { doc } from "firebase/firestore";
 
 const navLinks = [
   { href: "/", label: "Accueil", exact: true },
-  { href: "/artisans", label: "Artisans" },
+  { href: "/marketplace", label: "Artisans" },
   { href: "/e-market", label: "Boutique" },
   { href: "/training", label: "Formations" },
   { href: "/mentors", label: "Mentors" },
@@ -54,6 +55,8 @@ export function Header() {
     if (exact) {
       return pathname === href;
     }
+    // Make sure /artisans also matches /marketplace
+    if (href === '/marketplace' && pathname.startsWith('/artisans')) return true;
     return pathname.startsWith(href);
   };
 
