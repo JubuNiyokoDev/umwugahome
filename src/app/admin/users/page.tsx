@@ -9,14 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { UserProfile } from "@/lib/types";
-import { collection } from "firebase/firestore";
+import { collection, orderBy, query } from "firebase/firestore";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminUsersPage() {
     const firestore = useFirestore();
 
-    const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
+    const usersRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), orderBy('name')) : null, [firestore]);
     const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
 
     return (
@@ -52,18 +52,17 @@ export default function AdminUsersPage() {
                                                 <Skeleton className="h-10 w-10 rounded-full" />
                                                 <div className="space-y-1">
                                                     <Skeleton className="h-4 w-24" />
-                                                    <Skeleton className="h-3 w-16" />
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                        <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                                        <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                                        <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
                                         <TableCell><Skeleton className="h-8 w-8" /></TableCell>
                                     </TableRow>
                                 ))
                             ) : (
                                 users?.map(user => {
-                                     const userImage = PlaceHolderImages.find(img => img.id === user.profileImageId);
+                                     const userImage = user.profileImageId ? PlaceHolderImages.find(img => img.id === user.profileImageId) : null;
                                     return (
                                         <TableRow key={user.id}>
                                             <TableCell>
@@ -79,7 +78,7 @@ export default function AdminUsersPage() {
                                             </TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>
-                                                <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="capitalize">{user.role}</Badge>
+                                                <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="capitalize">{user.role.replace('_', ' ')}</Badge>
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
@@ -91,7 +90,7 @@ export default function AdminUsersPage() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem>Modifier</DropdownMenuItem>
-                                                        <DropdownMenuItem>Supprimer</DropdownMenuItem>
+                                                        <DropdownMenuItem className="text-destructive">Supprimer</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>

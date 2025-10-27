@@ -3,16 +3,16 @@ import type { SeedData, Mentor } from './types';
 
 export const seedData: SeedData = {
     users: [
-        { id: 'user-artisan-1', name: 'Aline Niyonsaba', email: 'aline@umwuga.com', role: 'artisan' },
-        { id: 'user-artisan-2', name: 'Jean-Claude Bizimana', email: 'jc.bizimana@umwuga.com', role: 'artisan' },
-        { id: 'user-artisan-3', name: 'Marie Goretti Uwizeye', email: 'mg.uwizeye@umwuga.com', role: 'artisan' },
-        { id: 'user-artisan-4', name: 'Eric Ndayishimiye', email: 'eric.ndayishimiye@umwuga.com', role: 'artisan' },
-        { id: 'user-center-1', name: 'Centre de Formation Gira', email: 'contact@gira.bi', role: 'training_center' },
-        { id: 'user-center-2', name: 'Bujumbura Creative Hub', email: 'info@bujacreative.org', role: 'training_center' },
+        { id: 'user-artisan-1', name: 'Aline Niyonsaba', email: 'aline@umwuga.com', role: 'artisan', profileImageId: 'artisan-1' },
+        { id: 'user-artisan-2', name: 'Jean-Claude Bizimana', email: 'jc.bizimana@umwuga.com', role: 'artisan', profileImageId: 'artisan-2' },
+        { id: 'user-artisan-3', name: 'Marie Goretti Uwizeye', email: 'mg.uwizeye@umwuga.com', role: 'artisan', profileImageId: 'artisan-3' },
+        { id: 'user-artisan-4', name: 'Eric Ndayishimiye', email: 'eric.ndayishimiye@umwuga.com', role: 'artisan', profileImageId: 'artisan-4' },
+        { id: 'user-center-1', name: 'Centre de Formation Gira', email: 'contact@gira.bi', role: 'training_center', profileImageId: 'training-center-1' },
+        { id: 'user-center-2', name: 'Bujumbura Creative Hub', email: 'info@bujacreative.org', role: 'training_center', profileImageId: 'training-center-2' },
         { id: 'user-admin-1', name: 'Admin Umwuga', email: 'admin@umwuga.com', role: 'admin' },
-        { id: 'user-student-1', name: 'Eliane Nshimirimana', email: 'eliane.n@gmail.com', role: 'student' },
-        { id: 'user-mentor-1', name: 'Charlotte Niyongere', email: 'c.niyongere@umwuga.com', role: 'mentor' },
-        { id: 'user-mentor-2', name: 'Olivier Munezero', email: 'o.munezero@umwuga.com', role: 'mentor' }
+        { id: 'user-student-1', name: 'Eliane Nshimirimana', email: 'eliane.n@gmail.com', role: 'student', profileImageId: 'student-profile-1' },
+        { id: 'user-mentor-1', name: 'Charlotte Niyongere', email: 'c.niyongere@umwuga.com', role: 'mentor', profileImageId: 'artisan-2' },
+        { id: 'user-mentor-2', name: 'Olivier Munezero', email: 'o.munezero@umwuga.com', role: 'mentor', profileImageId: 'artisan-4' }
     ],
     artisans: [
         {
