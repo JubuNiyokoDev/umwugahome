@@ -1,4 +1,5 @@
 
+
 export type Artisan = {
   id: string;
   userId: string; // Link to UserProfile
