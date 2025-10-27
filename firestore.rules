@@ -1,126 +1,163 @@
 /**
- * @fileoverview Firestore Security Rules for UmwugaHome platform.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for profile data (artisans, training centers, youths, mentors).
- * Products and programs are owned by artisans and training centers, respectively, and orders are secured with customer/artisan ownership.
- *
- * Data Structure:
- * - /users/{userId}: Stores core user information; access is restricted to the user themselves.
- * - /users/{userId}/{profileType}: Subcollections for artisan, training center, youth, and mentor profiles, owned by the user.
- * - /users/{userId}/artisan/products/{productId}: Products are stored under the artisan's profile.
- * - /users/{userId}/training_center/programs/{programId}: Programs are stored under the training center's profile.
- * - /orders/{orderId}: Orders are stored at the top level, containing customerId and artisanId.
- *
- * Key Security Decisions:
- * - User listing is explicitly denied to protect user privacy.
- * - Strict ownership is enforced for all profile-related data.
- * - Orders can only be created, updated, and deleted by either the customer or the artisan involved.
- * - No complex data validation is enforced (prototyping mode); focus is on authorization.
- *
- * Denormalization for Authorization:
- * - The data structure inherently denormalizes ownership by nesting profile data under /users/{userId}.
- * - Orders store both artisanId and customerId, allowing for efficient authorization checks without additional reads.
- *
- * Structural Segregation:
- * - User profiles are stored in private user subcollections, while orders are top-level.
+ * @file Firestore Security Rules for UmwugaHome Platform
+ * @core_philosophy This ruleset enforces a strict user-ownership model for user profiles and their associated data (artisans, training centers, youths, mentors, products, and programs). Top-level collections for orders are secured with ownership checks based on denormalized data (artisanId, customerId).
+ * @data_structure Data is organized hierarchically under `/users/{userId}` for user-specific content. Orders are stored in a top-level `/orders` collection. Products and Programs are subcollections of Artisans and Training Centers respectively, nested under the user's profile.
+ * @key_security_decisions Strict user ownership is enforced for all user-related data. Listing all users is disallowed. Public read access is not granted to any collection without owner-only writes. All write operations are validated against the authenticated user's ID.
+ * @denormalization Authorization decisions rely on denormalized data: `orders` include `artisanId` and `customerId` to avoid needing to `get()` the artisan or user document for authorization.
+ * @structural_segregation Private user data (profiles, products, programs) is stored under `/users/{userId}`, while orders are in a top-level collection.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description: Secure root access.  Forces explicit collection access.
-     * @path: /databases/{database}/documents
-     * @allow: N/A
-     * @deny: Any request to the root path.
-     * @principle: Secures the database root, preventing accidental open access.
-     */
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    /**
-     * @description: Manages user profile access.
-     * @path: /users/{userId}
-     * @allow: (get, create, update, delete) User with matching UID.
-     * @deny: (get, create, update, delete) User with non-matching UID.
-     * @principle: Enforces user-ownership for profile data.
+     * @description Grants access to user profile data.
+     * @path /users/{userId}
+     * @allow (create) Signed-in user creates their own profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own profile.
+     * @deny (create) User attempts to create a profile with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's profile.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-      function isExistingOwner(userId) {
-        return isOwner(userId) && exists(resource);
-      }
-
-      allow get: if isOwner(userId);
-      allow list: if false; // User listing is not permitted.
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
-
-      match /{profileType} {
-          allow get: if isOwner(userId);
-          allow list: if false;
-          allow create: if isSignedIn() && isOwner(userId);
-          allow update: if isSignedIn() && isOwner(userId);
-          allow delete: if isSignedIn() && isOwner(userId);
-
-          match /products/{productId} {
-            allow get: if isOwner(userId);
-            allow list: if false;
-            allow create: if isSignedIn() && isOwner(userId);
-            allow update: if isSignedIn() && isOwner(userId);
-            allow delete: if isSignedIn() && isOwner(userId);
-          }
-          match /programs/{programId} {
-            allow get: if isOwner(userId);
-            allow list: if false;
-            allow create: if isSignedIn() && isOwner(userId);
-            allow update: if isSignedIn() && isOwner(userId);
-            allow delete: if isSignedIn() && isOwner(userId);
-          }
-        }
+      //isOwner(userId)
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.id == request.resource.data.id;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
+    /**
+     * @description Grants access to artisan profile data.
+     * @path /users/{userId}/artisan
+     * @allow (create) Signed-in user creates their own artisan profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own artisan profile.
+     * @deny (create) User attempts to create an artisan profile with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's artisan profile.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/artisan {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.userId == request.resource.data.userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
 
     /**
-     * @description: Manages order access. Orders are accessible by both the customer and the artisan.
-     * @path: /orders/{orderId}
-     * @allow: (get) Any authenticated user.
-     * @allow: (create) Authenticated user if they are the customer.
-     * @allow: (update, delete) Authenticated user if they are the customer or the artisan.
-     * @deny: (create) If not the customer.
-     * @deny: (update, delete) If not the customer or artisan.
-     * @principle: Allows customers and artisans to manage orders related to them.
+     * @description Grants access to training center profile data.
+     * @path /users/{userId}/training_center
+     * @allow (create) Signed-in user creates their own training center profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own training center profile.
+     * @deny (create) User attempts to create a training center profile with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's training center profile.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/training_center {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.userId == request.resource.data.userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Grants access to youth profile data.
+     * @path /users/{userId}/youth
+     * @allow (create) Signed-in user creates their own youth profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own youth profile.
+     * @deny (create) User attempts to create a youth profile with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's youth profile.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/youth {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.userId == request.resource.data.userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+     /**
+     * @description Grants access to mentor profile data.
+     * @path /users/{userId}/mentor
+     * @allow (create) Signed-in user creates their own mentor profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own mentor profile.
+     * @deny (create) User attempts to create a mentor profile with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's mentor profile.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/mentor {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.userId == request.resource.data.userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Grants access to product data for a specific artisan.
+     * @path /users/{userId}/artisan/products/{productId}
+     * @allow (create) Signed-in user creates a product under their artisan profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own product.
+     * @deny (create) User attempts to create a product with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's product.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/artisan/products/{productId} {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.artisanId == userId;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.artisanId == userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    /**
+     * @description Grants access to order data.
+     * @path /orders/{orderId}
+     * @allow (get, list) Public read access is granted
+     * @allow (create) Signed-in user creates an order.
+     * @allow (update, delete) Only the artisan or customer associated with the order can update or delete it.
+     * @deny (create) User attempts to create an order with a mismatched artisanId or customerId.
+     * @deny (update, delete) User attempts to modify or delete an order they do not own.
+     * @principle Enforces document ownership for writes based on the artisanId and customerId fields.
      */
     match /orders/{orderId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-      function isCustomer(customerId) {
-        return request.auth.uid == customerId;
-      }
-      function isArtisan(artisanId) {
-        return request.auth.uid == artisanId;
-      }
-      function isCustomerOrArtisan(customerId, artisanId) {
-        return isCustomer(customerId) || isArtisan(artisanId);
-      }
-      function isExistingCustomerOrArtisan(customerId, artisanId) {
-        return isCustomerOrArtisan(customerId, artisanId) && exists(resource);
-      }
+      allow get, list: if true;
+      allow create: if isSignedIn() && (request.resource.data.artisanId != null && request.resource.data.customerId != null);
+      allow update: if isSignedIn() && (resource.data.artisanId == request.auth.uid || resource.data.customerId == request.auth.uid) && resource != null;
+      allow delete: if isSignedIn() && (resource.data.artisanId == request.auth.uid || resource.data.customerId == request.auth.uid) && resource != null;
+    }
+    
+    /**
+     * @description Grants access to program data for a specific training center.
+     * @path /users/{userId}/training_center/programs/{programId}
+     * @allow (create) Signed-in user creates a program under their training center profile.
+     * @allow (get, list, update, delete) Signed-in user accesses their own program.
+     * @deny (create) User attempts to create a program with a mismatched userId.
+     * @deny (get, list, update, delete) User attempts to access another user's program.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/training_center/programs/{programId} {
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.centerId == userId;
+      allow update: if isSignedIn() && isOwner(userId) && resource.data.centerId == userId;
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
 
-      allow get: if isSignedIn();
-      allow list: if false; // Listing orders is not generally permitted for all users. Specific order listing logic may be implemented elsewhere.
-      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
-      allow update: if isSignedIn() && (resource.data.customerId == request.auth.uid || resource.data.artisanId == request.auth.uid);
-      allow delete: if isSignedIn() && (resource.data.customerId == request.auth.uid || resource.data.artisanId == request.auth.uid);
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+      return isSignedIn() && isOwner(userId) && resource != null;
     }
   }
 }

@@ -354,144 +354,45 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user account information. This collection uses the user's UID as the document ID, providing path-based ownership.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            }
-          ]
-        }
+    "collections": {
+      "users": {
+        "schema": {
+          "$ref": "#/entities/User"
+        },
+        "description": "Stores user account information. This collection uses the user's UID as the document ID, providing path-based ownership."
       },
-      {
-        "path": "/users/{userId}/artisan",
-        "definition": {
-          "entityName": "Artisan",
-          "schema": {
-            "$ref": "#/backend/entities/Artisan"
-          },
-          "description": "Stores artisan profile information. This is a subcollection of the user, providing path-based ownership. Contains artisan profile data directly linked to the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            }
-          ]
-        }
+      "artisans": {
+        "schema": {
+          "$ref": "#/entities/Artisan"
+        },
+        "description": "Stores artisan profile information."
       },
-      {
-        "path": "/users/{userId}/training_center",
-        "definition": {
-          "entityName": "TrainingCenter",
-          "schema": {
-            "$ref": "#/backend/entities/TrainingCenter"
-          },
-          "description": "Stores training center profile information. This is a subcollection of the user, providing path-based ownership. Contains training center profile data directly linked to the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            }
-          ]
-        }
+      "training-centers": {
+        "schema": {
+          "$ref": "#/entities/TrainingCenter"
+        },
+        "description": "Stores training center profile information."
       },
-      {
-        "path": "/users/{userId}/youth",
-        "definition": {
-          "entityName": "Youth",
-          "schema": {
-            "$ref": "#/backend/entities/Youth"
-          },
-          "description": "Stores youth profile information. This is a subcollection of the user, providing path-based ownership. Contains youth profile data directly linked to the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            }
-          ]
-        }
+      "products": {
+        "schema": {
+          "$ref": "#/entities/Product"
+        },
+        "description": "Stores all products. Contains an artisanId for linking."
       },
-      {
-        "path": "/users/{userId}/mentor",
-        "definition": {
-          "entityName": "Mentor",
-          "schema": {
-            "$ref": "#/backend/entities/Mentor"
-          },
-          "description": "Stores mentor profile information. This is a subcollection of the user, providing path-based ownership. Contains mentor profile data directly linked to the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            }
-          ]
-        }
+      "courses": {
+        "schema": {
+          "$ref": "#/entities/Program"
+        },
+        "description": "Stores all courses. Contains a centerId for linking."
       },
-      {
-        "path": "/users/{userId}/artisan/products/{productId}",
-        "definition": {
-          "entityName": "Product",
-          "schema": {
-            "$ref": "#/backend/entities/Product"
-          },
-          "description": "Stores product information for a specific artisan.  The artisan's userId is the parent.  This structure facilitates listing products owned by a specific artisan.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            },
-            {
-              "name": "productId",
-              "description": "The unique identifier of the product."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/orders/{orderId}",
-        "definition": {
-          "entityName": "Order",
-          "schema": {
-            "$ref": "#/backend/entities/Order"
-          },
-          "description": "Stores order information. Contains artisanId and customerId for querying and reporting.",
-          "params": [
-            {
-              "name": "orderId",
-              "description": "The unique identifier of the order."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/training_center/programs/{programId}",
-        "definition": {
-          "entityName": "Program",
-          "schema": {
-            "$ref": "#/backend/entities/Program"
-          },
-          "description": "Stores program information for a specific training center. The training center's userId is the parent. This structure facilitates listing programs offered by a specific training center.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user, matching the Firebase Auth UID."
-            },
-            {
-              "name": "programId",
-              "description": "The unique identifier of the training program."
-            }
-          ]
-        }
+      "orders": {
+        "schema": {
+          "$ref": "#/entities/Order"
+        },
+        "description": "Stores all orders."
       }
-    ],
-    "reasoning": "The Firestore structure is designed to support the UmwugaHome platform, focusing on artisans, training centers, youths, mentors, products, orders, and programs. It prioritizes authorization independence by denormalizing data where necessary and uses structural segregation to ensure consistent security postures within collections.\n\n*   **Authorization Independence:** The structure avoids `get()` calls in security rules by denormalizing authorization data.  For example, if product access depended on artisan data, the artisan's relevant attributes would be copied into the product document.\n*   **Structural Segregation:** Each collection houses documents with similar access requirements. Public profiles are separated from private user data.\n*   **QAPs (Rules are Not Filters):** The structure enables secure list operations by avoiding the need to filter data based on access rights within the rules themselves. This is achieved through path-based ownership and membership maps.  For instance, products are stored under the artisan's profile (`/users/{userId}/artisan/products/{productId}`), enabling efficient listing based on ownership.\n*   **Access Modeling:**\n    *   **User Profiles:** User-related data (artisan, training center, youth, mentor profiles) is stored under `/users/{userId}`, providing path-based ownership.\n    *   **Products:** Products are stored as a subcollection of the artisan profile. This establishes a clear ownership relationship and simplifies security rules.\n    *   **Orders:** Orders are stored at the top level to facilitate global queries and reporting. Order documents contain the artisanId and customerId for filtering by artisan or customer.\n    *   **Training Programs:** Programs are stored as a subcollection of the training center, ensuring a clear hierarchy."
+    }
   }
 }
+
+    
