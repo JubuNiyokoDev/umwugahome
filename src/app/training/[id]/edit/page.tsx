@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useDoc, useFirestore, useUser } from "@/firebase";
+import { useDoc, useFirestore, useUser, updateDocumentNonBlocking } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { TrainingCenter } from "@/lib/types";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { useRouter, notFound, useParams } from "next/navigation";
 import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,21 +80,15 @@ export default function EditTrainingCenterProfilePage() {
 
     async function onSubmit(data: ProfileFormValues) {
         if (!centerRef) return;
-        try {
-            await updateDoc(centerRef, data);
-            toast({
-                title: "Profil mis à jour",
-                description: "Le profil du centre a été sauvegardé avec succès.",
-            });
-            router.push(`/training/${id}`);
-        } catch (error) {
-            console.error("Failed to update profile", error);
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "La mise à jour du profil a échoué.",
-            });
-        }
+        
+        // Use non-blocking update
+        updateDocumentNonBlocking(centerRef, data);
+        
+        toast({
+            title: "Profil mis à jour",
+            description: "Le profil du centre a été sauvegardé avec succès.",
+        });
+        router.push(`/training/${id}`);
     }
 
     if (isUserLoading || isLoadingCenter) {
@@ -126,7 +120,7 @@ export default function EditTrainingCenterProfilePage() {
     }
 
     // Security check: ensure the logged-in user is the owner of this profile
-    if (!user || user.uid !== id) {
+    if (!isUserLoading && user?.uid !== id) {
         notFound();
     }
     

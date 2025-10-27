@@ -10,6 +10,8 @@ import { seedData } from "@/lib/seed";
 import { writeBatch, doc } from "firebase/firestore";
 import { useState } from "react";
 import { Loader2, Database } from "lucide-react";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function AdminDebugPage() {
     const firestore = useFirestore();
@@ -73,11 +75,17 @@ export default function AdminDebugPage() {
             });
 
         } catch (error: any) {
+             const permissionError = new FirestorePermissionError({
+                path: 'batch operation',
+                operation: 'write',
+                requestResourceData: 'seed data'
+            });
+            errorEmitter.emit('permission-error', permissionError);
             console.error("Error seeding database:", error);
             toast({
                 variant: 'destructive',
                 title: "Erreur lors du seeding",
-                description: error.message
+                description: "Vérifiez les règles de sécurité Firestore et la console du navigateur pour plus de détails."
             });
         } finally {
             setIsSeeding(false);
@@ -93,7 +101,7 @@ export default function AdminDebugPage() {
                     <CardTitle>Initialisation de la base de données</CardTitle>
                     <CardDescription>
                         Cliquez sur ce bouton pour remplir la base de données avec un jeu de données de test.
-                        Ceci écrasera les données existantes pour les IDs correspondants.
+                        Ceci écrasera les données existantes pour les IDs correspondants. Attention: cette opération peut échouer si les règles de sécurité ne permettent pas à un admin d'écrire partout.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

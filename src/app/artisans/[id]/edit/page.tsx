@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useDoc, useFirestore, useUser } from "@/firebase";
+import { useDoc, useFirestore, useUser, updateDocumentNonBlocking } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Artisan } from "@/lib/types";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { useRouter, notFound, useParams } from "next/navigation";
 import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -86,21 +86,15 @@ export default function EditArtisanProfilePage() {
 
     async function onSubmit(data: ProfileFormValues) {
         if (!artisanRef) return;
-        try {
-            await updateDoc(artisanRef, data);
-            toast({
-                title: "Profil mis à jour",
-                description: "Votre profil a été sauvegardé avec succès.",
-            });
-            router.push(`/artisans/${id}`);
-        } catch (error) {
-            console.error("Failed to update profile", error);
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "La mise à jour du profil a échoué.",
-            });
-        }
+        
+        // Use non-blocking update
+        updateDocumentNonBlocking(artisanRef, data);
+        
+        toast({
+            title: "Profil mis à jour",
+            description: "Votre profil a été sauvegardé avec succès.",
+        });
+        router.push(`/artisans/${id}`);
     }
 
     if (isUserLoading || isLoadingArtisan) {
@@ -146,7 +140,7 @@ export default function EditArtisanProfilePage() {
     }
 
     // Security check: ensure the logged-in user is the owner of this profile
-    if (!user || user.uid !== id) {
+    if (!isUserLoading && user?.uid !== id) {
         notFound();
     }
     

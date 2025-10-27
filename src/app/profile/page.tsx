@@ -5,11 +5,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase, setDocumentNonBlocking } from "@/firebase";
 import { Artisan, Mentor, TrainingCenter, UserProfile } from "@/lib/types";
 import { BookMarked, LogOut, User as UserIcon, Loader2, Save, Building, Paintbrush, Edit, Shield } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { doc, setDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
@@ -33,68 +33,62 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
 
         setIsLoading(true);
 
-        try {
-            const userRef = doc(firestore, "users", user.uid);
-            const newUserProfile: UserProfile = {
-                id: user.uid,
-                name: name.trim(),
-                email: user.email,
-                role: role,
-                interests: role === 'student' ? ['Couture', 'Design Web'] : []
-            };
-            
-            // This is a crucial write, so we can block for it.
-            await setDoc(userRef, newUserProfile);
+        const userRef = doc(firestore, "users", user.uid);
+        const newUserProfile: UserProfile = {
+            id: user.uid,
+            name: name.trim(),
+            email: user.email,
+            role: role,
+            interests: role === 'student' ? ['Couture', 'Design Web'] : []
+        };
+        
+        // Use non-blocking write for main user profile
+        setDocumentNonBlocking(userRef, newUserProfile, {});
 
-            // Create specific profile based on role
-            if (role === 'artisan') {
-                const artisanRef = doc(firestore, "artisans", user.uid);
-                const newArtisan: Artisan = {
-                    id: user.uid,
-                    userId: user.uid,
-                    name: name.trim(),
-                    craft: "À définir",
-                    province: "À définir",
-                    bio: "Bio à compléter.",
-                    rating: 0,
-                    profileImageId: 'artisan-1'
-                };
-                await setDoc(artisanRef, newArtisan);
-            } else if (role === 'training_center') {
-                const centerRef = doc(firestore, "training-centers", user.uid);
-                const newCenter: TrainingCenter = {
-                    id: user.uid,
-                    userId: user.uid,
-                    name: name.trim(),
-                    province: "À définir",
-                    description: "Description à compléter.",
-                    rating: 0,
-                    imageId: 'training-center-1'
-                };
-                await setDoc(centerRef, newCenter);
-            } else if (role === 'mentor') {
-                const mentorRef = doc(firestore, "mentors", user.uid);
-                const newMentor: Mentor = {
-                    id: user.uid,
-                    userId: user.uid,
-                    name: name.trim(),
-                    expertise: "À définir",
-                    province: "À définir",
-                    bio: "Bio à compléter.",
-                    rating: 0,
-                    profileImageId: 'student-profile-1'
-                };
-                await setDoc(mentorRef, newMentor);
-            }
-            
-            toast({ title: "Profil créé !", description: "Bienvenue sur UmwugaHome." });
-            // The profile page will automatically re-render with the new data.
-        } catch (error: any) {
-            console.error("Error creating profile:", error);
-            toast({ variant: 'destructive', title: "Erreur", description: "Impossible de créer le profil." });
-        } finally {
-            setIsLoading(false);
+        // Create specific profile based on role, also non-blocking
+        if (role === 'artisan') {
+            const artisanRef = doc(firestore, "artisans", user.uid);
+            const newArtisan: Artisan = {
+                id: user.uid,
+                userId: user.uid,
+                name: name.trim(),
+                craft: "À définir",
+                province: "À définir",
+                bio: "Bio à compléter.",
+                rating: 0,
+                profileImageId: 'artisan-1'
+            };
+            setDocumentNonBlocking(artisanRef, newArtisan, {});
+        } else if (role === 'training_center') {
+            const centerRef = doc(firestore, "training-centers", user.uid);
+            const newCenter: TrainingCenter = {
+                id: user.uid,
+                userId: user.uid,
+                name: name.trim(),
+                province: "À définir",
+                description: "Description à compléter.",
+                rating: 0,
+                imageId: 'training-center-1'
+            };
+            setDocumentNonBlocking(centerRef, newCenter, {});
+        } else if (role === 'mentor') {
+            const mentorRef = doc(firestore, "mentors", user.uid);
+            const newMentor: Mentor = {
+                id: user.uid,
+                userId: user.uid,
+                name: name.trim(),
+                expertise: "À définir",
+                province: "À définir",
+                bio: "Bio à compléter.",
+                rating: 0,
+                profileImageId: 'student-profile-1'
+            };
+            setDocumentNonBlocking(mentorRef, newMentor, {});
         }
+        
+        toast({ title: "Profil créé !", description: "Bienvenue sur UmwugaHome." });
+        setIsLoading(false);
+        // The profile page will automatically re-render with the new data due to useDoc hook.
     };
 
     return (
@@ -311,7 +305,7 @@ export default function ProfilePage() {
                         </CardContent>
                     </Card>
                 </div>
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 space-y-8">
                     <ProfileDashboard userProfile={userProfile} />
                 </div>
             </div>
