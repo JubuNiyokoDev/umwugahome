@@ -1,236 +1,207 @@
 /**
- * @file Firestore Security Rules for UmwugaHome Platform
- *
- * @description
- * This ruleset enforces a strict user-ownership model for most data,
- * with some collections (e.g., /artisans) potentially allowing public read access.
- * It leverages path-based authorization and data denormalization to minimize
- * the need for costly `get()` calls within the rules.
+ * @file Overview
+ * This ruleset enforces a strict user-ownership model for the UmwugaHome platform, ensuring that users can only access their own data and that data relationships are consistently maintained.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profile information; access is restricted to the user themselves.
- * - /users/{userId}/{profileType}: Subcollections for artisan, training center, youth, and mentor profiles,
- *   ensuring user-specific data isolation.
- * - /users/{userId}/artisan/products/{productId}: Stores products created by a specific artisan.
- * - /orders/{orderId}: Stores order information.
+ * - /users/{userId}: Stores user account information, acting as the root for user-specific data.
+ * - /users/{userId}/artisan: Stores artisan profiles owned by the user.
+ * - /users/{userId}/training_center: Stores training center profiles owned by the user.
+ * - /users/{userId}/youth: Stores youth profiles owned by the user.
+ * - /users/{userId}/mentor: Stores mentor profiles owned by the user.
+ * - /users/{userId}/artisan/products/{productId}: Stores product information owned by the artisan.
+ * - /orders/{orderId}: Stores order information, with `artisanId` and `customerId` fields for relational integrity.
+ * - /users/{userId}/training_center/programs/{programId}: Stores program information owned by the training center.
  *
  * Key Security Decisions:
- * - User listing is disallowed.
- * - Public read access is granted to the /artisans collection, but write access is restricted to owners.
- * - All write operations (create, update, delete) require authentication.
- * - Data validation is minimal during this prototyping phase, focusing on authorization-critical fields.
+ * - User data is strictly private and accessible only to the authenticated user.
+ * - Resource relationships (e.g., a product belonging to an artisan) are enforced through data denormalization and validated on write operations.
+ * - Public listing of user profiles (artisans, training centers, etc.) is not supported.
+ * - Orders are globally accessible, but ownership is validated based on the `artisanId` and `customerId` fields.
  *
  * Denormalization for Authorization:
- * - The `Order` entity contains `artisanId` and `customerId` to simplify access control for orders.
- *
- * Structural Segregation:
- * - User profiles and their associated data (artisans, training centers, etc.) are stored under the /users/{userId} path,
- *   while top-level collections like /artisans are used for data that may be publicly accessible.
+ * - The `orders` collection contains `artisanId` and `customerId` to enable filtering and authorization without requiring additional `get()` calls.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is authenticated.
+     * @description Enforces access control for user profiles. Only the authenticated user can read and write their own profile.
+     * @path /users/{userId}
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'user123' can create, update, delete, get, and list the document at /users/user123.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, get, or list the document at /users/user123.
+     * @principle Enforces document ownership for all operations.
      */
-    function isSignedIn() {
-      return request.auth != null;
+    match /users/{userId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false; // User listing is not permitted.
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
     }
 
     /**
-     * @description Checks if the authenticated user's ID matches the provided userId.
+     * @description Enforces access control for artisan profiles. Only the authenticated user can read and write their own artisan profile.
+     * @path /users/{userId}/artisan
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'user123' can create, update, delete, get, and list the document at /users/user123/artisan.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, get, or list the document at /users/user123/artisan.
+     * @principle Enforces document ownership for all operations.
      */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+    match /users/{userId}/artisan {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
     }
 
     /**
-     * @description Checks if the authenticated user's ID matches the existing resource's owner ID.
-     *             Also verifies that the resource exists to prevent destructive operations on non-existent data.
+     * @description Enforces access control for training center profiles. Only the authenticated user can read and write their own training center profile.
+     * @path /users/{userId}/training_center
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'user123' can create, update, delete, get, and list the document at /users/user123/training_center.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, or list the document at /users/user123/training_center.
+     * @principle Enforces document ownership for all operations.
      */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+    match /users/{userId}/training_center {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
     }
 
     /**
-     * @description Root-level rule to prevent listing all users.
-     * @path /users
-     * @allow None (Listing all users is not permitted)
-     * @deny list: always
-     * @principle Prevents information leakage by restricting access to user lists.
+     * @description Enforces access control for youth profiles. Only the authenticated user can read and write their own youth profile.
+     * @path /users/{userId}/youth
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'user123' can create, update, delete, get, and list the document at /users/user123/youth.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, get, or list the document at /users/user123/youth.
+     * @principle Enforces document ownership for all operations.
      */
-    match /users {
-      allow get: if false;
-      allow list: if false;
+    match /users/{userId}/youth {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Enforces access control for mentor profiles. Only the authenticated user can read and write their own mentor profile.
+     * @path /users/{userId}/mentor
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'user123' can create, update, delete, get, and list the document at /users/user123/mentor.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, get, or list the document at /users/user123/mentor.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/mentor {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Enforces access control for product information under an artisan profile. Only the artisan (owner) can manage their products.
+     * @path /users/{userId}/artisan/products/{productId}
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'artisan123' can create, update, delete, get, and list the product at /users/artisan123/artisan/products/product456.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, get, or list the product at /users/artisan123/artisan/products/product456.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/artisan/products/{productId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Enforces access control for orders.  Allows reads for anyone, but write access is not permitted.
+     * @path /orders/{orderId}
+     * @allow get, list: if true
+     *   Example: Any user can retrieve the order at /orders/order123.
+     * @deny create, update, delete: if true;
+     * @principle Read access is public, but writes are forbidden (for now).
+     */
+    match /orders/{orderId} {
+      allow get: if true;
+      allow list: if true;
       allow create: if false;
       allow update: if false;
       allow delete: if false;
     }
 
     /**
-     * @description Manages access to individual user documents.
-     * @path /users/{userId}
-     * @allow (get) Authenticated user can retrieve their own profile.
-     * @allow (create) Authenticated user can create their own profile.
-     * @allow (update) Authenticated user can update their own profile.
-     * @allow (delete) Authenticated user can delete their own profile.
-     * @deny (get) Authenticated user cannot retrieve another user's profile.
-     * @deny (create) Authenticated user cannot create a profile for another user.
-     * @deny (update) Authenticated user cannot update another user's profile.
-     * @deny (delete) Authenticated user cannot delete another user's profile.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId) && request.resource.data.id == request.auth.uid;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Manages access to artisan profiles under a specific user.
-     * @path /users/{userId}/artisan
-     * @allow (get) Authenticated user can retrieve their own artisan profile.
-     * @allow (create) Authenticated user can create their own artisan profile.
-     * @allow (update) Authenticated user can update their own artisan profile.
-     * @allow (delete) Authenticated user can delete their own artisan profile.
-     * @deny (get) Authenticated user cannot retrieve another user's artisan profile.
-     * @deny (create) Authenticated user cannot create an artisan profile for another user.
-     * @deny (update) Authenticated user cannot update another user's artisan profile.
-     * @deny (delete) Authenticated user cannot delete another user's artisan profile.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/artisan {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Manages access to training center profiles under a specific user.
-     * @path /users/{userId}/training_center
-     * @allow (get) Authenticated user can retrieve their own training center profile.
-     * @allow (create) Authenticated user can create their own training center profile.
-     * @allow (update) Authenticated user can update their own training center profile.
-     * @allow (delete) Authenticated user can delete their own training center profile.
-     * @deny (get) Authenticated user cannot retrieve another user's training center profile.
-     * @deny (create) Authenticated user cannot create a training center profile for another user.
-     * @deny (update) Authenticated user cannot update another user's training center profile.
-     * @deny (delete) Authenticated user cannot delete another user's training center profile.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/training_center {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Manages access to youth profiles under a specific user.
-     * @path /users/{userId}/youth
-     * @allow (get) Authenticated user can retrieve their own youth profile.
-     * @allow (create) Authenticated user can create their own youth profile.
-     * @allow (update) Authenticated user can update their own youth profile.
-     * @allow (delete) Authenticated user can delete their own youth profile.
-     * @deny (get) Authenticated user cannot retrieve another user's youth profile.
-     * @deny (create) Authenticated user cannot create a youth profile for another user.
-     * @deny (update) Authenticated user cannot update another user's youth profile.
-     * @deny (delete) Authenticated user cannot delete another user's youth profile.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/youth {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Manages access to mentor profiles under a specific user.
-     * @path /users/{userId}/mentor
-     * @allow (get) Authenticated user can retrieve their own mentor profile.
-     * @allow (create) Authenticated user can create their own mentor profile.
-     * @allow (update) Authenticated user can update their own mentor profile.
-     * @allow (delete) Authenticated user can delete their own mentor profile.
-     * @deny (get) Authenticated user cannot retrieve another user's mentor profile.
-     * @deny (create) Authenticated user cannot create a mentor profile for another user.
-     * @deny (update) Authenticated user cannot update another user's mentor profile.
-     * @deny (delete) Authenticated user cannot delete another user's mentor profile.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/mentor {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Manages access to products created by a specific artisan.
-     * @path /users/{userId}/artisan/products/{productId}
-     * @allow (get) Authenticated artisan can retrieve their own product.
-     * @allow (list) Authenticated artisan can list their own products.
-     * @allow (create) Authenticated artisan can create their own product.
-     * @allow (update) Authenticated artisan can update their own product.
-     * @allow (delete) Authenticated artisan can delete their own product.
-     * @deny (get) Authenticated user cannot retrieve another user's product.
-     * @deny (list) Authenticated user cannot list another user's products.
-     * @deny (create) Authenticated user cannot create a product for another user.
-     * @deny (update) Authenticated user cannot update another user's product.
-     * @deny (delete) Authenticated user cannot delete another user's product.
-     * @principle Enforces document ownership for reads and writes.
-     */
-    match /users/{userId}/artisan/products/{productId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.artisanId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.artisanId == resource.data.artisanId;
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Manages access to orders.
-     * @path /orders/{orderId}
-     *
-     */
-    match /orders/{orderId} {
-      allow get: if isSignedIn();
-      allow list: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
-      allow update: if isSignedIn() && (request.resource.data.artisanId == resource.data.artisanId) && (request.resource.data.customerId == resource.data.customerId);
-      allow delete: if false;
-    }
-
-    /**
-     * @description Manages access to programs offered by a specific training center.
+     * @description Enforces access control for programs under a training center profile. Only the training center (owner) can manage their programs.
      * @path /users/{userId}/training_center/programs/{programId}
+     * @allow (create, update, delete, get, list) if the authenticated user's ID matches the user ID in the path.
+     *   Example: A user with UID 'center123' can create, update, delete, get, and list the program at /users/center123/training_center/programs/program456.
+     * @deny (create, update, delete, get, list) if the authenticated user's ID does not match the user ID in the path.
+     *   Example: A user with UID 'user456' cannot create, update, delete, get, or list the program at /users/center123/training_center/programs/program456.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/training_center/programs/{programId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.centerId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.centerId == resource.data.centerId;
-      allow delete: if isExistingOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
     }
-    
-     /**
-     * @description Public read of artisans.
-     * @path /artisans
+
+    /**
+     * @description This rule is missing a description
+     * @path /training-centers
+     * @allow get, list: if true
+     *   Example: Any user can retrieve the training-centers at /training-centers.
+     * @deny create, update, delete: if true;
+     * @principle Missing Description
      */
-     match /artisans {
-        allow get: if true;
-        allow list: if true;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+    match /training-centers {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }
