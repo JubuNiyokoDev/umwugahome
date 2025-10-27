@@ -6,14 +6,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { artisans } from "@/lib/data";
+import { useDoc, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Artisan, Product } from "@/lib/types";
+import { collection, doc, query, where } from "firebase/firestore";
 import { MapPin, MessageCircle, Star } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
 export default function ArtisanProfilePage({ params }: { params: { id: string } }) {
-  const artisan = artisans.find(a => a.id === params.id);
+  const firestore = useFirestore();
+
+  const artisanRef = useMemoFirebase(() => firestore ? doc(firestore, 'artisans', params.id) : null, [firestore, params.id]);
+  const { data: artisan, isLoading: isLoadingArtisan } = useDoc<Artisan>(artisanRef);
+
+  const productsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'products'), where('artisanId', '==', params.id)) : null, [firestore, params.id]);
+  const { data: products, isLoading: isLoadingProducts } = useCollection<Product>(productsQuery);
+
+  if (isLoadingArtisan) {
+    return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement du profil...</div>
+  }
 
   if (!artisan) {
     notFound();
@@ -23,7 +35,7 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-lg bg-card/80 backdrop-blur-sm">
         <div className="relative h-48 md:h-64 bg-muted">
           {profileImage && (
             <Image
@@ -78,12 +90,15 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
             <TabsTrigger value="reviews">Avis</TabsTrigger>
           </TabsList>
           <TabsContent value="shop" className="mt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {artisan.products.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-            {artisan.products.length === 0 && (
+            {isLoadingProducts && <p>Chargement des produits...</p>}
+            {!isLoadingProducts && products && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {products.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+            {!isLoadingProducts && (!products || products.length === 0) && (
                 <div className="text-center py-12 text-muted-foreground">
                     <p>Cette boutique est vide pour le moment.</p>
                 </div>

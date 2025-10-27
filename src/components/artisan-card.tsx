@@ -18,38 +18,38 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
   const profileImage = PlaceHolderImages.find(p => p.id === artisan.profileImageId);
 
   return (
-    <motion.div whileHover={{ y: -8, boxShadow: "var(--tw-shadow-md)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
-    <Card className="flex flex-col overflow-hidden h-full shadow-md bg-card/80 backdrop-blur-sm">
-      <CardHeader className="p-0">
-        <div className="relative h-48 w-full overflow-hidden">
-          {profileImage && (
-            <motion.div className="h-full w-full" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
-              <Image
-                src={profileImage.imageUrl}
-                alt={artisan.name}
-                fill
-                className="object-cover"
-                data-ai-hint={profileImage.imageHint}
-              />
-            </motion.div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="flex-grow p-4">
-        <Badge variant="secondary" className="mb-2">{artisan.craft}</Badge>
-        <h3 className="text-lg font-bold font-headline">{artisan.name}</h3>
-        <p className="text-sm text-muted-foreground">{artisan.province}</p>
-        <div className="flex items-center gap-1 mt-2">
-            <Star className="w-4 h-4 text-primary fill-primary" />
-            <span className="text-sm font-bold">{artisan.rating}</span>
-        </div>
-      </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button asChild className="w-full">
-          <Link href={`/artisans/${artisan.id}`}>Voir le profil</Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    <motion.div whileHover={{ y: -8, boxShadow: "var(--tw-shadow-xl)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
+      <Card className="flex flex-col overflow-hidden h-full shadow-lg bg-card/80 backdrop-blur-sm">
+        <CardHeader className="p-0">
+          <div className="relative h-48 w-full overflow-hidden">
+            {profileImage && (
+              <motion.div className="h-full w-full" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+                <Image
+                  src={profileImage.imageUrl}
+                  alt={artisan.name}
+                  fill
+                  className="object-cover"
+                  data-ai-hint={profileImage.imageHint}
+                />
+              </motion.div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="flex-grow p-4">
+          <Badge variant="secondary" className="mb-2">{artisan.craft}</Badge>
+          <h3 className="text-lg font-bold font-headline">{artisan.name}</h3>
+          <p className="text-sm text-muted-foreground">{artisan.province}</p>
+          <div className="flex items-center gap-1 mt-2">
+              <Star className="w-4 h-4 text-primary fill-primary" />
+              <span className="text-sm font-bold">{artisan.rating}</span>
+          </div>
+        </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <Button asChild className="w-full">
+            <Link href={`/artisans/${artisan.id}`}>Voir le profil</Link>
+          </Button>
+        </CardFooter>
+      </Card>
     </motion.div>
   )
 }

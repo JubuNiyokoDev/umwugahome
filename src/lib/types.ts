@@ -5,7 +5,6 @@ export type Artisan = {
   province: string;
   bio: string;
   profileImageId: string;
-  products: Product[];
   rating: number;
 };
 
@@ -15,6 +14,7 @@ export type Product = {
   price: number;
   imageId: string;
   description: string;
+  artisanId: string;
 };
 
 export type TrainingCenter = {
@@ -23,7 +23,6 @@ export type TrainingCenter = {
   province: string;
   description: string;
   imageId: string;
-  courses: Course[];
   rating: number;
 };
 
@@ -34,9 +33,10 @@ export type Course = {
   description: string;
   prerequisites: string;
   imageId: string;
+  centerId: string;
 };
 
-export type User = {
+export type UserProfile = {
   id: string;
   name: string;
   email: string;

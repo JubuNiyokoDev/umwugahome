@@ -22,7 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden group">
+    <Card className="overflow-hidden group bg-card/80 backdrop-blur-sm">
       <div className="relative h-48 w-full bg-muted">
         {image && (
           <Image

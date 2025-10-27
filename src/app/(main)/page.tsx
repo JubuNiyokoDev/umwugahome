@@ -5,16 +5,25 @@ import { MapPlaceholder } from "@/components/map-placeholder";
 import { StatCard } from "@/components/stat-card";
 import { TrainingCenterCard } from "@/components/training-center-card";
 import { Button } from "@/components/ui/button";
-import { artisans, trainingCenters } from "@/lib/data";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Artisan, TrainingCenter } from "@/lib/types";
 import { Award, Briefcase, School, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-
+import { collection } from "firebase/firestore";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
+  const firestore = useFirestore();
+
+  const artisansCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
+  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansCollectionRef);
+
+  const trainingCentersCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
+  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersCollectionRef);
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -39,7 +48,7 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-gradient-to-b from-background to-secondary/20">
+    <div className="flex flex-col min-h-[100dvh]">
       <section className="relative w-full h-[70vh] md:h-[90vh]">
         {heroImage && (
             <Image
@@ -86,7 +95,7 @@ export default function Home() {
       >
         <div className="container px-4 md:px-6">
           <motion.div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8" variants={containerVariants}>
-            <motion.div variants={itemVariants}><StatCard title="Artisans" value="1,200+" icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoadingArtisans ? '...' : (artisans?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
             <motion.div variants={itemVariants}><StatCard title="Formations" value="50+" icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
             <motion.div variants={itemVariants}><StatCard title="Métiers" value="80+" icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
             <motion.div variants={itemVariants}><StatCard title="Lauréats Umwuga Award" value="30+" icon={<Award className="h-4 w-4 text-muted-foreground" />} /></motion.div>
@@ -110,7 +119,7 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {artisans.slice(0, 4).map(artisan => (
+            {artisans?.slice(0, 4).map(artisan => (
               <motion.div key={artisan.id} variants={itemVariants}>
                 <ArtisanCard artisan={artisan} />
               </motion.div>
@@ -148,7 +157,7 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 lg:grid-cols-2" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {trainingCenters.slice(0, 2).map(center => (
+            {trainingCenters?.slice(0, 2).map(center => (
               <motion.div key={center.id} variants={itemVariants}>
                 <TrainingCenterCard center={center} />
               </motion.div>

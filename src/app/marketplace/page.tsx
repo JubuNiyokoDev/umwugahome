@@ -2,40 +2,52 @@
 
 import { ArtisanCard } from "@/components/artisan-card";
 import { TrainingCenterCard } from "@/components/training-center-card";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { artisans as allArtisans, trainingCenters as allTrainingCenters } from "@/lib/data";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { Artisan, TrainingCenter } from "@/lib/types";
+import { collection } from "firebase/firestore";
 import { Search } from "lucide-react";
 import { useState, useMemo } from "react";
 
 export default function MarketplacePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [province, setProvince] = useState('all');
+  const firestore = useFirestore();
+
+  const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans'): null, [firestore]);
+  const { data: allArtisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
+
+  const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers'): null, [firestore]);
+  const { data: allTrainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
 
   const filteredArtisans = useMemo(() => {
+    if (!allArtisans) return [];
     return allArtisans.filter(artisan => {
       const matchesSearch = artisan.name.toLowerCase().includes(searchTerm.toLowerCase()) || artisan.craft.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesProvince = province === 'all' || artisan.province === province;
       return matchesSearch && matchesProvince;
     });
-  }, [searchTerm, province]);
+  }, [allArtisans, searchTerm, province]);
 
   const filteredTrainingCenters = useMemo(() => {
+    if (!allTrainingCenters) return [];
     return allTrainingCenters.filter(center => {
       const matchesSearch = center.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesProvince = province === 'all' || center.province === province;
       return matchesSearch && matchesProvince;
     });
-  }, [searchTerm, province]);
+  }, [allTrainingCenters, searchTerm, province]);
   
   const provinces = useMemo(() => {
-    const artisanProvinces = allArtisans.map(a => a.province);
-    const centerProvinces = allTrainingCenters.map(c => c.province);
+    const artisanProvinces = allArtisans?.map(a => a.province) || [];
+    const centerProvinces = allTrainingCenters?.map(c => c.province) || [];
     return [...new Set([...artisanProvinces, ...centerProvinces])];
-  }, []);
+  }, [allArtisans, allTrainingCenters]);
+
+  const isLoading = isLoadingArtisans || isLoadingCenters;
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
@@ -46,7 +58,7 @@ export default function MarketplacePage() {
         </p>
       </div>
 
-      <Card className="mb-8">
+      <Card className="mb-8 shadow-md bg-card/80 backdrop-blur-sm">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             <div className="md:col-span-2 relative">
@@ -75,11 +87,12 @@ export default function MarketplacePage() {
 
       <Tabs defaultValue="artisans" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="artisans">Artisans ({filteredArtisans.length})</TabsTrigger>
-          <TabsTrigger value="centers">Centres de Formation ({filteredTrainingCenters.length})</TabsTrigger>
+          <TabsTrigger value="artisans">Artisans ({isLoading ? '...' : filteredArtisans.length})</TabsTrigger>
+          <TabsTrigger value="centers">Centres de Formation ({isLoading ? '...' : filteredTrainingCenters.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="artisans">
-          {filteredArtisans.length > 0 ? (
+          {isLoading ? <div className="text-center py-16">Chargement des artisans...</div> : 
+           filteredArtisans.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
               {filteredArtisans.map(artisan => (
                 <ArtisanCard key={artisan.id} artisan={artisan} />
@@ -92,7 +105,8 @@ export default function MarketplacePage() {
           )}
         </TabsContent>
         <TabsContent value="centers">
-           {filteredTrainingCenters.length > 0 ? (
+           {isLoading ? <div className="text-center py-16">Chargement des centres...</div> :
+            filteredTrainingCenters.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
               {filteredTrainingCenters.map(center => (
                 <TrainingCenterCard key={center.id} center={center} />

@@ -4,20 +4,41 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Menu, User } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeSwitcher } from "../theme-switcher";
+import { useAuth, useUser } from "@/firebase";
+import { signOut } from "firebase/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 const navLinks = [
   { href: "/marketplace", label: "Marketplace" },
   { href: "/training", label: "Formations" },
-  { href: "/profile", label: "Profil" },
-  { href: "/admin", label: "Admin" },
 ];
 
 export function Header() {
   const pathname = usePathname();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
+
+  const userImage = user ? PlaceHolderImages.find(i => i.id === 'student-profile-1') : null;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg">
@@ -39,14 +60,52 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <ThemeSwitcher />
-          <Button asChild variant="outline" className="hidden md:flex gap-2">
-            <Link href="/login">
-              <User className="h-4 w-4"/>
-              Connexion
-            </Link>
-          </Button>
+          {isUserLoading ? (
+            <div className="h-10 w-24 animate-pulse rounded-md bg-muted"></div>
+          ) : user ? (
+             <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                     <AvatarImage src={user.photoURL || userImage?.imageUrl} alt={user.displayName || 'User'} />
+                    <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.displayName || 'Utilisateur'}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                   <Link href="/profile"><User className="mr-2 h-4 w-4" />Profil</Link>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                   <Link href="/admin"><User className="mr-2 h-4 w-4" />Admin</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Se déconnecter
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild variant="default" className="hidden md:flex gap-2">
+              <Link href="/login">
+                <User className="h-4 w-4"/>
+                Connexion
+              </Link>
+            </Button>
+          )}
+
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -71,9 +130,9 @@ export function Header() {
                     </Link>
                   ))}
                 </nav>
-                 <Button asChild>
+                 {!user && <Button asChild>
                   <Link href="/login">Connexion</Link>
-                </Button>
+                </Button>}
               </div>
             </SheetContent>
           </Sheet>

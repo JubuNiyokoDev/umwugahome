@@ -1,15 +1,29 @@
+'use client';
+
 import { CourseCard } from "@/components/course-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { trainingCenters } from "@/lib/data";
+import { useDoc, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Course, TrainingCenter } from "@/lib/types";
+import { doc, collection, query, where } from "firebase/firestore";
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
 export default function TrainingCenterPage({ params }: { params: { id: string } }) {
-  const center = trainingCenters.find(c => c.id === params.id);
+  const firestore = useFirestore();
+
+  const centerRef = useMemoFirebase(() => firestore ? doc(firestore, 'training-centers', params.id) : null, [firestore, params.id]);
+  const { data: center, isLoading: isLoadingCenter } = useDoc<TrainingCenter>(centerRef);
+
+  const coursesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'courses'), where('centerId', '==', params.id)) : null, [firestore, params.id]);
+  const { data: courses, isLoading: isLoadingCourses } = useCollection<Course>(coursesQuery);
+
+  if (isLoadingCenter) {
+    return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement du centre...</div>
+  }
 
   if (!center) {
     notFound();
@@ -19,7 +33,7 @@ export default function TrainingCenterPage({ params }: { params: { id: string } 
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
-      <Card>
+      <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             {centerImage && (
@@ -54,16 +68,19 @@ export default function TrainingCenterPage({ params }: { params: { id: string } 
 
       <div className="mt-12">
         <h2 className="text-2xl md:text-3xl font-bold font-headline mb-6">Programmes de Formation</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {center.courses.map(course => (
-            <CourseCard key={course.id} course={course} />
-          ))}
-          {center.courses.length === 0 && (
+        {isLoadingCourses && <p>Chargement des formations...</p>}
+        {!isLoadingCourses && courses && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {courses.map(course => (
+              <CourseCard key={course.id} course={course} />
+            ))}
+          </div>
+        )}
+        {!isLoadingCourses && (!courses || courses.length === 0) && (
             <div className="text-center py-12 text-muted-foreground lg:col-span-2">
                 <p>Aucune formation disponible pour le moment.</p>
             </div>
           )}
-        </div>
       </div>
     </div>
   );

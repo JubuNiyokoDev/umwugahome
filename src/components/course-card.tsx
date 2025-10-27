@@ -31,7 +31,7 @@ export function CourseCard({ course }: CourseCardProps) {
   };
 
   return (
-    <Card className="flex flex-col overflow-hidden">
+    <Card className="flex flex-col overflow-hidden shadow-lg bg-card/80 backdrop-blur-sm">
       {image &&
         <div className="relative h-40 w-full">
             <Image 

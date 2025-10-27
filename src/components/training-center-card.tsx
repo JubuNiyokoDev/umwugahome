@@ -17,8 +17,8 @@ export function TrainingCenterCard({ center }: TrainingCenterCardProps) {
   const image = PlaceHolderImages.find(p => p.id === center.imageId);
 
   return (
-    <motion.div whileHover={{ y: -8, boxShadow: "var(--tw-shadow-md)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 h-full shadow-md bg-card/80 backdrop-blur-sm">
+    <motion.div whileHover={{ y: -8, boxShadow: "var(--tw-shadow-xl)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 h-full shadow-lg">
        <CardHeader className="p-0">
         <div className="relative h-48 w-full">
           {image && (

@@ -1,11 +1,16 @@
+'use client'
+
 import { StatCard } from "@/components/stat-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { artisans, trainingCenters, users } from "@/lib/data";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Artisan, TrainingCenter, UserProfile } from "@/lib/types";
+import { collection } from "firebase/firestore";
+import { Users } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 const chartData = [
@@ -25,14 +30,25 @@ const chartConfig = {
 };
 
 export default function AdminDashboardPage() {
+  const firestore = useFirestore();
+
+  const usersRef = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
+  const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
+
+  const artisansRef = useMemoFirebase(() => collection(firestore, 'artisans'), [firestore]);
+  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
+
+  const trainingCentersRef = useMemoFirebase(() => collection(firestore, 'training-centers'), [firestore]);
+  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold font-headline">Tableau de Bord Administrateur</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Utilisateurs" value={users.length.toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Artisans" value={artisans.length.toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Centres" value={trainingCenters.length.toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Utilisateurs" value={isLoadingUsers ? '...' : (users?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Artisans" value={isLoadingArtisans ? '...' : (artisans?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Centres" value={isLoadingCenters ? '...' : (trainingCenters?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
         <StatCard title="Revenu (30j)" value="1,250,000 FBU" icon={<Users className="h-4 w-4 text-muted-foreground" />} />
       </div>
 
@@ -70,12 +86,12 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {users.map((user) => {
+              {isLoadingUsers ? <p>Chargement...</p> : users?.slice(0, 5).map((user) => {
                   const userImage = PlaceHolderImages.find(img => img.id === user.profileImageId);
                   return (
                     <div key={user.id} className="flex items-center gap-4">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src={userImage?.imageUrl} alt="Avatar" />
+                        {userImage && <AvatarImage src={userImage?.imageUrl} alt="Avatar" />}
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">

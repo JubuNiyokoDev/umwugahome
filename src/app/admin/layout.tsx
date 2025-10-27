@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { users } from "@/lib/data";
+import { useUser, useAuth } from "@/firebase";
 import {
   BarChart,
   Briefcase,
@@ -28,11 +28,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 
-const adminUser = users.find(u => u.role === 'admin');
-const adminImage = adminUser ? PlaceHolderImages.find(img => img.id === adminUser.profileImageId) : null;
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user } = useUser();
+
+  const adminImage = user ? PlaceHolderImages.find(img => img.id === 'student-profile-1') : null;
 
   return (
     <SidebarProvider>
@@ -116,18 +116,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
-          <div className="flex items-center gap-3 p-2 rounded-md bg-sidebar-accent">
-            <Avatar className="h-9 w-9">
-              {adminImage && <AvatarImage src={adminImage.imageUrl} />}
-              <AvatarFallback>{adminUser?.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-semibold truncate">{adminUser?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{adminUser?.email}</p>
+        {user && (
+          <SidebarFooter>
+            <div className="flex items-center gap-3 p-2 rounded-md bg-sidebar-accent">
+              <Avatar className="h-9 w-9">
+                {adminImage && <AvatarImage src={user.photoURL || adminImage.imageUrl} />}
+                <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 overflow-hidden">
+                  <p className="text-sm font-semibold truncate">{user.displayName || 'Admin'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              </div>
             </div>
-          </div>
-        </SidebarFooter>
+          </SidebarFooter>
+        )}
       </Sidebar>
       <SidebarInset>
         <header className="flex items-center justify-between p-4 border-b">
