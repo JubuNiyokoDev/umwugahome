@@ -86,7 +86,7 @@ export default function EMarketPage() {
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-          {Array.from({ length: 8 }).map((_, i) => <ProductCard key={i} product={null} />)}
+          {Array.from({ length: 12 }).map((_, i) => <ProductCard key={i} product={null} />)}
         </div>
       ) : filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
@@ -102,3 +102,5 @@ export default function EMarketPage() {
     </div>
   );
 }
+
+    

@@ -15,6 +15,9 @@ import { motion } from "framer-motion";
 import { seedData } from "@/lib/seed";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
@@ -28,8 +31,8 @@ export default function Home() {
 
   useEffect(() => {
     // Simulate fetching data from seed
-    setArtisans(seedData.artisans.slice(0, 8));
-    setTrainingCenters(seedData.trainingCenters.slice(0, 4));
+    setArtisans(seedData.artisans.slice(0, 4));
+    setTrainingCenters(seedData.trainingCenters.slice(0, 2));
     setAllArtisans(seedData.artisans);
     setAllCourses(seedData.courses);
     setAllCenters(seedData.trainingCenters);
@@ -57,6 +60,8 @@ export default function Home() {
       },
     },
   };
+  
+  const partners = ["Enabel", "MENRS", "CFCIB", "KIT Hub"];
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-transparent">
@@ -106,16 +111,31 @@ export default function Home() {
 
       <section className="w-full py-12 md:py-24 lg:py-32 bg-transparent z-20">
         <div className="container px-4 md:px-6">
-          <Card className="bg-card/80">
-            <CardContent className="p-10 text-center">
-              <h3 className="text-xl font-semibold text-muted-foreground mb-4">Un projet soutenu par</h3>
-              <div className="flex justify-center items-center gap-8 md:gap-12 flex-wrap">
-                  <p className="text-2xl font-bold text-foreground">Enabel</p>
-                  <p className="text-2xl font-bold text-foreground">MENRS</p>
-                  <p className="text-2xl font-bold text-foreground">CFCIB</p>
-              </div>
-            </CardContent>
-          </Card>
+          <h3 className="text-xl font-semibold text-muted-foreground mb-8 text-center">Un projet soutenu par nos partenaires</h3>
+          <Carousel
+            opts={{ align: "start", loop: true }}
+             plugins={[
+              Autoplay({
+                delay: 2000,
+                stopOnInteraction: false,
+              }),
+            ]}
+            className="w-full"
+          >
+            <CarouselContent>
+              {partners.map((partner, index) => (
+                <CarouselItem key={index} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <div className="p-1">
+                    <Card className="bg-card/80">
+                      <CardContent className="flex items-center justify-center p-6">
+                        <p className="text-2xl font-bold text-foreground">{partner}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </section>
       
@@ -134,9 +154,9 @@ export default function Home() {
               </p>
             </div>
           </motion.div>
-          <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+          <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 lg:grid-cols-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {isLoading ? (
-              Array.from({ length: 8 }).map((_, i) => <motion.div key={i} variants={itemVariants}><ArtisanCard artisan={null} /></motion.div>)
+              Array.from({ length: 4 }).map((_, i) => <motion.div key={i} variants={itemVariants}><ArtisanCard artisan={null} /></motion.div>)
             ) : (
               artisans?.map(artisan => (
                 <motion.div key={artisan.id} variants={itemVariants}>
@@ -178,7 +198,7 @@ export default function Home() {
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
             {isLoading ? (
-              Array.from({ length: 4 }).map((_, i) => <motion.div key={i} variants={itemVariants}><TrainingCenterCard center={null} /></motion.div>)
+              Array.from({ length: 2 }).map((_, i) => <motion.div key={i} variants={itemVariants}><TrainingCenterCard center={null} /></motion.div>)
             ) : (
               trainingCenters?.map(center => (
                 <motion.div key={center.id} variants={itemVariants}>

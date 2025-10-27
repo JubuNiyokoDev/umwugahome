@@ -95,7 +95,7 @@ export default function ArtisansPage() {
         <TabsContent value="artisans">
           {isLoading ? 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
-              {Array.from({ length: 8 }).map((_, i) => <ArtisanCard key={i} artisan={null} />)}
+              {Array.from({ length: 12 }).map((_, i) => <ArtisanCard key={i} artisan={null} />)}
             </div> : 
            filteredArtisans.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
@@ -130,3 +130,5 @@ export default function ArtisansPage() {
     </div>
   );
 }
+
+    
