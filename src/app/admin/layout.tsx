@@ -28,6 +28,7 @@ import {
   Bug,
   Shield,
   Loader2,
+  Database,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -47,7 +48,7 @@ const navLinks = [
 ];
 
 const devLinks = [
-    { href: "/seed", label: "Seed Database", icon: <Bug /> },
+    { href: "/seed", label: "Seed Database", icon: <Database /> },
 ]
 
 function AdminProtectionLayer({ children }: { children: React.ReactNode }) {
@@ -74,10 +75,10 @@ function AdminProtectionLayer({ children }: { children: React.ReactNode }) {
 
     if (userProfile?.role !== 'admin') {
         return (
-            <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
+            <div className="flex h-screen w-full flex-col items-center justify-center gap-4 text-center p-4">
                 <Shield className="h-12 w-12 text-destructive" />
                 <h1 className="text-2xl font-bold">Accès Refusé</h1>
-                <p className="text-muted-foreground">Vous n'avez pas les autorisations nécessaires pour accéder à cette page.</p>
+                <p className="text-muted-foreground max-w-md">Vous n'avez pas les autorisations nécessaires pour accéder à cette page. Seul un administrateur peut accéder à cette section.</p>
                 <Button asChild>
                     <Link href="/">Retour à l'accueil</Link>
                 </Button>
@@ -99,14 +100,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const checkIsActive = (href: string, exact = false) => {
     return exact ? pathname === href : pathname.startsWith(href);
-  }
-  
-  if(pathname === '/seed') {
-      return (
-        <AdminProtectionLayer>
-            <div className="p-4 md:p-6">{children}</div>
-        </AdminProtectionLayer>
-      );
   }
 
   return (

@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth, useFirestore } from "@/firebase";
+import { useFirestore } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { seedData } from "@/lib/seed";
 import { writeBatch, doc } from "firebase/firestore";
@@ -108,7 +108,7 @@ export default function SeedPage() {
                     <CardTitle>Initialisation de la base de données</CardTitle>
                     <CardDescription>
                         Cliquez sur ce bouton pour remplir la base de données Firestore avec un jeu de données de test complet.
-                        Cette action est réservée aux administrateurs.
+                        Cette action est nécessaire pour la première utilisation de l'application.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
