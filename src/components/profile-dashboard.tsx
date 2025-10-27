@@ -2,20 +2,20 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AiSuggestions } from "@/components/ai-suggestions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useCollection, useFirestore, updateDocumentNonBlocking, useUser, useMemoFirebase } from "@/firebase";
+import { useUser } from "@/firebase";
 import { Order, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Building, Edit, Loader2, Paintbrush, Save, Shield, ShoppingBag, Tag } from "lucide-react";
-import { collection, doc, getFirestore, query, where, Timestamp } from "firebase/firestore";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { seedData } from "@/lib/seed";
 
 interface ProfileDashboardProps {
     userProfile: UserProfile;
@@ -23,9 +23,10 @@ interface ProfileDashboardProps {
 
 function UserOrders() {
     const { user } = useUser();
-    const firestore = useFirestore();
-    const ordersQuery = useMemoFirebase(() => firestore && user ? query(collection(firestore, 'orders'), where('customerId', '==', user.uid)) : null, [firestore, user]);
-    const { data: orders, isLoading: isLoadingOrders } = useCollection<Order>(ordersQuery);
+    
+    // In demo mode, we just filter seedData
+    const orders = user ? seedData.orders?.filter(o => o.customerId === user.uid) : [];
+    const isLoadingOrders = false; // Data is local
 
     return (
         <Card className="bg-card/80 backdrop-blur-sm mt-8">
@@ -53,7 +54,7 @@ function UserOrders() {
                                 let formattedDate = 'Date invalide';
                                 if (order.orderDate) {
                                     try {
-                                        const date = (order.orderDate as any).toDate ? (order.orderDate as any).toDate() : new Date(order.orderDate);
+                                        const date = new Date(order.orderDate);
                                         formattedDate = format(date, 'd MMM yyyy', { locale: fr });
                                     } catch (e) {
                                         console.error("Error formatting date: ", order.orderDate)
@@ -83,24 +84,20 @@ function UserOrders() {
 
 export function ProfileDashboard({ userProfile }: ProfileDashboardProps) {
     const router = useRouter();
-    const firestore = getFirestore();
     const { toast } = useToast();
     const [isEditingInterests, setIsEditingInterests] = useState(false);
     const [interests, setInterests] = useState(userProfile.interests?.join(', ') || '');
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSaveInterests = async () => {
-        if (!firestore) return;
         setIsSaving(true);
-        const userRef = doc(firestore, 'users', userProfile.id);
-        const interestsArray = interests.split(',').map(i => i.trim()).filter(Boolean);
-        
-        updateDocumentNonBlocking(userRef, { interests: interestsArray });
-
+        // This is a mock update for demo mode
         toast({
-            title: "Intérêts mis à jour",
+            title: "Intérêts mis à jour (Démo)",
             description: "Vos suggestions de formation seront actualisées.",
         });
+        // Here you would typically update the user profile in the database
+        // For demo, we can just update the local state if needed for reactivity, but for now it's just a toast.
         setIsSaving(false);
         setIsEditingInterests(false);
     };

@@ -7,19 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan } from "@/lib/types";
-import { collection, orderBy, query } from "firebase/firestore";
 import { MoreHorizontal, PlusCircle, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
 
 export default function AdminArtisansPage() {
-    const firestore = useFirestore();
+    const [artisans, setArtisans] = useState<Artisan[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const artisansRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'artisans'), orderBy('name')) : null, [firestore]);
-    const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
+    useEffect(() => {
+        setArtisans(seedData.artisans);
+        setIsLoading(false);
+    }, []);
 
     return (
         <div className="space-y-6">
@@ -47,7 +50,7 @@ export default function AdminArtisansPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoadingArtisans ? (
+                            {isLoading ? (
                                 Array.from({length: 4}).map((_, i) => (
                                     <TableRow key={i}>
                                         <TableCell>

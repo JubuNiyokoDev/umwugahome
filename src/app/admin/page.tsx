@@ -1,3 +1,4 @@
+
 'use client'
 
 import { StatCard } from "@/components/stat-card";
@@ -6,13 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Artisan, TrainingCenter, UserProfile } from "@/lib/types";
-import { collection, limit, orderBy, query } from "firebase/firestore";
+import { UserProfile } from "@/lib/types";
 import { Briefcase, School, Users, Wallet } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
 
 const chartData = [
   { month: "Janvier", users: 186 },
@@ -31,32 +32,28 @@ const chartConfig = {
 };
 
 export default function AdminDashboardPage() {
-  const firestore = useFirestore();
+    const [stats, setStats] = useState({ users: 0, artisans: 0, centers: 0 });
+    const [recentUsers, setRecentUsers] = useState<UserProfile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-  // Query for all documents to get counts
-  const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
-  const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
-
-  const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
-  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
-
-  const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
-
-  // Query for recent users
-  const recentUsersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), orderBy('name'), limit(5)) : null, [firestore]);
-  const { data: recentUsers, isLoading: isLoadingRecentUsers } = useCollection<UserProfile>(recentUsersQuery);
-
-  const isLoadingStats = isLoadingUsers || isLoadingArtisans || isLoadingCenters;
+    useEffect(() => {
+        setStats({
+            users: seedData.users.length,
+            artisans: seedData.artisans.length,
+            centers: seedData.trainingCenters.length,
+        });
+        setRecentUsers(seedData.users.slice(0, 5));
+        setIsLoading(false);
+    }, []);
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold font-headline">Tableau de Bord Administrateur</h1>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Utilisateurs" value={isLoadingStats ? '...' : (users?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Artisans" value={isLoadingStats ? '...' : (artisans?.length ?? 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Centres" value={isLoadingStats ? '...' : (trainingCenters?.length ?? 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Utilisateurs" value={isLoading ? '...' : stats.users.toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Artisans" value={isLoading ? '...' : stats.artisans.toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} />
+        <StatCard title="Total Centres" value={isLoading ? '...' : stats.centers.toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} />
         <StatCard title="Revenu (30j)" value="1,250,000 FBU" icon={<Wallet className="h-4 w-4 text-muted-foreground" />} description="+5% vs mois dernier"/>
       </div>
 
@@ -95,7 +92,7 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {isLoadingRecentUsers ? 
+              {isLoading ? 
                 Array.from({length: 5}).map((_, i) => (
                     <div key={i} className="flex items-center gap-4">
                         <Skeleton className="h-9 w-9 rounded-full" />

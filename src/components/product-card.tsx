@@ -60,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
     toast({
       title: "Commande passée (Démo)!",
-      description: `Votre commande pour "${product.name}" a été enregistrée.`,
+      description: `Votre commande pour "${product.name}" a été enregistrée. Cette fonctionnalité est en mode démo.`,
     });
   };
 

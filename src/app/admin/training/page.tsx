@@ -1,27 +1,27 @@
 
 'use client';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { Course, TrainingCenter } from "@/lib/types";
-import { collection, orderBy, query } from "firebase/firestore";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { seedData } from "@/lib/seed";
 
 export default function AdminTrainingPage() {
-    const firestore = useFirestore();
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [centers, setCenters] = useState<TrainingCenter[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const coursesRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'courses'), orderBy('title')) : null, [firestore]);
-    const { data: courses, isLoading: isLoadingCourses } = useCollection<Course>(coursesRef);
-    
-    const centersRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'training-centers')) : null, [firestore]);
-    const { data: centers, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(centersRef);
+    useEffect(() => {
+        setCourses(seedData.courses);
+        setCenters(seedData.trainingCenters);
+        setIsLoading(false);
+    }, []);
 
     const centersById = useMemo(() => {
         if (!centers) return new Map();
@@ -30,8 +30,6 @@ export default function AdminTrainingPage() {
           return acc;
         }, new Map<string, TrainingCenter>());
     }, [centers]);
-
-    const isLoading = isLoadingCourses || isLoadingCenters;
 
     return (
         <div className="space-y-6">

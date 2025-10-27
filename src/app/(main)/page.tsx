@@ -7,7 +7,7 @@ import { StatCard } from "@/components/stat-card";
 import { TrainingCenterCard } from "@/components/training-center-card";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Artisan, Course, TrainingCenter } from "@/lib/types";
+import { Artisan, TrainingCenter } from "@/lib/types";
 import { Award, Briefcase, School, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

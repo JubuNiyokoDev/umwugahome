@@ -7,64 +7,29 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { UserProfile } from "@/lib/types";
-import { collection, doc, orderBy, query, writeBatch } from "firebase/firestore";
 import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
-
-async function deleteUserAndProfile(firestore: any, userId: string, role: UserProfile['role']) {
-    if (!firestore) return;
-
-    const batch = writeBatch(firestore);
-
-    // Delete from users collection
-    const userRef = doc(firestore, 'users', userId);
-    batch.delete(userRef);
-
-    // Delete from role-specific collection
-    let profileRef;
-    if (role === 'artisan') {
-        profileRef = doc(firestore, 'artisans', userId);
-    } else if (role === 'mentor') {
-        profileRef = doc(firestore, 'mentors', userId);
-    } else if (role === 'training_center') {
-        profileRef = doc(firestore, 'training-centers', userId);
-    }
-    
-    if (profileRef) {
-        batch.delete(profileRef);
-    }
-    
-    // Non-blocking commit
-    batch.commit().catch(error => {
-        console.error("Failed to delete user profile:", error);
-         errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: `batch delete for user ${userId}`,
-            operation: 'delete'
-        }));
-    });
-}
-
+import { useState, useEffect } from "react";
+import { seedData } from "@/lib/seed";
 
 export default function AdminUsersPage() {
-    const firestore = useFirestore();
     const { toast } = useToast();
+    const [users, setUsers] = useState<UserProfile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const usersRef = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), orderBy('name')) : null, [firestore]);
-    const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
+    useEffect(() => {
+        setUsers(seedData.users);
+        setIsLoading(false);
+    }, []);
 
     const handleDeleteUser = async (user: UserProfile) => {
-        if (!firestore) return;
-        await deleteUserAndProfile(firestore, user.id, user.role);
         toast({
-            title: "Utilisateur supprimé",
-            description: `L'utilisateur ${user.name} a été supprimé avec succès.`,
+            title: "Action non disponible (Démo)",
+            description: `La suppression de ${user.name} n'est pas activée en mode démo.`,
         });
     };
 
@@ -93,7 +58,7 @@ export default function AdminUsersPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoadingUsers ? (
+                            {isLoading ? (
                                 Array.from({length: 5}).map((_, i) => (
                                     <TableRow key={i}>
                                         <TableCell>

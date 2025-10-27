@@ -4,22 +4,27 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Mentor } from "@/lib/types";
-import { doc } from "firebase/firestore";
 import { Award, Briefcase, GraduationCap, MapPin, MessageCircle, Star } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
 
 export default function MentorProfilePage({ params }: { params: { id: string } }) {
-  const firestore = useFirestore();
+  const [mentor, setMentor] = useState<Mentor | null | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const foundMentor = seedData.mentors.find(m => m.id === params.id);
+    setMentor(foundMentor);
+    setIsLoading(false);
+  }, [params.id]);
 
-  const mentorRef = useMemoFirebase(() => firestore ? doc(firestore, 'mentors', params.id) : null, [firestore, params.id]);
-  const { data: mentor, isLoading: isLoadingMentor } = useDoc<Mentor>(mentorRef);
 
-   if (isLoadingMentor) {
+   if (isLoading) {
     return (
         <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
             <Card className="w-full max-w-4xl mx-auto">

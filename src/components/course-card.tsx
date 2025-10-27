@@ -36,8 +36,8 @@ export function CourseCard({ course }: CourseCardProps) {
 
   const handleEnroll = () => {
     toast({
-      title: "Inscription en cours",
-      description: `Votre demande d'inscription pour "${course.title}" a été envoyée.`,
+      title: "Inscription en cours (Démo)",
+      description: `Votre demande d'inscription pour "${course.title}" a été envoyée. Cette fonctionnalité est en mode démo.`,
     });
   };
 
