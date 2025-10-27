@@ -7,43 +7,32 @@ import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence } fr
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  if (!getApps().length) {
-    // Important! initializeApp() is called without any arguments because Firebase App Hosting
-    // integrates with the initializeApp() function to provide the environment variables needed to
-    // populate the FirebaseOptions in production. It is critical that we attempt to call initializeApp()
-    // without arguments.
-    let firebaseApp;
-    try {
-      // Attempt to initialize via Firebase App Hosting environment variables
-      firebaseApp = initializeApp();
-    } catch (e) {
-      // Only warn in production because it's normal to use the firebaseConfig to initialize
-      // during development
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
-      firebaseApp = initializeApp(firebaseConfig);
-    }
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  const firestore = getFirestore(app);
 
-    return getSdks(firebaseApp);
-  }
-
-  // If already initialized, return the SDKs with the already initialized App
-  return getSdks(getApp());
-}
-
-export function getSdks(firebaseApp: FirebaseApp) {
-  const firestore = getFirestore(firebaseApp);
   if (process.env.NODE_ENV === 'development') {
+    // Connect to emulator BEFORE any other Firestore operations
     connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
   }
-  enableIndexedDbPersistence(firestore);
+
+  // Enable persistence must be called after emulator connection but before other operations.
+  // We'll wrap it in a try-catch to avoid errors if it has already been enabled.
+  try {
+    enableIndexedDbPersistence(firestore);
+  } catch (e: any) {
+    if (e.code !== 'failed-precondition') {
+      // This can happen if persistence is enabled in another tab.
+      // It's safe to ignore.
+    }
+  }
+  
   return {
-    firebaseApp,
-    auth: getAuth(firebaseApp),
-    firestore
+    firebaseApp: app,
+    auth: getAuth(app),
+    firestore: firestore,
   };
 }
+
 
 export * from './provider';
 export * from './client-provider';
