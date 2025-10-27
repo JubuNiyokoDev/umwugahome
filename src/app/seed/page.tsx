@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useFirestore } from "@/firebase";
+import { useAuth, useFirestore } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { seedData } from "@/lib/seed";
 import { writeBatch, doc } from "firebase/firestore";
@@ -11,15 +11,17 @@ import { useState } from "react";
 import { Loader2, Database } from "lucide-react";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { signInAnonymously } from "firebase/auth";
 
 export default function SeedPage() {
     const firestore = useFirestore();
+    const auth = useAuth();
     const { toast } = useToast();
     const [isSeeding, setIsSeeding] = useState(false);
 
     const handleSeedDatabase = async () => {
-        if (!firestore) {
-            toast({ variant: 'destructive', title: "Firestore not available." });
+        if (!firestore || !auth) {
+            toast({ variant: 'destructive', title: "Les services Firebase ne sont pas disponibles." });
             return;
         }
 
@@ -27,6 +29,9 @@ export default function SeedPage() {
         toast({ title: "Démarrage du seeding...", description: "Veuillez patienter." });
 
         try {
+            // Step 1: Sign in anonymously to get auth context
+            await signInAnonymously(auth);
+            
             const batch = writeBatch(firestore);
 
             // Seed Users
@@ -78,7 +83,7 @@ export default function SeedPage() {
 
             toast({
                 title: "Base de données initialisée !",
-                description: `Les données de test, y compris ${seedData.orders?.length || 0} commandes, ont été ajoutées.`
+                description: `Les données de test ont été ajoutées avec succès.`
             });
 
         } catch (error: any) {
