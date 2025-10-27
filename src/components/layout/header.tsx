@@ -19,7 +19,7 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Logo />
 
@@ -56,7 +56,7 @@ export function Header() {
                 <span className="sr-only">Ouvrir le menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="right" className="bg-background/95">
               <div className="flex flex-col gap-6 p-6">
                 <Logo />
                 <nav className="flex flex-col gap-4">

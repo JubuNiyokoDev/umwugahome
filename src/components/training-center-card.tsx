@@ -5,6 +5,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface TrainingCenterCardProps {
   center: TrainingCenter;
@@ -14,17 +15,20 @@ export function TrainingCenterCard({ center }: TrainingCenterCardProps) {
   const image = PlaceHolderImages.find(p => p.id === center.imageId);
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border-0">
+    <motion.div whileHover={{ y: -8, boxShadow: "0 10px 20px -5px hsl(var(--primary) / 0.1)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 h-full border-0 shadow-lg shadow-black/20">
        <CardHeader className="p-0">
         <div className="relative h-48 w-full">
           {image && (
-            <Image
-              src={image.imageUrl}
-              alt={center.name}
-              fill
-              className="object-cover"
-              data-ai-hint={image.imageHint}
-            />
+             <motion.div className="h-full w-full" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+              <Image
+                src={image.imageUrl}
+                alt={center.name}
+                fill
+                className="object-cover"
+                data-ai-hint={image.imageHint}
+              />
+            </motion.div>
           )}
         </div>
       </CardHeader>
@@ -43,5 +47,6 @@ export function TrainingCenterCard({ center }: TrainingCenterCardProps) {
         </Button>
       </CardFooter>
     </Card>
+    </motion.div>
   )
 }

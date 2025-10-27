@@ -39,38 +39,38 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <section className="relative w-full h-[60vh] md:h-[80vh]">
+    <div className="flex flex-col min-h-[100dvh] bg-gradient-to-b from-background to-secondary/20">
+      <section className="relative w-full h-[70vh] md:h-[90vh]">
         {heroImage && (
             <Image
             src={heroImage.imageUrl}
             alt={heroImage.description}
             fill
-            className="object-cover"
+            className="object-cover opacity-10"
             data-ai-hint={heroImage.imageHint}
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        <div className="relative container mx-auto flex h-full items-end justify-center px-4 text-center md:px-6 pb-12 md:pb-24">
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+        <div className="relative container mx-auto flex h-full items-center justify-center px-4 text-center md:px-6">
           <motion.div 
-            className="flex flex-col items-center space-y-4"
+            className="flex flex-col items-center space-y-6"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-foreground drop-shadow-lg">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl font-headline text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-green-300 drop-shadow-lg">
               UmwugaHome
             </h1>
             <p className="max-w-[700px] text-muted-foreground md:text-xl font-body">
-              La Maison Digitale des Métiers du Burundi. Connecter les talents, former les générations, bâtir l’avenir.
+              L'Innovation au Cœur de l'Artisanat Burundais. Connecter les talents, former les générations, bâtir l’avenir.
             </p>
             <div className="flex gap-4">
               <Button asChild size="lg">
-                <Link href="/marketplace">Découvrir les Artisans</Link>
+                <Link href="/marketplace">Découvrir</Link>
               </Button>
-              <Button asChild variant="secondary" size="lg">
-                <Link href="/training">Trouver une Formation</Link>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/training">Contact</Link>
               </Button>
             </div>
           </motion.div>
@@ -78,7 +78,7 @@ export default function Home() {
       </section>
 
       <motion.section 
-        className="w-full py-12 md:py-24 lg:py-32"
+        className="w-full py-12 md:py-24 lg:py-32 -mt-16"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -94,7 +94,7 @@ export default function Home() {
         </div>
       </motion.section>
       
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
+      <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
           <motion.div 
              initial={{ opacity: 0, y: 50 }}
@@ -132,7 +132,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
+      <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}

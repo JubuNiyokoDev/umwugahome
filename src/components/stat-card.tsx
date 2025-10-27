@@ -10,13 +10,13 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon, className }: StatCardProps) {
   return (
-    <Card className={cn("transform transition-transform duration-300 hover:scale-105 hover:shadow-lg border-0", className)}>
+    <Card className={cn("transform transition-transform duration-300 hover:scale-105 hover:shadow-lg border-0 bg-card/50 backdrop-blur-sm", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground font-body">{title}</CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold font-headline">{value}</div>
+        <div className="text-2xl font-bold font-headline text-primary">{value}</div>
       </CardContent>
     </Card>
   );
