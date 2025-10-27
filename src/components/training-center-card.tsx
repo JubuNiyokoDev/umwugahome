@@ -1,3 +1,5 @@
+"use client";
+
 import type { TrainingCenter } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import Image from "next/image";
