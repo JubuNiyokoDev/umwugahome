@@ -159,7 +159,7 @@
     {
       "id": "course-3",
       "description": "Des étudiants africains suivant un cours de design sur ordinateurs.",
-      "imageUrl": "https://images.unsplash.com/photo-1626785774573-4b799315345d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmFwaGljJTIwZGVzaWduJTIwY2xhc3N8ZW58MHx8fHwxNzYxNzQ2ODkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1626785774573-4b799315345d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmFwaGljJTIwZGVzaWduJTIwY2xhc3N8ZW58MHx8fHwxNzYxNzQ2ODkzfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "design class"
     },
     {
@@ -177,25 +177,25 @@
     {
       "id": "course-6",
       "description": "Personne tenant de la terre fraîche dans ses mains dans une ferme.",
-      "imageUrl": "https://images.unsplash.com/photo-1492496913980-501348b61469?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZ3JpY3VsdHVyZXxlbnwwfHx8fDE3NjM5NDMwMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1492496913980-501348b61469?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZ3JpY3VsdHVyZXxlbnwwfHx8fDE3NjM5NDMwMDB8MA&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "agriculture"
     },
     {
       "id": "course-7",
       "description": "Une imprimante 3D en action, créant un objet.",
-      "imageUrl": "https://images.unsplash.com/photo-1617791160536-595a724029a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHwzZCUyMHByaW50ZXJ8ZW58MHx8fHwxNzYzOTQzMDQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1617791160536-595a724029a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHwzZCUyMHByaW50ZXJ8ZW58MHx8fHwxNzYzOTQzMDQwfDA&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "3d printer"
     },
     {
       "id": "course-8",
       "description": "Écran d'ordinateur montrant du code HTML.",
-      "imageUrl": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxIVE1MJTIwY29kZXxlbnwwfHx8fDE3NjM5NDMwNzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxIVE1MJTIwY29kZXxlbnwwfHx8fDE3NjM5NDMwNzd8MA&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "html code"
     },
     {
       "id": "hero-background",
       "description": "Un arrière-plan vibrant d'artisanat africain.",
-      "imageUrl": "https://images.unsplash.com/photo-1758188408858-0f5389c35f50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhZnJpY2FuJTIwY3JhZnR8ZW58MHx8fHwxNzYxNTQ4NjEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1758188408858-0f5389c35f50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhZnJpY2FuJTIwY3JhZnR8ZW58MHx8fHwxNzYxNTQ4NjEzfDA&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "african craft"
     },
     {
@@ -207,25 +207,25 @@
     {
       "id": "student-profile-1",
       "description": "Portrait d'une jeune étudiante africaine.",
-      "imageUrl": "https://images.unsplash.com/photo-1594367064223-3f16d542a127?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwc3R1ZGVudCUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MjE5MjkxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1594367064223-3f16d542a127?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwc3R1ZGVudCUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MjE5MjkxN3ww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "student portrait"
     },
     {
       "id": "student-profile-2",
       "description": "Portrait d'un jeune étudiant africain souriant.",
-      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGFmcmljYW4lMjBtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNzQ3MjMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGFmcmljYW4lMjBtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNzQ3MjMwfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "student portrait"
     },
     {
       "id": "mentor-profile-1",
       "description": "Portrait d'un mentor africain expérimenté.",
-      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZnJpY2FuJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkyOTc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZnJpY2FuJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkyOTc3fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "mentor portrait"
     },
     {
       "id": "mentor-profile-2",
       "description": "Portrait d'une femme d'affaires africaine servant de mentor.",
-      "imageUrl": "https://images.unsplash.com/photo-1582233479526-d9a0a049969d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwZmVtYWxlJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkzMDI1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1582233479526-d9a0a049969d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwZmVtYWxlJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkzMDI1fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "mentor portrait"
     },
     {
@@ -255,73 +255,73 @@
     {
       "id": "award-laureate-4",
       "description": "Portrait d'un jeune homme africain souriant.",
-      "imageUrl": "https://images.unsplash.com/photo-1566753323558-f4e0952af115?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMGNvbmZpZGVudCUyMG1hbnxlbnwwfHx8fDE3NjM5NDM2NDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "confident man"
+      "imageUrl": "https://images.unsplash.com/photo-1615217036465-4a572c62c954?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMHByb3VkJTIwbWFufGVufDB8fHx8MTc2Mzk0NDEzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "proud man"
     },
     {
       "id": "award-laureate-5",
       "description": "Portrait d'une femme africaine créative et pensive.",
-      "imageUrl": "https://images.unsplash.com/photo-1488161628813-04466f872d24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxZb3VuZyUyMEJsYWNrJTIwY3JlYXRpdmUlMjB3b21hbnxlbnwwfHx8fDE3NjM5NDM2ODd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1488161628813-04466f872d24?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxZb3VuZyUyMEJsYWNrJTIwY3JlYXRpdmUlMjB3b21hbnxlbnwwfHx8fDE3NjM5NDM2ODd8MA&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "creative woman"
     },
     {
       "id": "award-laureate-6",
       "description": "Portrait d'un homme africain fier.",
-      "imageUrl": "https://images.unsplash.com/photo-1615217036465-4a572c62c954?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMHByb3VkJTIwbWFufGVufDB8fHx8MTc2Mzk0NDEzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1615217036465-4a572c62c954?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxCbGFjayUyMHByb3VkJTIwbWFufGVufDB8fHx8MTc2Mzk0NDEzMXww&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "proud man"
     },
     {
       "id": "event-1",
-      "description": "Scène de la cérémonie de remise des prix.",
-      "imageUrl": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhd2FyZCUyMGNlcmVtb255fGVufDB8fHx8MTc2Mzk0Mzg1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Scène de la cérémonie de remise des prix avec une audience africaine.",
+      "imageUrl": "https://images.unsplash.com/photo-1678846933589-38566b142431?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwYXdhcmQlMjBjZXJlbW9ueXxlbnwwfHx8fDE3NjM5NDQ1NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "award ceremony"
     },
     {
       "id": "event-2",
-      "description": "Foule applaudissant lors d'un événement.",
-      "imageUrl": "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhdWRpZW5jZSUyMGNsYXBwaW5nfGVufDB8fHx8MTc2Mzk0MzkxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Foule africaine applaudissant lors d'un événement.",
+      "imageUrl": "https://images.unsplash.com/photo-1678846933758-c21b3335559f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhZnJpY2FuJTIwYXVkZW5jZSUyMGNsYXBwaW5nfGVufDB8fHx8MTc2Mzk0NDYxMHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "audience clapping"
     },
     {
       "id": "event-3",
-      "description": "Un lauréat recevant son prix sur scène.",
-      "imageUrl": "https://images.unsplash.com/photo-1616422285859-f13153c30626?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhd2FyZCUyMGNlcmVtb255fGVufDB8fHx8MTc2Mzk0Mzg1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Un lauréat noir recevant son prix sur scène.",
+      "imageUrl": "https://images.unsplash.com/photo-1678846933795-3652e00f9175?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwYXdhcmQlMjBjZXJlbW9ueXxlbnwwfHx8fDE3NjM5NDQ1NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "award winner"
     },
     {
       "id": "event-4",
-      "description": "Gros plan sur un trophée de l'Umwuga Award.",
+      "description": "Gros plan sur un trophée avec un fond africain.",
       "imageUrl": "https://images.unsplash.com/photo-1594312523249-195329388dfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0cm9waHl8ZW58MHx8fHwxNzYzOTQ0MDAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "trophy"
     },
     {
       "id": "event-5",
-      "description": "Discours d'un organisateur sur scène.",
-      "imageUrl": "https://images.unsplash.com/photo-1560439514-4e9645039924?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzcGVha2VyJTIwb24lMjBzdGFnZXxlbnwwfHx8fDE3NjM5NDQwNDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Discours d'un organisateur africain sur scène.",
+      "imageUrl": "https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwc3BlYWtlciUyMG9uJTIwc3RhZ2V8ZW58MHx8fHwxNzYzOTQ0Njg2fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "speaker stage"
     },
     {
       "id": "event-6",
-      "description": "Artisans exposant leurs œuvres lors de l'événement.",
-      "imageUrl": "https://images.unsplash.com/photo-1512413318231-9a72483a45c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcnQlMjBleGhpYml0aW9ufGVufDB8fHx8MTc2Mzk0NDExNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Artisans noirs exposant leurs œuvres lors de l'événement.",
+      "imageUrl": "https://images.unsplash.com/photo-1611095965933-28929314e38c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwYXJ0JTIwZXhoaWJpdGlvbnxlbnwwfHx8fDE3NjM5NDQ3MjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "art exhibition"
     },
     {
       "id": "event-7",
-      "description": "Vue d'ensemble de la salle de cérémonie.",
-      "imageUrl": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhd2FyZCUyMGNlcmVtb255fGVufDB8fHx8MTc2Mzk0Mzg1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Vue d'ensemble de la salle de cérémonie avec des participants africains.",
+      "imageUrl": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwY29uZmVyZW5jZXxlbnwwfHx8fDE3NjM5NDQ3NTd8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "award ceremony"
     },
     {
       "id": "event-8",
-      "description": "Personnes applaudissant debout.",
-      "imageUrl": "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZW9wbGUlMjBjbGFwcGluZ3xlbnwwfHx8fDE3NjM5NDQzNTB8MA&ixlib_rb-4.1.0&q=80&w=1080",
+      "description": "Personnes noires applaudissant debout.",
+      "imageUrl": "https://images.unsplash.com/photo-1678846933758-c21b3335559f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhZnJpY2FuJTIwYXVkZW5jZSUyMGNsYXBwaW5nfGVufDB8fHx8MTc2Mzk0NDYxMHww&ixlib_rb-4.1.0&q=80&w=1080",
       "imageHint": "people clapping"
     },
     {
       "id": "event-9",
-      "description": "Conférencier sur une scène éclairée.",
-      "imageUrl": "https://images.unsplash.com/photo-1543269664-56d93c1b41a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzcGVha2VyJTIwb24lMjBzdGFnZXxlbnwwfHx8fDE3NjM5NDQwNDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Conférencier noir sur une scène éclairée.",
+      "imageUrl": "https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwc3BlYWtlciUyMG9uJTIwc3RhZ2V8ZW58MHx8fHwxNzYzOTQ0Njg2fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "speaker stage"
     }
   ]
