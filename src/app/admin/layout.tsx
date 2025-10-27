@@ -17,7 +17,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
-import { useUser, useAuth } from "@/firebase";
+import { useUser } from "@/firebase";
 import {
   BarChart,
   Briefcase,
@@ -33,11 +33,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 
+const navLinks = [
+  { href: "/admin", label: "Dashboard", icon: <Home />, exact: true },
+  { href: "/admin/users", label: "Utilisateurs", icon: <Users /> },
+  { href: "/admin/artisans", label: "Artisans", icon: <Briefcase /> },
+  { href: "/admin/training", label: "Formations", icon: <School /> },
+  { href: "/admin/analytics", label: "Statistiques", icon: <BarChart /> },
+  { href: "/admin/settings", label: "Paramètres", icon: <Settings /> },
+];
+
+const devLinks = [
+    { href: "/admin/debug", label: "Debug & Seed", icon: <Bug /> },
+]
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user } = useUser();
 
   const adminImage = user ? PlaceHolderImages.find(img => img.id === 'student-profile-1') : null;
+
+  const checkIsActive = (href: string, exact = false) => {
+    return exact ? pathname === href : pathname.startsWith(href);
+  }
 
   return (
     <SidebarProvider>
@@ -47,78 +64,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === "/admin"}
-                tooltip="Dashboard"
-              >
-                <Link href="/admin">
-                  <Home />
-                  <span>Dashboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith("/admin/users")}
-                tooltip="Utilisateurs"
-              >
-                <Link href="/admin/users">
-                  <Users />
-                  <span>Utilisateurs</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith("/admin/artisans")}
-                tooltip="Artisans"
-              >
-                <Link href="#">
-                  <Briefcase />
-                  <span>Artisans</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith("/admin/training")}
-                tooltip="Formations"
-              >
-                <Link href="#">
-                  <School />
-                  <span>Formations</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith("/admin/analytics")}
-                tooltip="Statistiques"
-              >
-                <Link href="#">
-                  <BarChart />
-                  <span>Statistiques</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith("/admin/settings")}
-                tooltip="Paramètres"
-              >
-                <Link href="#">
-                  <Settings />
-                  <span>Paramètres</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {navLinks.map(link => (
+                <SidebarMenuItem key={link.href}>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={checkIsActive(link.href, link.exact)}
+                        tooltip={link.label}
+                    >
+                        <Link href={link.href}>
+                            {link.icon}
+                            <span>{link.label}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
           </SidebarMenu>
 
           <SidebarSeparator />
@@ -126,18 +85,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <SidebarGroup>
             <SidebarGroupLabel>Développement</SidebarGroupLabel>
             <SidebarMenu>
-               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith("/admin/debug")}
-                  tooltip="Debug"
-                >
-                  <Link href="/admin/debug">
-                    <Bug />
-                    <span>Debug & Seed</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+               {devLinks.map(link => (
+                    <SidebarMenuItem key={link.href}>
+                        <SidebarMenuButton
+                            asChild
+                            isActive={checkIsActive(link.href)}
+                            tooltip={link.label}
+                        >
+                        <Link href={link.href}>
+                            {link.icon}
+                            <span>{link.label}</span>
+                        </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+               ))}
             </SidebarMenu>
           </SidebarGroup>
 
