@@ -8,7 +8,7 @@ import { TrainingCenterCard } from "@/components/training-center-card";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan, Course, TrainingCenter } from "@/lib/types";
-import { Award, Briefcase, School, Users } from "lucide-react";
+import { Award, Briefcase, School, Users, Rocket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -58,35 +58,25 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <section className="relative w-full h-[70vh] md:h-[90vh]">
-        {heroImage && (
-            <Image
-            src={heroImage.imageUrl}
-            alt={heroImage.description}
-            fill
-            className="object-cover opacity-10"
-            data-ai-hint={heroImage.imageHint}
-            priority
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-        <div className="relative container mx-auto flex h-full items-center justify-center px-4 text-center md:px-6">
+    <div className="flex flex-col min-h-[100dvh] bg-transparent">
+      <section className="relative w-full h-[70vh] md:h-[90vh] flex items-center justify-center">
+         <div className="absolute inset-0 bg-background/80 z-10" />
+        <div className="relative z-20 container mx-auto flex h-full items-center justify-center px-4 text-center md:px-6">
           <motion.div 
             className="flex flex-col items-center space-y-6"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl font-headline text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-green-300 drop-shadow-lg">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl font-headline text-primary drop-shadow-lg">
               UmwugaHome
             </h1>
-            <p className="max-w-[700px] text-muted-foreground md:text-xl font-body">
+            <p className="max-w-[700px] text-foreground/80 md:text-xl font-body">
               L'Innovation au Cœur de l'Artisanat Burundais. Connecter les talents, former les générations, bâtir l’avenir.
             </p>
             <div className="flex gap-4">
               <Button asChild size="lg">
-                <Link href="/artisans">Découvrir</Link>
+                <Link href="/artisans"><Rocket className="mr-2 h-4 w-4" /> Découvrir</Link>
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link href="/training">Contact</Link>
@@ -97,7 +87,7 @@ export default function Home() {
       </section>
 
       <motion.section 
-        className="w-full py-12 md:py-24 lg:py-32 -mt-16"
+        className="w-full py-12 md:py-24 lg:py-32 -mt-16 z-20"
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -113,7 +103,7 @@ export default function Home() {
         </div>
       </motion.section>
       
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-transparent z-20">
         <div className="container px-4 md:px-6">
           <motion.div 
              initial={{ opacity: 0, y: 50 }}
@@ -147,7 +137,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-transparent z-20">
         <div className="container px-4 md:px-6">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <MapPlaceholder />
@@ -155,7 +145,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-transparent z-20">
         <div className="container px-4 md:px-6">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}

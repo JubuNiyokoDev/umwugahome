@@ -49,7 +49,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg border-b">
+    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg border-b border-white/10">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Logo />
 
