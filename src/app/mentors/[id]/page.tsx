@@ -8,21 +8,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Mentor } from "@/lib/types";
 import { Award, Briefcase, GraduationCap, MapPin, MessageCircle, Star } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { seedData } from "@/lib/seed";
 import { useEffect, useState } from "react";
 
-export default function MentorProfilePage({ params }: { params: { id: string } }) {
+export default function MentorProfilePage() {
+  const params = useParams();
+  const id = params.id as string;
   const [mentor, setMentor] = useState<Mentor | undefined | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) return;
     setIsLoading(true);
-    const foundMentor = seedData.mentors.find(m => m.id === params.id);
+    const foundMentor = seedData.mentors.find(m => m.id === id);
     setMentor(foundMentor);
     setIsLoading(false);
-  }, [params.id]);
+  }, [id]);
 
 
    if (isLoading) {

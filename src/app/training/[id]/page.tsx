@@ -8,25 +8,28 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Course, TrainingCenter } from "@/lib/types";
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { seedData } from "@/lib/seed";
 import { useEffect, useState } from "react";
 
-export default function TrainingCenterPage({ params }: { params: { id: string } }) {
+export default function TrainingCenterPage() {
+  const params = useParams();
+  const id = params.id as string;
   const [center, setCenter] = useState<TrainingCenter | undefined | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+      if (!id) return;
       setIsLoading(true);
-      const foundCenter = seedData.trainingCenters.find(c => c.id === params.id);
+      const foundCenter = seedData.trainingCenters.find(c => c.id === id);
       setCenter(foundCenter);
       if (foundCenter) {
           const foundCourses = seedData.courses.filter(c => c.centerId === foundCenter.id);
           setCourses(foundCourses);
       }
       setIsLoading(false);
-  }, [params.id]);
+  }, [id]);
   
   if (isLoading) {
     return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement du centre...</div>

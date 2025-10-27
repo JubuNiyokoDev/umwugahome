@@ -13,7 +13,7 @@ import { Artisan, Order, Product } from "@/lib/types";
 import { MapPin, MessageCircle, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -117,21 +117,24 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
 }
 
 
-export default function ArtisanProfilePage({ params }: { params: { id: string } }) {
+export default function ArtisanProfilePage() {
+  const params = useParams();
+  const id = params.id as string;
   const [artisan, setArtisan] = useState<Artisan | null | undefined>(undefined);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) return;
     setIsLoading(true);
-    const foundArtisan = seedData.artisans.find(a => a.id === params.id);
+    const foundArtisan = seedData.artisans.find(a => a.id === id);
     setArtisan(foundArtisan);
     if(foundArtisan) {
       const foundProducts = seedData.products.filter(p => p.artisanId === foundArtisan.id);
       setProducts(foundProducts);
     }
     setIsLoading(false);
-  }, [params.id]);
+  }, [id]);
 
 
   if (isLoading) {
@@ -219,7 +222,7 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
             )}
           </TabsContent>
            <TabsContent value="orders" className="mt-6">
-            <ArtisanOrders artisanId={params.id} />
+            <ArtisanOrders artisanId={id} />
           </TabsContent>
           <TabsContent value="about" className="mt-6">
             <Card>
