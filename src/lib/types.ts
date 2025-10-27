@@ -44,7 +44,7 @@ export type UserProfile = {
   email: string | null;
   role: 'artisan' | 'student' | 'mentor' | 'admin' | 'training_center';
   profileImageId?: string;
-  interests: string[];
+  interests?: string[];
 };
 
     

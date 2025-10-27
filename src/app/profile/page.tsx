@@ -215,7 +215,12 @@ export default function ProfilePage() {
     const auth = useAuth();
     const router = useRouter();
 
-    const roleFromQuery = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('role') as UserProfile['role'] | null : null;
+    // Safely get query params only on the client side
+    const [roleFromQuery, setRoleFromQuery] = useState<UserProfile['role'] | null>(null);
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        setRoleFromQuery(params.get('role') as UserProfile['role'] | null);
+    }, []);
     
     const userProfileRef = useMemoFirebase(() => (firestore && user) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
@@ -246,11 +251,20 @@ export default function ProfilePage() {
     }
 
     if (user && !userProfile) {
+        // Wait until roleFromQuery is determined on the client
+        if (roleFromQuery === null && typeof window !== 'undefined') {
+            return (
+                 <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            );
+        }
         const roleToCreate = roleFromQuery || 'student';
         return <ProfileCompletionForm user={user} role={roleToCreate} />;
     }
 
     if (!userProfile) {
+        // This should theoretically not be reached if the above logic is correct
         router.push('/login?error=profile_creation_failed');
         return null;
     }
@@ -263,9 +277,9 @@ export default function ProfilePage() {
                     <Card className="shadow-lg bg-card/80 backdrop-blur-sm">
                         <CardContent className="flex flex-col items-center p-6 text-center">
                             <Avatar className="w-32 h-32 mb-4">
-                                <AvatarImage src={user.photoURL || undefined} alt={userProfile.name} />
+                                {user.photoURL ? <AvatarImage src={user.photoURL} alt={userProfile.name} /> : <UserIcon className="h-16 w-16 text-muted-foreground" />}
                                 <AvatarFallback>
-                                    <UserIcon className="h-16 w-16 text-muted-foreground" />
+                                    {userProfile.name.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
                             <h1 className="text-2xl font-bold font-headline">{userProfile.name}</h1>

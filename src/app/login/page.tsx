@@ -50,34 +50,21 @@ export default function LoginPage() {
         let userCredential: UserCredential;
         if (isSigningUp) {
             userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // Immediately create the user profile document
-            const userRef = doc(firestore, "users", user.uid);
-            await setDoc(userRef, { 
-                id: user.uid,
-                name: user.displayName || email.split('@')[0],
-                email: user.email,
-                role: role,
-                interests: []
-            });
-            
-            toast({ title: "Compte créé avec succès", description: "Bienvenue ! Redirection..." });
-
+            // Don't create profile here, redirect to profile page with role
+            toast({ title: "Compte créé avec succès", description: "Veuillez compléter votre profil." });
+            router.push(`/profile?role=${role}`);
         } else {
             userCredential = await signInWithEmailAndPassword(auth, email, password);
             toast({ title: "Connexion réussie", description: "Bienvenue !" });
+            router.push('/profile');
         }
-        // Redirect to profile page after the action is complete
-        // The useEffect will handle this, but we can also push directly
-        router.push('/profile');
-
     } catch (error: any) {
         toast({
             variant: "destructive",
             title: "Erreur d'authentification",
             description: error.message,
         });
+    } finally {
         setIsLoading(false);
     }
   };
@@ -90,31 +77,24 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Check if user profile already exists, if not, create it
       const docRef = doc(firestore, "users", user.uid);
       const docSnap = await getDoc(docRef);
 
-      if (!docSnap.exists()) {
-        const newUserProfile: UserProfile = {
-          id: user.uid,
-          name: user.displayName || user.email?.split('@')[0] || 'Utilisateur',
-          email: user.email,
-          role: 'student', // Default role for Google Sign-in
-          interests: []
-        };
-        await setDoc(docRef, newUserProfile);
-        toast({ title: "Compte créé avec succès", description: "Bienvenue sur UmwugaHome." });
+      // If user exists, just log them in. If not, redirect to profile completion.
+      if (docSnap.exists()) {
+         toast({ title: "Connexion réussie", description: "Bienvenue !" });
       } else {
-        toast({ title: "Connexion réussie", description: "Bienvenue !" });
+         toast({ title: "Bienvenue!", description: "Veuillez compléter votre profil." });
       }
-      router.push('/profile');
+      router.push('/profile?role=student'); // Default to student, they can change if needed in profile form.
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erreur de connexion Google",
         description: error.message,
       });
-       setIsGoogleLoading(false);
+    } finally {
+        setIsGoogleLoading(false);
     }
   };
 
