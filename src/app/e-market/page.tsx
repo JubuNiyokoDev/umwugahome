@@ -3,7 +3,7 @@
 import { ProductCard } from "@/components/product-card";
 import { Artisan, Product } from "@/lib/types";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection }s from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
