@@ -7,7 +7,7 @@ import { TrainingCenterCard } from "@/components/training-center-card";
 import { Button } from "@/components/ui/button";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Artisan, TrainingCenter } from "@/lib/types";
+import { Artisan, Course, TrainingCenter } from "@/lib/types";
 import { Award, Briefcase, School, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,11 +18,22 @@ export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
   const firestore = useFirestore();
 
+  // Queries for featured items
   const artisansQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'artisans'), limit(4)) : null, [firestore]);
   const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansQuery);
 
   const trainingCentersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'training-centers'), limit(2)) : null, [firestore]);
   const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersQuery);
+
+  // Queries for stats
+  const allArtisansQuery = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
+  const { data: allArtisans, isLoading: isLoadingAllArtisans } = useCollection<Artisan>(allArtisansQuery);
+
+  const allCentersQuery = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
+  const { data: allCenters, isLoading: isLoadingAllCenters } = useCollection<TrainingCenter>(allCentersQuery);
+
+  const allCoursesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
+  const { data: allCourses, isLoading: isLoadingAllCourses } = useCollection<Course>(allCoursesQuery);
 
 
   const containerVariants = {
@@ -45,6 +56,8 @@ export default function Home() {
       },
     },
   };
+
+  const isLoadingStats = isLoadingAllArtisans || isLoadingAllCenters || isLoadingAllCourses;
 
 
   return (
@@ -95,9 +108,9 @@ export default function Home() {
       >
         <div className="container px-4 md:px-6">
           <motion.div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8" variants={containerVariants}>
-            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoadingArtisans ? '...' : (artisans?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Formations" value="50+" icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Métiers" value="80+" icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoadingStats ? '...' : (allArtisans?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoadingStats ? '...' : (allCourses?.length ?? 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoadingStats ? '...' : (allCenters?.length ?? 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
             <motion.div variants={itemVariants}><StatCard title="Lauréats Umwuga Award" value="30+" icon={<Award className="h-4 w-4 text-muted-foreground" />} /></motion.div>
           </motion.div>
         </div>
