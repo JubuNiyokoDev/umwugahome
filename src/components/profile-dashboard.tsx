@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { useUser, useFirestore, updateDocumentNonBlocking, useCollection, useMemoFirebase } from "@/firebase";
 import { Order, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Edit, Loader2, Paintbrush, Save, Shield, ShoppingBag, Tag } from "lucide-react";
+import { Building, Edit, Loader2, Paintbrush, Save, Shield, ShoppingBag, Tag, Star } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -176,7 +176,7 @@ export function ProfileDashboard({ userProfile }: ProfileDashboardProps) {
         return (
              <Card className="bg-card/80 backdrop-blur-sm">
                 <CardHeader>
-                    <CardTitle className="font-headline flex items-center gap-2"><Shield/> Tableau de bord Mentor</CardTitle>
+                    <CardTitle className="font-headline flex items-center gap-2"><Star/> Tableau de bord Mentor</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <p>Gérez vos disponibilités, vos mentorés et votre profil public.</p>

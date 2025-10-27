@@ -58,7 +58,7 @@ export default function MentorProfilePage() {
   const profileImage = PlaceHolderImages.find(p => p.id === mentor.profileImageId);
 
   return (
-    <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+    <div className="container mx-auto px-4 py-8 md:px-6 md-py-12">
         <Card className="w-full max-w-4xl mx-auto shadow-xl bg-card/80 backdrop-blur-sm">
             <CardContent className="p-8">
                 <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">

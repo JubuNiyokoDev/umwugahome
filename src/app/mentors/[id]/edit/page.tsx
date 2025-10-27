@@ -97,7 +97,7 @@ export default function EditMentorProfilePage() {
 
     if (isUserLoading || isLoadingMentor) {
         return (
-            <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+            <div className="container mx-auto px-4 py-8 md:px-6 md-py-12">
                 <Card className="max-w-2xl mx-auto">
                     <CardHeader>
                         <Skeleton className="h-8 w-1/2" />
@@ -133,7 +133,7 @@ export default function EditMentorProfilePage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+        <div className="container mx-auto px-4 py-8 md:px-6 md-py-12">
             <Card className="max-w-2xl mx-auto shadow-lg bg-card/80 backdrop-blur-sm">
                  <CardHeader>
                     <CardTitle className="font-headline text-2xl">Modifier mon profil de Mentor</CardTitle>
