@@ -60,13 +60,13 @@ export default function LoginPage() {
   const handleAuthAction = async () => {
     setIsLoading(true);
     try {
-      let userCred: UserCredential;
       if (isSigningUp) {
-        userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        // This is a critical step. If it fails, the user has an auth account but no profile.
         await createProfileIfNotExists(userCred, role);
         toast({ title: "Compte créé", description: "Vous êtes maintenant connecté." });
       } else {
-        userCred = await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
         toast({ title: "Connexion réussie", description: "Bienvenue !" });
       }
       router.push('/profile');
