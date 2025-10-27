@@ -2,21 +2,84 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AiSuggestions } from "@/components/ai-suggestions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { updateDocumentNonBlocking } from "@/firebase";
-import { UserProfile } from "@/lib/types";
+import { useCollection, useFirestore, updateDocumentNonBlocking, useUser, useMemoFirebase } from "@/firebase";
+import { Order, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Edit, Loader2, Paintbrush, Save, Shield, Tag } from "lucide-react";
-import { doc, getFirestore } from "firebase/firestore";
+import { Building, Edit, Loader2, Paintbrush, Save, Shield, ShoppingBag, Tag } from "lucide-react";
+import { collection, doc, getFirestore, query, where, Timestamp } from "firebase/firestore";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface ProfileDashboardProps {
     userProfile: UserProfile;
 }
+
+function UserOrders() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const ordersQuery = useMemoFirebase(() => firestore && user ? query(collection(firestore, 'orders'), where('customerId', '==', user.uid)) : null, [firestore, user]);
+    const { data: orders, isLoading: isLoadingOrders } = useCollection<Order>(ordersQuery);
+
+    return (
+        <Card className="bg-card/80 backdrop-blur-sm mt-8">
+            <CardHeader>
+                <CardTitle className="font-headline flex items-center gap-2"><ShoppingBag /> Mes Commandes</CardTitle>
+                <CardDescription>Suivez le statut de vos commandes passées auprès de nos artisans.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {isLoadingOrders ? (
+                    <p>Chargement de vos commandes...</p>
+                ) : !orders || orders.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">Vous n'avez passé aucune commande pour le moment.</p>
+                ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Produit</TableHead>
+                                <TableHead>Artisan</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Statut</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {orders.map(order => {
+                                let formattedDate = 'Date invalide';
+                                if (order.orderDate) {
+                                    try {
+                                        const date = (order.orderDate as any).toDate ? (order.orderDate as any).toDate() : new Date(order.orderDate);
+                                        formattedDate = format(date, 'd MMM yyyy', { locale: fr });
+                                    } catch (e) {
+                                        console.error("Error formatting date: ", order.orderDate)
+                                    }
+                                }
+                                return (
+                                    <TableRow key={order.id}>
+                                        <TableCell className="font-medium">{order.productName}</TableCell>
+                                        <TableCell>{order.artisanName}</TableCell>
+                                        <TableCell>{formattedDate}</TableCell>
+                                        <TableCell>
+                                            <Badge variant={order.status === 'pending' ? 'default' : 'secondary'} className="capitalize">
+                                                {order.status}
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })}
+                        </TableBody>
+                    </Table>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 
 export function ProfileDashboard({ userProfile }: ProfileDashboardProps) {
     const router = useRouter();
@@ -158,6 +221,8 @@ export function ProfileDashboard({ userProfile }: ProfileDashboardProps) {
             </Card>
             
             <AiSuggestions studentProfile={userProfile} />
+
+            <UserOrders />
         </>
     );
 }

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useDoc, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { useDoc, useCollection, useFirestore, useMemoFirebase, useUser, updateDocumentNonBlocking } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan, Order, Product } from "@/lib/types";
 import { collection, doc, query, where, Timestamp } from "firebase/firestore";
@@ -18,11 +18,26 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 function ArtisanOrders({ artisanId }: { artisanId: string }) {
+  const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const ordersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'orders'), where('artisanId', '==', artisanId)) : null, [firestore, artisanId]);
   const { data: orders, isLoading: isLoadingOrders } = useCollection<Order>(ordersQuery);
+
+  const isOwner = user?.uid === artisanId;
+
+  const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
+      if (!firestore) return;
+      const orderRef = doc(firestore, 'orders', orderId);
+      updateDocumentNonBlocking(orderRef, { status: newStatus });
+      toast({
+          title: "Statut de la commande mis à jour",
+      });
+  };
 
   if (isLoadingOrders) {
     return <p>Chargement des commandes...</p>
@@ -50,13 +65,12 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
               <TableHead>Produit</TableHead>
               <TableHead>Client</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Statut</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.map(order => {
                 let formattedDate = 'Date invalide';
-                // Firestore timestamp can be a string or a Timestamp object
                 if (order.orderDate) {
                      try {
                         const date = (order.orderDate as any).toDate ? (order.orderDate as any).toDate() : new Date(order.orderDate);
@@ -70,7 +84,23 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
                     <TableCell className="font-medium">{order.productName}</TableCell>
                     <TableCell>{order.customerName}</TableCell>
                     <TableCell>{formattedDate}</TableCell>
-                    <TableCell><Badge variant={order.status === 'pending' ? 'default' : 'secondary'}>{order.status}</Badge></TableCell>
+                    <TableCell>
+                      {isOwner ? (
+                         <Select defaultValue={order.status} onValueChange={(value) => handleStatusChange(order.id, value as Order['status'])}>
+                            <SelectTrigger className="w-[120px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="pending">En attente</SelectItem>
+                                <SelectItem value="shipped">Expédiée</SelectItem>
+                                <SelectItem value="delivered">Livrée</SelectItem>
+                                <SelectItem value="cancelled">Annulée</SelectItem>
+                            </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant={order.status === 'pending' ? 'default' : 'secondary'} className="capitalize">{order.status}</Badge>
+                      )}
+                    </TableCell>
                   </TableRow>
                )
             })}

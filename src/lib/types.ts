@@ -68,6 +68,7 @@ export type Order = {
     customerName: string;
     orderDate: any; 
     status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+    artisanName?: string;
 }
 
 export type SeedData = {

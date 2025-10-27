@@ -1,6 +1,6 @@
 
 'use client';
-import type { Product } from "@/lib/types";
+import type { Artisan, Product } from "@/lib/types";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import Image from "next/image";
@@ -8,8 +8,8 @@ import { Button } from "./ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
-import { useAuth, useFirestore, useUser, addDocumentNonBlocking } from "@/firebase";
-import { collection, serverTimestamp } from "firebase/firestore";
+import { useAuth, useFirestore, useUser, addDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase";
+import { collection, doc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
@@ -22,6 +22,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const { user } = useUser();
   const router = useRouter();
 
+  const artisanRef = useMemoFirebase(() => (firestore && product) ? doc(firestore, 'artisans', product.artisanId) : null, [firestore, product]);
+  const { data: artisan } = useDoc<Artisan>(artisanRef);
 
   if (!product) {
     return (
@@ -40,20 +42,21 @@ export function ProductCard({ product }: ProductCardProps) {
   }
   
   const handleAddToCart = () => {
-    if (!user) {
+    if (!user || !user.displayName) {
       toast({
         variant: "destructive",
         title: "Connexion requise",
-        description: "Vous devez être connecté pour passer une commande.",
+        description: "Vous devez être connecté et avoir un nom de profil pour passer une commande.",
       });
-      router.push('/login');
+      if(!user) router.push('/login');
       return;
     }
-    if (!firestore) return;
+    if (!firestore || !artisan) return;
 
     const ordersRef = collection(firestore, 'orders');
     addDocumentNonBlocking(ordersRef, {
         artisanId: product.artisanId,
+        artisanName: artisan.name,
         productId: product.id,
         productName: product.name,
         customerId: user.uid,
@@ -89,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="font-bold text-lg mt-2 text-primary">{product.price.toLocaleString('fr-FR')} FBU</p>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full" onClick={handleAddToCart}>
+        <Button className="w-full" onClick={handleAddToCart} disabled={!artisan}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Commander
         </Button>
