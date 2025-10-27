@@ -5,10 +5,10 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Bot, Send, User, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Bot, Send, User } from "lucide-react";
 import { ScrollArea } from './ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback } from './ui/avatar';
 import { chatbotGuidedOrientation } from '@/ai/flows/chatbot-guided-orientation';
 import { cn } from '@/lib/utils';
 
@@ -60,12 +60,15 @@ export default function Chatbot() {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent side="right" className="w-full max-w-md p-0 flex flex-col">
             <Card className="h-full flex flex-col border-0 rounded-none">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div className='flex items-center gap-2'>
+              <SheetHeader className="p-4 border-b">
+                 <SheetTitle className='flex items-center gap-2'>
                     <Bot className="h-6 w-6 text-primary" />
-                    <CardTitle className="font-headline">Assistant Umwuga</CardTitle>
-                </div>
-              </CardHeader>
+                     <span className='font-headline'>Assistant Umwuga</span>
+                </SheetTitle>
+                 <SheetDescription className='sr-only'>
+                    Conteneur de conversation pour le chatbot d'assistance.
+                 </SheetDescription>
+              </SheetHeader>
               <CardContent className="flex-1 overflow-hidden p-4">
                 <ScrollArea className="h-full pr-4">
                   <div className="space-y-4">
