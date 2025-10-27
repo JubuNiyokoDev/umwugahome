@@ -67,7 +67,7 @@ export type Order = {
     productName: string;
     customerId: string;
     customerName: string;
-    orderDate: string; 
+    orderDate: any; 
     status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
 }
 

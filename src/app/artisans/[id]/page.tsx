@@ -210,5 +210,3 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
     </div>
   );
 }
-
-    
