@@ -14,7 +14,7 @@ import {
   UserCredential,
 } from "firebase/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
@@ -83,10 +83,11 @@ export default function LoginPage() {
       // If user exists, just log them in. If not, redirect to profile completion.
       if (docSnap.exists()) {
          toast({ title: "Connexion réussie", description: "Bienvenue !" });
+         router.push('/profile');
       } else {
          toast({ title: "Bienvenue!", description: "Veuillez compléter votre profil." });
+         router.push('/profile?role=student'); // Default to student, they can change if needed in profile form.
       }
-      router.push('/profile?role=student'); // Default to student, they can change if needed in profile form.
     } catch (error: any) {
       toast({
         variant: "destructive",

@@ -8,13 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase } from "@/firebase";
 import { Artisan, Mentor, TrainingCenter, UserProfile } from "@/lib/types";
 import { BookMarked, LogOut, User as UserIcon, Loader2, Save, Building, Paintbrush, Edit, Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { doc, setDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { AiSuggestions } from "@/components/ai-suggestions";
 
 function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<typeof useUser>['user']>, role: UserProfile['role'] }) {
     const firestore = useFirestore();
@@ -39,7 +40,7 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
                 name: name.trim(),
                 email: user.email,
                 role: role,
-                interests: []
+                interests: role === 'student' ? ['Couture', 'Design Web'] : []
             };
             
             // This is a crucial write, so we can block for it.
@@ -221,23 +222,8 @@ function ProfileDashboard({ userProfile }: { userProfile: UserProfile }) {
                     )}
                 </CardContent>
             </Card>
-            <Card className="mt-8 bg-card/80 backdrop-blur-sm">
-                <CardHeader>
-                    <CardTitle className="font-headline flex items-center gap-2">
-                        <BookMarked className="h-5 w-5" />
-                        Formations et Mentorat
-                    </CardTitle>
-                    <CardDescription>
-                        Suivez vos progrès dans les formations et les sessions de mentorat.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                   <div className="text-center py-12 text-muted-foreground">
-                    <p>Vous n'êtes inscrit à aucune formation pour le moment.</p>
-                    <Button variant="link" className="mt-2" onClick={() => router.push('/training')}>Explorer les formations</Button>
-                   </div>
-                </CardContent>
-            </Card>
+            
+            <AiSuggestions studentProfile={userProfile} />
         </>
     );
 }
@@ -247,13 +233,13 @@ export default function ProfilePage() {
     const firestore = useFirestore();
     const auth = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     // Safely get query params only on the client side
     const [roleFromQuery, setRoleFromQuery] = useState<UserProfile['role'] | null>(null);
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        setRoleFromQuery(params.get('role') as UserProfile['role'] | null);
-    }, []);
+        setRoleFromQuery(searchParams.get('role') as UserProfile['role'] | null);
+    }, [searchParams]);
     
     const userProfileRef = useMemoFirebase(() => (firestore && user) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
