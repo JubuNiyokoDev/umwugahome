@@ -19,7 +19,7 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
 
   return (
     <motion.div whileHover={{ y: -8, boxShadow: "0 10px 20px -5px hsl(var(--primary) / 0.1)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
-    <Card className="flex flex-col overflow-hidden h-full border-0 shadow-lg shadow-black/20">
+    <Card className="flex flex-col overflow-hidden h-full border-0 shadow-lg bg-card/80 backdrop-blur-sm">
       <CardHeader className="p-0">
         <div className="relative h-48 w-full overflow-hidden">
           {profileImage && (

@@ -4,9 +4,10 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Globe, Menu, User } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeSwitcher } from "../theme-switcher";
 
 const navLinks = [
   { href: "/marketplace", label: "Marketplace" },
@@ -19,7 +20,7 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 w-full border-b border-sidebar-border/50 bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Logo />
 
@@ -39,10 +40,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
-            <Globe className="h-5 w-5" />
-            <span className="sr-only">Langue</span>
-          </Button>
+          <ThemeSwitcher />
           <Button asChild variant="outline" className="hidden md:flex gap-2">
             <Link href="/login">
               <User className="h-4 w-4"/>
