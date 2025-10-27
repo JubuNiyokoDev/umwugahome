@@ -94,9 +94,9 @@ const searchTrainingCentersTool = ai.defineTool(
 const searchProductsTool = ai.defineTool(
     {
         name: 'searchProducts',
-        description: 'Search for products.',
+        description: 'Search for products. Can be a general query to see available products.',
         inputSchema: z.object({
-            query: z.string().describe('The name of the product to search for.'),
+            query: z.string().optional().describe('The name of the product to search for. If empty, returns a list of available products.'),
         }),
         outputSchema: z.array(z.object({
             id: z.string(),
@@ -110,7 +110,12 @@ const searchProductsTool = ai.defineTool(
         const db = getDb();
         const productsRef = collection(db, 'products');
 
-        const q = query(productsRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'));
+        let q;
+        if (nameQuery) {
+            q = query(productsRef, where('name', '>=', nameQuery), where('name', '<=', nameQuery + '\uf8ff'));
+        } else {
+            q = query(productsRef);
+        }
         
         const snapshot = await getDocs(q);
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
@@ -146,6 +151,7 @@ const chatbotGuidedOrientationPrompt = ai.definePrompt({
 
   When you find information, present it clearly. For example, if you find an artisan, provide their name, craft, and province.
   If you find multiple items, present them as a list.
+  If a user asks a general question to see items (like "show me products" or "nshaka ibidandazwa"), use the appropriate tool without a specific query argument to show them available items.
   If you don't find anything, say so politely.
 
   Respond to the following user query:
