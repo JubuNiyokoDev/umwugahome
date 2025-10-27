@@ -73,4 +73,3 @@ export function MentorCard({ mentor }: MentorCardProps) {
     </motion.div>
   )
 }
-
