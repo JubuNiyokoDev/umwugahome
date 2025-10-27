@@ -32,6 +32,8 @@ const chatbotGuidedOrientationPrompt = ai.definePrompt({
   prompt: `You are a helpful chatbot on the UmwugaHome platform, designed to guide new users.
 
   Your goal is to help users discover relevant artisan profiles, training programs, and market opportunities based on their interests and skills.
+  
+  You must detect the language of the user's query and respond in the SAME language. You must support English, French, Swahili, and pure Kirundi (do not mix with Kinyarwanda).
 
   Respond to the following user query:
   {{query}}
