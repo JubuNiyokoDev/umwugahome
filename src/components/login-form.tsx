@@ -15,7 +15,7 @@ import {
   UserCredential,
 } from "firebase/auth";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
