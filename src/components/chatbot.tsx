@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -64,9 +65,6 @@ export default function Chatbot() {
                     <Bot className="h-6 w-6 text-primary" />
                     <CardTitle className="font-headline">Assistant Umwuga</CardTitle>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                    <X className="h-4 w-4" />
-                </Button>
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-4">
                 <ScrollArea className="h-full pr-4">
