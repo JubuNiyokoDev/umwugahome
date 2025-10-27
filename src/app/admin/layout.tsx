@@ -60,7 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 isActive={pathname.startsWith("/admin/users")}
                 tooltip="Utilisateurs"
               >
-                <Link href="#">
+                <Link href="/admin/users">
                   <Users />
                   <span>Utilisateurs</span>
                 </Link>
