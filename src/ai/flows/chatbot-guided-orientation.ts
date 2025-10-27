@@ -6,7 +6,7 @@
  *
  * - chatbotGuidedOrientation - A function that provides personalized guidance to new users.
  * - ChatbotGuidedOrientationInput - The input type for the chatbotGuidedOrientation function.
- * - ChatbotGuidedOrientationOutput - The return type for the chatbotGuidedOrientation function.
+ * - ChatbotGuidedOrientationOutput - The return type for the chatbotGuidedorientation function.
  */
 
 import {ai} from '@/ai/genkit';
