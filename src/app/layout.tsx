@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { NProgressProvider } from '@/components/layout/nprogress-provider';
 import { MotionProvider } from '@/components/motion-provider';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 
 export const metadata: Metadata = {
   title: 'UmwugaHome Digital',
@@ -33,7 +35,11 @@ export default function RootLayout({
         >
           <NProgressProvider>
             <MotionProvider>
-              {children}
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
               <Toaster />
               <Chatbot />
             </MotionProvider>
