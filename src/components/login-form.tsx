@@ -95,4 +95,67 @@ export function LoginForm() {
         title: "Erreur de connexion Google",
         description: error.message,
       });
-    } finally
+    } finally {
+        setIsGoogleLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto flex min-h-[calc(100vh-8rem)] items-center justify-center p-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl font-headline">
+            {isSigningUp ? 'Inscription' : 'Connexion'}
+          </CardTitle>
+          <CardDescription>
+            {isSigningUp
+              ? "Créez un compte pour commencer."
+              : "Entrez vos identifiants pour accéder à votre espace."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">Mot de passe</Label>
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </div>
+          {isSigningUp && (
+              <div className="grid gap-2">
+                  <Label htmlFor="role">Je suis un(e)...</Label>
+                  <Select value={role} onValueChange={(value) => setRole(value as UserProfile['role'])}>
+                      <SelectTrigger id="role">
+                          <SelectValue placeholder="Sélectionnez un rôle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          <SelectItem value="student">Étudiant / Jeune</SelectItem>
+                          <SelectItem value="artisan">Artisan</SelectItem>
+                          <SelectItem value="mentor">Mentor</SelectItem>
+                          <SelectItem value="training_center">Centre de Formation</SelectItem>
+                      </SelectContent>
+                  </Select>
+              </div>
+          )}
+          <Button onClick={handleAuthAction} className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSigningUp ? "S'inscrire" : 'Se connecter'}
+          </Button>
+          <Button onClick={handleGoogleSignIn} variant="outline" className="w-full" disabled={isGoogleLoading}>
+             {isGoogleLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Continuer avec Google
+          </Button>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-2">
+            <p className="text-sm text-muted-foreground">
+            {isSigningUp ? 'Déjà un compte ?' : "Pas encore de compte ?"}
+            <Button variant="link" onClick={() => setIsSigningUp(!isSigningUp)}>
+                {isSigningUp ? 'Se connecter' : "S'inscrire"}
+            </Button>
+            </p>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
