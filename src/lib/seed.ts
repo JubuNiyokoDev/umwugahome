@@ -3,16 +3,22 @@ import type { SeedData, Mentor, Order } from './types';
 
 export const seedData: SeedData = {
     users: [
+        // Artisans
         { id: 'user-artisan-1', name: 'Aline Niyonsaba', email: 'aline@umwuga.com', role: 'artisan', profileImageId: 'artisan-1' },
         { id: 'user-artisan-2', name: 'Jean-Claude Bizimana', email: 'jc.bizimana@umwuga.com', role: 'artisan', profileImageId: 'artisan-2' },
         { id: 'user-artisan-3', name: 'Marie Goretti Uwizeye', email: 'mg.uwizeye@umwuga.com', role: 'artisan', profileImageId: 'artisan-3' },
         { id: 'user-artisan-4', name: 'Eric Ndayishimiye', email: 'eric.ndayishimiye@umwuga.com', role: 'artisan', profileImageId: 'artisan-4' },
-        { id: 'user-center-1', name: 'Centre de Formation Gira', email: 'contact@gira.bi', role: 'training_center', profileImageId: 'training-center-1' },
-        { id: 'user-center-2', name: 'Bujumbura Creative Hub', email: 'info@bujacreative.org', role: 'training_center', profileImageId: 'training-center-2' },
-        { id: 'user-admin-1', name: 'Admin Umwuga', email: 'admin@umwuga.com', role: 'admin' },
-        { id: 'user-student-1', name: 'Eliane Nshimirimana', email: 'eliane.n@gmail.com', role: 'student', profileImageId: 'student-profile-1' },
-        { id: 'user-mentor-1', name: 'Charlotte Niyongere', email: 'c.niyongere@umwuga.com', role: 'mentor', profileImageId: 'artisan-2' },
-        { id: 'user-mentor-2', name: 'Olivier Munezero', email: 'o.munezero@umwuga.com', role: 'mentor', profileImageId: 'artisan-4' }
+        // Training Centers
+        { id: 'user-center-1', name: 'Centre de Formation Gira', email: 'contact@gira.bi', role: 'training_center' },
+        { id: 'user-center-2', name: 'Bujumbura Creative Hub', email: 'info@bujacreative.org', role: 'training_center' },
+        // Admin
+        { id: 'user-admin-1', name: 'Admin Umwuga', email: 'admin@umwuga.com', role: 'admin', profileImageId: 'admin-profile' },
+        // Students
+        { id: 'user-student-1', name: 'Eliane Nshimirimana', email: 'eliane.n@gmail.com', role: 'student', profileImageId: 'student-profile-1', interests: ['Couture', 'Marketing Digital', 'Anglais des affaires'] },
+        { id: 'user-student-2', name: 'Kevin Mugisha', email: 'kevin.m@gmail.com', role: 'student', profileImageId: 'student-profile-2', interests: ['Design Web', 'Photographie', 'Entrepreneuriat'] },
+        // Mentors
+        { id: 'user-mentor-1', name: 'Charlotte Niyongere', email: 'c.niyongere@umwuga.com', role: 'mentor', profileImageId: 'mentor-profile-2' },
+        { id: 'user-mentor-2', name: 'Olivier Munezero', email: 'o.munezero@umwuga.com', role: 'mentor', profileImageId: 'mentor-profile-1' }
     ],
     artisans: [
         {
@@ -21,7 +27,7 @@ export const seedData: SeedData = {
             name: 'Aline Niyonsaba',
             craft: 'Vannerie',
             province: 'Gitega',
-            bio: 'Spécialiste de la vannerie traditionnelle burundaise, je crée des paniers et des objets décoratifs uniques en utilisant des techniques ancestrales transmises de génération en génération.',
+            bio: 'Spécialiste de la vannerie traditionnelle burundaise, je crée des paniers et des objets décoratifs uniques en utilisant des techniques ancestrales transmises de génération en génération. Chaque pièce raconte une histoire.',
             profileImageId: 'artisan-1',
             rating: 4.8
         },
@@ -31,7 +37,7 @@ export const seedData: SeedData = {
             name: 'Jean-Claude Bizimana',
             craft: 'Maroquinerie',
             province: 'Bujumbura Mairie',
-            bio: 'Artisan du cuir passionné, je confectionne des sacs, ceintures et sandales de haute qualité. Chaque pièce est faite à la main avec une attention particulière aux détails.',
+            bio: 'Artisan du cuir passionné, je confectionne des sacs, ceintures et sandales de haute qualité. Chaque pièce est faite à la main avec une attention particulière aux détails et à la durabilité.',
             profileImageId: 'artisan-2',
             rating: 4.9
         },
@@ -41,7 +47,7 @@ export const seedData: SeedData = {
             name: 'Marie Goretti Uwizeye',
             craft: 'Poterie',
             province: 'Ngozi',
-            bio: 'Mes créations en poterie allient fonctionnalité et art. Je puise mon inspiration dans les paysages verdoyants du Burundi pour créer des pièces uniques et authentiques.',
+            bio: 'Mes créations en poterie allient fonctionnalité et art. Je puise mon inspiration dans les paysages verdoyants du Burundi pour créer des pièces uniques et authentiques qui embelliront votre quotidien.',
             profileImageId: 'artisan-3',
             rating: 4.7
         },
@@ -51,7 +57,7 @@ export const seedData: SeedData = {
             name: 'Eric Ndayishimiye',
             craft: 'Sculpture sur bois',
             province: 'Muramvya',
-            bio: 'Je transforme le bois local en œuvres d\'art. Mes sculptures représentent des scènes de la vie quotidienne et la riche culture de notre pays.',
+            bio: 'Je transforme le bois local en œuvres d\'art. Mes sculptures représentent des scènes de la vie quotidienne et la riche culture de notre pays. Chaque sculpture est une invitation au voyage.',
             profileImageId: 'artisan-4',
             rating: 4.8
         },
@@ -62,7 +68,7 @@ export const seedData: SeedData = {
             userId: 'user-center-1',
             name: 'Centre de Formation Gira',
             province: 'Gitega',
-            description: 'Le Centre Gira offre des formations professionnelles de haute qualité en coupe-couture, soudure et menuiserie, visant l\'autonomisation des jeunes.',
+            description: 'Le Centre Gira offre des formations professionnelles de haute qualité en coupe-couture, soudure et menuiserie, visant l\'autonomisation des jeunes et leur insertion dans le monde du travail.',
             imageId: 'training-center-1',
             rating: 4.5
         },
@@ -71,18 +77,20 @@ export const seedData: SeedData = {
             userId: 'user-center-2',
             name: 'Bujumbura Creative Hub',
             province: 'Bujumbura Mairie',
-            description: 'Un espace innovant pour les créatifs. Nous proposons des formations en design graphique, web design et marketing digital pour les artisans 2.0.',
+            description: 'Un espace innovant pour les créatifs. Nous proposons des formations en design graphique, web design et marketing digital pour les artisans 2.0 et les entrepreneurs de demain.',
             imageId: 'training-center-2',
             rating: 4.9
         }
     ],
     products: [
         { id: 'prod-001', name: 'Panier en jonc "Umuco"', price: 25000, imageId: 'product-1', description: 'Grand panier tressé à la main, idéal pour la décoration ou le marché. Motifs traditionnels.', artisanId: 'user-artisan-1' },
-        { id: 'prod-002', name: 'Sac en cuir "Kazoza"', price: 75000, imageId: 'product-2', description: 'Sac à bandoulière en cuir véritable, design moderne et élégant.', artisanId: 'user-artisan-2' },
-        { id: 'prod-003', name: 'Vase en argile "Ihanga"', price: 15000, imageId: 'product-3', description: 'Vase décoratif en poterie, parfait pour apporter une touche naturelle à votre intérieur.', artisanId: 'user-artisan-3' },
-        { id: 'prod-004', name: 'Sculpture "Umuryango"', price: 120000, imageId: 'product-4', description: 'Représentation stylisée d\'une famille en bois de musave.', artisanId: 'user-artisan-4' },
-        { id: 'prod-005', name: 'Sous-plats en fibres de bananier', price: 18000, imageId: 'product-1', description: 'Ensemble de 6 sous-plats tressés, écologiques et durables.', artisanId: 'user-artisan-1' },
-        { id: 'prod-006', name: 'Sandales en cuir "Intago"', price: 35000, imageId: 'product-2', description: 'Sandales robustes et confortables pour homme, faites pour durer.', artisanId: 'user-artisan-2' },
+        { id: 'prod-002', name: 'Sac en cuir "Kazoza"', price: 75000, imageId: 'product-3', description: 'Sac à bandoulière en cuir véritable, design moderne et élégant. Fabriqué pour durer.', artisanId: 'user-artisan-2' },
+        { id: 'prod-003', name: 'Vase en argile "Ihanga"', price: 15000, imageId: 'product-2', description: 'Vase décoratif en poterie, parfait pour apporter une touche naturelle à votre intérieur.', artisanId: 'user-artisan-3' },
+        { id: 'prod-004', name: 'Sculpture "Umuryango"', price: 120000, imageId: 'product-4', description: 'Représentation stylisée d\'une famille en bois de musave. Pièce unique.', artisanId: 'user-artisan-4' },
+        { id: 'prod-005', name: 'Sous-plats en fibres de bananier', price: 18000, imageId: 'product-5', description: 'Ensemble de 6 sous-plats tressés, écologiques et durables.', artisanId: 'user-artisan-1' },
+        { id: 'prod-006', name: 'Sandales en cuir "Intago"', price: 35000, imageId: 'product-6', description: 'Sandales robustes et confortables pour homme, faites pour durer.', artisanId: 'user-artisan-2' },
+        { id: 'prod-007', name: 'Bol décoratif "Amahugurwa"', price: 22000, imageId: 'product-7', description: 'Bol en argile peint à la main avec des motifs colorés. Non alimentaire.', artisanId: 'user-artisan-3' },
+        { id: 'prod-008', name: 'Masque mural en bois', price: 95000, imageId: 'product-8', description: 'Masque décoratif mural sculpté dans du bois d\'ébène, représentant un esprit protecteur.', artisanId: 'user-artisan-4' },
     ],
     courses: [
         {
@@ -105,11 +113,11 @@ export const seedData: SeedData = {
         },
         {
             id: 'course-003',
-            title: 'Web Design pour Artisans',
+            title: 'Web Design pour Artisans (WordPress)',
             duration: '6 semaines',
             description: 'Créez un site web portfolio pour présenter et vendre vos créations en ligne. Notions de WordPress et de photographie de produit.',
             prerequisites: 'Maîtrise de l\'ordinateur',
-            imageId: 'training-center-2',
+            imageId: 'course-3',
             centerId: 'user-center-2'
         },
         {
@@ -118,7 +126,7 @@ export const seedData: SeedData = {
             duration: '4 semaines',
             description: 'Utilisez Instagram et Facebook pour promouvoir votre marque d\'artisan, atteindre de nouveaux clients et booster vos ventes.',
             prerequisites: 'Compte Facebook/Instagram',
-            imageId: 'training-center-2',
+            imageId: 'course-4',
             centerId: 'user-center-2'
         }
     ],
@@ -129,8 +137,8 @@ export const seedData: SeedData = {
             name: 'Charlotte Niyongere',
             expertise: 'Business Development & Export',
             province: 'Bujumbura Mairie',
-            bio: 'Avec plus de 15 ans d\'expérience dans le commerce international, j\'aide les artisans à structurer leur activité, à fixer leurs prix et à trouver des débouchés à l\'étranger.',
-            profileImageId: 'artisan-2', // Placeholder
+            bio: 'Avec plus de 15 ans d\'expérience dans le commerce international, j\'aide les artisans à structurer leur activité, à fixer leurs prix et à trouver des débouchés à l\'étranger. Ma passion est de voir les produits burundais briller sur la scène mondiale.',
+            profileImageId: 'mentor-profile-2',
             rating: 5.0
         },
         {
@@ -139,13 +147,15 @@ export const seedData: SeedData = {
             name: 'Olivier Munezero',
             expertise: 'Techniques de Production & Qualité',
             province: 'Gitega',
-            bio: 'Ingénieur de formation et passionné d\'artisanat, j\'accompagne les artisans dans l\'amélioration de leurs processus de production, le contrôle qualité et l\'innovation technique.',
-            profileImageId: 'artisan-4', // Placeholder
+            bio: 'Ingénieur de formation et passionné d\'artisanat, j\'accompagne les artisans dans l\'amélioration de leurs processus de production, le contrôle qualité et l\'innovation technique. Ensemble, nous pouvons optimiser votre production.',
+            profileImageId: 'mentor-profile-1',
             rating: 4.9
         }
     ],
     orders: [
         { id: 'order-001', artisanId: 'user-artisan-1', artisanName: 'Aline Niyonsaba', productId: 'prod-001', productName: 'Panier en jonc "Umuco"', customerId: 'user-student-1', customerName: 'Eliane Nshimirimana', orderDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'pending' },
-        { id: 'order-002', artisanId: 'user-artisan-2', artisanName: 'Jean-Claude Bizimana', productId: 'prod-002', productName: 'Sac en cuir "Kazoza"', customerId: 'user-admin-1', customerName: 'Admin Umwuga', orderDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'shipped' }
+        { id: 'order-002', artisanId: 'user-artisan-2', artisanName: 'Jean-Claude Bizimana', productId: 'prod-002', productName: 'Sac en cuir "Kazoza"', customerId: 'user-admin-1', customerName: 'Admin Umwuga', orderDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'shipped' },
+        { id: 'order-003', artisanId: 'user-artisan-1', artisanName: 'Aline Niyonsaba', productId: 'prod-005', productName: 'Sous-plats en fibres de bananier', customerId: 'user-student-2', customerName: 'Kevin Mugisha', orderDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'pending' },
+        { id: 'order-004', artisanId: 'user-artisan-4', artisanName: 'Eric Ndayishimiye', productId: 'prod-004', productName: 'Sculpture "Umuryango"', customerId: 'user-admin-1', customerName: 'Admin Umwuga', orderDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), status: 'delivered' }
     ]
 };
