@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,6 @@ export default function AdminDebugPage() {
 
             // Seed Products
             seedData.products.forEach(product => {
-                // Let firestore generate the ID
                 const productRef = doc(firestore, 'products', product.id);
                 batch.set(productRef, product);
             });
@@ -66,12 +64,21 @@ export default function AdminDebugPage() {
                 const courseRef = doc(firestore, 'courses', course.id);
                 batch.set(courseRef, course);
             });
+
+            // Seed Orders
+            if (seedData.orders) {
+                seedData.orders.forEach(order => {
+                    const orderRef = doc(firestore, 'orders', order.id);
+                    // Convert ISO string back to Date object for Firestore Timestamp
+                    batch.set(orderRef, {...order, orderDate: new Date(order.orderDate)});
+                });
+            }
             
             await batch.commit();
 
             toast({
                 title: "Base de données initialisée !",
-                description: `${seedData.users.length} utilisateurs, ${seedData.artisans.length} artisans, ${seedData.products.length} produits, ${seedData.trainingCenters.length} centres, ${seedData.courses.length} cours et ${seedData.mentors.length} mentors ont été ajoutés.`
+                description: `Les données de test, y compris ${seedData.orders?.length || 0} commandes, ont été ajoutées.`
             });
 
         } catch (error: any) {

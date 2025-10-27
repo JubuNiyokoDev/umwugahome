@@ -1,5 +1,4 @@
 
-
 export type Artisan = {
   id: string;
   userId: string; // Link to UserProfile
@@ -57,7 +56,7 @@ export type UserProfile = {
   email: string | null;
   role: 'artisan' | 'student' | 'mentor' | 'admin' | 'training_center';
   profileImageId?: string;
-  interests: string[];
+  interests?: string[];
 };
 
 export type Order = {
@@ -80,5 +79,3 @@ export type SeedData = {
     mentors: Mentor[],
     orders?: Order[],
 }
-
-    

@@ -1,5 +1,5 @@
 
-import type { SeedData, Mentor } from './types';
+import type { SeedData, Mentor, Order } from './types';
 
 export const seedData: SeedData = {
     users: [
@@ -143,5 +143,9 @@ export const seedData: SeedData = {
             profileImageId: 'artisan-4', // Placeholder
             rating: 4.9
         }
+    ],
+    orders: [
+        { id: 'order-001', artisanId: 'user-artisan-1', productId: 'prod-001', productName: 'Panier en jonc "Umuco"', customerId: 'user-student-1', customerName: 'Eliane Nshimirimana', orderDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'pending' },
+        { id: 'order-002', artisanId: 'user-artisan-2', productId: 'prod-002', productName: 'Sac en cuir "Kazoza"', customerId: 'user-admin-1', customerName: 'Admin Umwuga', orderDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'shipped' }
     ]
 };
