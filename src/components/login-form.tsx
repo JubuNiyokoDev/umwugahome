@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth, useUser } from "@/firebase";
+import { useAuth, useUser, setDocumentNonBlocking } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import {
   createUserWithEmailAndPassword,
@@ -32,15 +32,16 @@ export function LoginForm() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const firestore = getFirestore();
 
   useEffect(() => {
-    // This effect redirects the user if they are already logged in.
     if (user && !isUserLoading) {
-        router.push('/profile');
+      const redirect = searchParams.get('redirect');
+      router.push(redirect || '/profile');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, searchParams]);
 
 
   const handleAuthAction = async () => {
@@ -51,14 +52,32 @@ export function LoginForm() {
         let userCredential: UserCredential;
         if (isSigningUp) {
             userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // Don't create profile here, redirect to profile page with role
-            toast({ title: "Compte créé avec succès", description: "Veuillez compléter votre profil." });
-            router.push(`/profile?role=${role}`);
+            const user = userCredential.user;
+            // This is where we create the user profile document in Firestore
+            const userRef = doc(firestore, "users", user.uid);
+            
+            // Special case for admin user creation
+            const userRole = email === 'admin@umwuga.com' ? 'admin' : role;
+            
+            const newUserProfile: UserProfile = {
+                id: user.uid,
+                name: user.displayName || email.split('@')[0],
+                email: user.email,
+                role: userRole
+            };
+            
+            await setDoc(userRef, newUserProfile);
+
+            toast({ title: "Compte créé avec succès", description: "Bienvenue !" });
+
         } else {
             userCredential = await signInWithEmailAndPassword(auth, email, password);
             toast({ title: "Connexion réussie", description: "Bienvenue !" });
-            router.push('/profile');
         }
+        
+        const redirect = searchParams.get('redirect');
+        router.push(redirect || '/profile');
+
     } catch (error: any) {
         toast({
             variant: "destructive",
@@ -81,14 +100,20 @@ export function LoginForm() {
       const docRef = doc(firestore, "users", user.uid);
       const docSnap = await getDoc(docRef);
 
-      // If user exists, just log them in. If not, redirect to profile completion.
-      if (docSnap.exists()) {
-         toast({ title: "Connexion réussie", description: "Bienvenue !" });
-         router.push('/profile');
+      if (!docSnap.exists()) {
+        const newUserProfile: UserProfile = {
+          id: user.uid,
+          name: user.displayName || user.email?.split('@')[0] || 'Nouvel utilisateur',
+          email: user.email,
+          role: 'student', // Default role for Google sign-in
+        };
+        await setDoc(docRef, newUserProfile);
+        toast({ title: "Bienvenue!", description: "Votre compte a été créé." });
       } else {
-         toast({ title: "Bienvenue!", description: "Veuillez compléter votre profil." });
-         router.push('/profile?role=student'); // Default to student, they can change if needed in profile form.
+        toast({ title: "Connexion réussie", description: "Bienvenue !" });
       }
+      const redirect = searchParams.get('redirect');
+      router.push(redirect || '/profile');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -122,7 +147,7 @@ export function LoginForm() {
             <Label htmlFor="password">Mot de passe</Label>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          {isSigningUp && (
+          {isSigningUp && email !== 'admin@umwuga.com' && (
               <div className="grid gap-2">
                   <Label htmlFor="role">Je suis un(e)...</Label>
                   <Select value={role} onValueChange={(value) => setRole(value as UserProfile['role'])}>

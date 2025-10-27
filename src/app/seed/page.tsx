@@ -11,17 +11,15 @@ import { useState } from "react";
 import { Loader2, Database } from "lucide-react";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { signInAnonymously } from "firebase/auth";
 
 export default function SeedPage() {
     const firestore = useFirestore();
-    const auth = useAuth();
     const { toast } = useToast();
     const [isSeeding, setIsSeeding] = useState(false);
 
     const handleSeedDatabase = async () => {
-        if (!firestore || !auth) {
-            toast({ variant: 'destructive', title: "Les services Firebase ne sont pas disponibles." });
+        if (!firestore) {
+            toast({ variant: 'destructive', title: "Firestore not available." });
             return;
         }
 
@@ -29,9 +27,6 @@ export default function SeedPage() {
         toast({ title: "Démarrage du seeding...", description: "Veuillez patienter." });
 
         try {
-            // Step 1: Sign in anonymously to get auth context
-            await signInAnonymously(auth);
-            
             const batch = writeBatch(firestore);
 
             // Seed Users
@@ -83,7 +78,7 @@ export default function SeedPage() {
 
             toast({
                 title: "Base de données initialisée !",
-                description: `Les données de test ont été ajoutées avec succès.`
+                description: `Les données de test, y compris ${seedData.users.length} utilisateurs, ont été ajoutées.`
             });
 
         } catch (error: any) {
@@ -93,6 +88,12 @@ export default function SeedPage() {
                 requestResourceData: 'seed data'
             });
             errorEmitter.emit('permission-error', permissionError);
+            console.error("Error seeding database:", error);
+            toast({
+                variant: 'destructive',
+                title: "Erreur lors du seeding",
+                description: "Vérifiez les règles de sécurité Firestore et la console du navigateur pour plus de détails."
+            });
         } finally {
             setIsSeeding(false);
         }
@@ -100,14 +101,14 @@ export default function SeedPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold font-headline">Outils de Débogage et d'Initialisation</h1>
+            <h1 className="text-3xl font-bold font-headline">Outils d'Initialisation</h1>
 
             <Card>
                 <CardHeader>
                     <CardTitle>Initialisation de la base de données</CardTitle>
                     <CardDescription>
-                        Cliquez sur ce bouton pour remplir la base de données avec un jeu de données de test.
-                        Ceci écrasera les données existantes pour les IDs correspondants.
+                        Cliquez sur ce bouton pour remplir la base de données Firestore avec un jeu de données de test complet.
+                        Cette action est réservée aux administrateurs.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -120,7 +121,7 @@ export default function SeedPage() {
                         ) : (
                             <>
                                 <Database className="mr-2 h-4 w-4" />
-                                Seed Database
+                                Lancer le Seeding
                             </>
                         )}
                     </Button>

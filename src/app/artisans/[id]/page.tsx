@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useUser } from "@/firebase";
+import { useCollection, useDoc, useFirestore, useUser, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan, Order, Product } from "@/lib/types";
 import { MapPin, MessageCircle, Star } from "lucide-react";
@@ -19,30 +19,37 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import { seedData } from "@/lib/seed";
+import { doc, collection, query, where, updateDoc } from "firebase/firestore";
 
 function ArtisanOrders({ artisanId }: { artisanId: string }) {
   const { user } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const artisanOrders = seedData.orders?.filter(o => o.artisanId === artisanId) || [];
-    setOrders(artisanOrders);
-    setIsLoading(false);
-  }, [artisanId]);
+  const ordersRef = useMemoFirebase(() => {
+    if (!firestore || !artisanId) return null;
+    return query(collection(firestore, 'orders'), where('artisanId', '==', artisanId));
+  }, [firestore, artisanId]);
 
+  const { data: orders, isLoading } = useCollection<Order>(ordersRef);
 
   const isOwner = user?.uid === artisanId;
 
-  const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
-      // This is a mock update for demo mode
-      setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {...o, status: newStatus} : o));
-      toast({
-          title: "Statut de la commande mis à jour (Démo)",
-      });
+  const handleStatusChange = async (orderId: string, newStatus: Order['status']) => {
+      if (!firestore) return;
+      const orderRef = doc(firestore, "orders", orderId);
+      try {
+        await updateDoc(orderRef, { status: newStatus });
+        toast({
+            title: "Statut de la commande mis à jour",
+        });
+      } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: "Erreur",
+            description: "Impossible de mettre à jour le statut de la commande.",
+        });
+      }
   };
 
   if (isLoading) {
@@ -77,14 +84,22 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
           <TableBody>
             {orders.map(order => {
                 let formattedDate = 'Date invalide';
-                if (order.orderDate) {
+                if (order.orderDate?.toDate) {
                      try {
+                        const date = order.orderDate.toDate();
+                        formattedDate = format(date, 'd MMM yyyy', { locale: fr });
+                     } catch (e) {
+                        console.error("Error formatting date: ", order.orderDate)
+                     }
+                } else if (typeof order.orderDate === 'string') {
+                    try {
                         const date = new Date(order.orderDate);
                         formattedDate = format(date, 'd MMM yyyy', { locale: fr });
                      } catch (e) {
                         console.error("Error formatting date: ", order.orderDate)
                      }
                 }
+
                return(
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">{order.productName}</TableCell>
@@ -119,21 +134,18 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
 
 
 export default function ArtisanProfilePage({ params }: { params: { id: string } }) {
-  const [artisan, setArtisan] = useState<Artisan | null | undefined>(undefined);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
+  
+  const artisanRef = useMemoFirebase(() => firestore ? doc(firestore, 'artisans', params.id) : null, [firestore, params.id]);
+  const { data: artisan, isLoading: isLoadingArtisan } = useDoc<Artisan>(artisanRef);
 
-  useEffect(() => {
-    const foundArtisan = seedData.artisans.find(a => a.id === params.id);
-    setArtisan(foundArtisan);
-
-    if(foundArtisan) {
-        const artisanProducts = seedData.products.filter(p => p.artisanId === foundArtisan.id);
-        setProducts(artisanProducts);
-    }
-    setIsLoading(false);
-  }, [params.id]);
-
+  const productsRef = useMemoFirebase(() => {
+    if (!firestore || !params.id) return null;
+    return query(collection(firestore, 'products'), where('artisanId', '==', params.id));
+  }, [firestore, params.id]);
+  const { data: products, isLoading: isLoadingProducts } = useCollection<Product>(productsRef);
+  
+  const isLoading = isLoadingArtisan || isLoadingProducts;
 
   if (isLoading) {
     return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement du profil...</div>
@@ -199,13 +211,13 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
       <div className="mt-8">
         <Tabs defaultValue="shop">
           <TabsList className="grid grid-cols-4 w-full max-w-lg mx-auto">
-            <TabsTrigger value="shop">Boutique ({products.length || 0})</TabsTrigger>
+            <TabsTrigger value="shop">Boutique ({products?.length || 0})</TabsTrigger>
             <TabsTrigger value="orders">Commandes</TabsTrigger>
             <TabsTrigger value="about">À Propos</TabsTrigger>
             <TabsTrigger value="reviews">Avis</TabsTrigger>
           </TabsList>
           <TabsContent value="shop" className="mt-6">
-            {products.length > 0 ? (
+            {products && products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {products.map(product => (
                   <ProductCard key={product.id} product={product} />

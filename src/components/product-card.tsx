@@ -9,9 +9,8 @@ import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { seedData } from "@/lib/seed";
-import { useUser } from "@/firebase";
+import { useUser, useFirestore, addDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase";
+import { collection, doc, serverTimestamp } from "firebase/firestore";
 
 interface ProductCardProps {
   product: Product | null;
@@ -21,15 +20,14 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { user } = useUser();
   const router = useRouter();
+  const firestore = useFirestore();
 
-  const [artisan, setArtisan] = useState<Artisan | undefined>(undefined);
+  const artisanRef = useMemoFirebase(() => {
+    if (!firestore || !product?.artisanId) return null;
+    return doc(firestore, 'artisans', product.artisanId);
+  }, [firestore, product?.artisanId]);
 
-  useEffect(() => {
-    if(product){
-        const foundArtisan = seedData.artisans.find(a => a.id === product.artisanId);
-        setArtisan(foundArtisan);
-    }
-  }, [product]);
+  const { data: artisan } = useDoc<Artisan>(artisanRef);
 
   if (!product) {
     return (
@@ -52,15 +50,29 @@ export function ProductCard({ product }: ProductCardProps) {
       toast({
         variant: "destructive",
         title: "Connexion requise",
-        description: "La commande n'est pas disponible en mode démo. Vous devez être connecté pour commander.",
+        description: "Vous devez être connecté pour passer une commande.",
       });
       if(!user) router.push('/login');
       return;
     }
+    
+    if(!firestore) return;
+
+    const ordersCollection = collection(firestore, 'orders');
+    addDocumentNonBlocking(ordersCollection, {
+        artisanId: product.artisanId,
+        productId: product.id,
+        productName: product.name,
+        customerId: user.uid,
+        customerName: user.displayName,
+        orderDate: serverTimestamp(),
+        status: 'pending',
+    });
+
 
     toast({
-      title: "Commande passée (Démo)!",
-      description: `Votre commande pour "${product.name}" a été enregistrée. Cette fonctionnalité est en mode démo.`,
+      title: "Commande passée !",
+      description: `Votre commande pour "${product.name}" a été enregistrée.`,
     });
   };
 

@@ -13,23 +13,19 @@ import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
-import { seedData } from "@/lib/seed";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 export default function AdminUsersPage() {
     const { toast } = useToast();
-    const [users, setUsers] = useState<UserProfile[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setUsers(seedData.users);
-        setIsLoading(false);
-    }, []);
+    const firestore = useFirestore();
+    const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
+    const { data: users, isLoading } = useCollection<UserProfile>(usersRef);
 
     const handleDeleteUser = async (user: UserProfile) => {
         toast({
             title: "Action non disponible (Démo)",
-            description: `La suppression de ${user.name} n'est pas activée en mode démo.`,
+            description: `La suppression de ${user.name} n'est pas activée.`,
         });
     };
 
@@ -129,7 +125,7 @@ export default function AdminUsersPage() {
                                                 </AlertDialog>
                                             </TableCell>
                                         </TableRow>
-                                    )
+                                    );
                                 })
                             )}
                         </TableBody>

@@ -12,17 +12,13 @@ import { Artisan } from "@/lib/types";
 import { MoreHorizontal, PlusCircle, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { seedData } from "@/lib/seed";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 export default function AdminArtisansPage() {
-    const [artisans, setArtisans] = useState<Artisan[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setArtisans(seedData.artisans);
-        setIsLoading(false);
-    }, []);
+    const firestore = useFirestore();
+    const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
+    const { data: artisans, isLoading } = useCollection<Artisan>(artisansRef);
 
     return (
         <div className="space-y-6">

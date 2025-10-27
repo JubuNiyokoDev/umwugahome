@@ -2,28 +2,27 @@
 'use client';
 
 import { ArtisanCard } from "@/components/artisan-card";
-import { TrainingCenterCard } from "@/components/training-center-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Artisan, TrainingCenter } from "@/lib/types";
 import { Search } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
-import { seedData } from "@/lib/seed";
+import { useState, useMemo } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { TrainingCenterCard } from "@/components/training-center-card";
 
 export default function ArtisansPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [province, setProvince] = useState('all');
-  const [allArtisans, setAllArtisans] = useState<Artisan[]>([]);
-  const [allTrainingCenters, setAllTrainingCenters] = useState<TrainingCenter[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    setAllArtisans(seedData.artisans);
-    setAllTrainingCenters(seedData.trainingCenters);
-    setIsLoading(false);
-  }, []);
+  const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
+  const { data: allArtisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
+
+  const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
+  const { data: allTrainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
 
   const filteredArtisans = useMemo(() => {
     if (!allArtisans) return [];
@@ -46,8 +45,11 @@ export default function ArtisansPage() {
   const provinces = useMemo(() => {
     const artisanProvinces = allArtisans?.map(a => a.province) || [];
     const centerProvinces = allTrainingCenters?.map(c => c.province) || [];
-    return [...new Set([...artisanProvinces, ...centerProvinces])].sort();
+    const uniqueProvinces = [...new Set([...artisanProvinces, ...centerProvinces])].sort();
+    return uniqueProvinces.filter(p => p && p !== "À définir");
   }, [allArtisans, allTrainingCenters]);
+
+  const isLoading = isLoadingArtisans || isLoadingCenters;
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
@@ -87,11 +89,11 @@ export default function ArtisansPage() {
 
       <Tabs defaultValue="artisans" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="artisans">Artisans ({isLoading ? '...' : filteredArtisans.length})</TabsTrigger>
-          <TabsTrigger value="centers">Centres de Formation ({isLoading ? '...' : filteredTrainingCenters.length})</TabsTrigger>
+          <TabsTrigger value="artisans">Artisans ({isLoadingArtisans ? '...' : filteredArtisans.length})</TabsTrigger>
+          <TabsTrigger value="centers">Centres de Formation ({isLoadingCenters ? '...' : filteredTrainingCenters.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="artisans">
-          {isLoading ? 
+          {isLoadingArtisans ? 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
               {Array.from({ length: 8 }).map((_, i) => <ArtisanCard key={i} artisan={null} />)}
             </div> : 
@@ -108,7 +110,7 @@ export default function ArtisansPage() {
           )}
         </TabsContent>
         <TabsContent value="centers">
-           {isLoading ? 
+           {isLoadingCenters ? 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                 {Array.from({ length: 6 }).map((_, i) => <TrainingCenterCard key={i} center={null} />)}
             </div> :

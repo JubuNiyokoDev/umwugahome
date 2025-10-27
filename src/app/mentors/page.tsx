@@ -7,19 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mentor } from "@/lib/types";
 import { Search } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
-import { seedData } from "@/lib/seed";
+import { useState, useMemo } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 export default function MentorsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expertise, setExpertise] = useState('all');
-  const [allMentors, setAllMentors] = useState<Mentor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const firestore = useFirestore();
 
-  useEffect(() => {
-    setAllMentors(seedData.mentors);
-    setIsLoading(false);
-  }, []);
+  const mentorsRef = useMemoFirebase(() => firestore ? collection(firestore, 'mentors') : null, [firestore]);
+  const { data: allMentors, isLoading } = useCollection<Mentor>(mentorsRef);
 
   const filteredMentors = useMemo(() => {
     if (!allMentors) return [];
@@ -32,7 +30,8 @@ export default function MentorsPage() {
   
   const expertises = useMemo(() => {
     if (!allMentors) return [];
-    return [...new Set(allMentors.map(m => m.expertise))].sort();
+    const uniqueExpertises = [...new Set(allMentors.map(m => m.expertise))].sort();
+    return uniqueExpertises.filter(e => e && e !== 'À définir');
   }, [allMentors]);
 
   return (

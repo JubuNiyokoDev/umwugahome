@@ -47,7 +47,7 @@ const navLinks = [
 ];
 
 const devLinks = [
-    { href: "/seed", label: "Debug & Seed", icon: <Bug /> },
+    { href: "/seed", label: "Seed Database", icon: <Bug /> },
 ]
 
 function AdminProtectionLayer({ children }: { children: React.ReactNode }) {
@@ -92,12 +92,21 @@ function AdminProtectionLayer({ children }: { children: React.ReactNode }) {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user } = useUser();
+  const firestore = useFirestore();
 
-  const userProfileRef = useMemoFirebase(() => (user && useFirestore()) ? doc(useFirestore(), 'users', user.uid) : null, [user]);
+  const userProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
 
   const checkIsActive = (href: string, exact = false) => {
     return exact ? pathname === href : pathname.startsWith(href);
+  }
+  
+  if(pathname === '/seed') {
+      return (
+        <AdminProtectionLayer>
+            <div className="p-4 md:p-6">{children}</div>
+        </AdminProtectionLayer>
+      );
   }
 
   return (
