@@ -4,11 +4,11 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Menu, User, LogOut, Loader2 } from "lucide-react";
+import { Menu, User, LogOut, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeSwitcher } from "../theme-switcher";
-import { useAuth, useUser } from "@/firebase";
+import { useAuth, useDoc, useFirestore, useUser, useMemoFirebase } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { User as UserIcon } from "lucide-react";
+import type { UserProfile } from "@/lib/types";
+import { doc } from "firebase/firestore";
 
 
 const navLinks = [
@@ -32,7 +34,11 @@ export function Header() {
   const pathname = usePathname();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
+
+  const userProfileRef = useMemoFirebase(() => (firestore && user) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
+  const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
 
   const handleSignOut = async () => {
     if (!auth) return;
@@ -93,9 +99,11 @@ export function Header() {
                 <DropdownMenuItem asChild>
                    <Link href="/profile"><User className="mr-2 h-4 w-4" />Profil</Link>
                 </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                   <Link href="/admin"><User className="mr-2 h-4 w-4" />Admin</Link>
-                </DropdownMenuItem>
+                 {userProfile?.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin"><ShieldCheck className="mr-2 h-4 w-4" />Admin</Link>
+                  </DropdownMenuItem>
+                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />

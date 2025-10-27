@@ -18,10 +18,13 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Loader2, User } from "lucide-react";
 import { doc, setDoc, getFirestore, getDoc } from "firebase/firestore";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserProfile } from "@/lib/types";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<UserProfile['role']>('student');
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -37,7 +40,7 @@ export default function LoginPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const createProfileIfNotExists = async (userCred: UserCredential) => {
+  const createProfileIfNotExists = async (userCred: UserCredential, selectedRole: UserProfile['role']) => {
     const user = userCred.user;
     const userRef = doc(firestore, "users", user.uid);
     const docSnap = await getDoc(userRef);
@@ -47,7 +50,7 @@ export default function LoginPage() {
             id: user.uid,
             name: user.displayName || user.email?.split('@')[0] || "Nouvel utilisateur",
             email: user.email,
-            role: 'student', // default role
+            role: selectedRole,
             profileImageId: 'student-profile-1', // default image
             interests: []
         }, { merge: true });
@@ -60,7 +63,7 @@ export default function LoginPage() {
       let userCred: UserCredential;
       if (isSigningUp) {
         userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await createProfileIfNotExists(userCred);
+        await createProfileIfNotExists(userCred, role);
         toast({ title: "Compte créé", description: "Vous êtes maintenant connecté." });
       } else {
         userCred = await signInWithEmailAndPassword(auth, email, password);
@@ -83,7 +86,9 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     try {
       const userCred = await signInWithPopup(auth, provider);
-      await createProfileIfNotExists(userCred);
+      // For Google sign-in, we can't ask for a role beforehand in this simple form.
+      // We'll default to 'student' and they can change it in their profile later.
+      await createProfileIfNotExists(userCred, 'student');
       toast({ title: "Connexion réussie", description: "Bienvenue !" });
       router.push('/profile');
     } catch (error: any) {
@@ -126,6 +131,21 @@ export default function LoginPage() {
             </div>
             <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading || isGoogleLoading} />
           </div>
+          {isSigningUp && (
+            <div className="grid gap-2">
+              <Label htmlFor="role">Je suis un(e)</Label>
+              <Select onValueChange={(value) => setRole(value as UserProfile['role'])} defaultValue={role}>
+                <SelectTrigger id="role" disabled={isLoading || isGoogleLoading}>
+                  <SelectValue placeholder="Sélectionnez un rôle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="student">Jeune / Étudiant</SelectItem>
+                  <SelectItem value="artisan">Artisan</SelectItem>
+                  <SelectItem value="mentor">Mentor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <Button onClick={handleAuthAction} className="w-full" disabled={isLoading || isGoogleLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSigningUp ? "S'inscrire" : "Se connecter"}
