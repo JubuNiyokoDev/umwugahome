@@ -2,8 +2,8 @@
 
 import { firebaseApp } from '@/firebase/config';
 import { FirebaseApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, enableIndexedDbPersistence, Firestore } from 'firebase/firestore';
 
 let firestoreInstance: Firestore | null = null;
 let authInstance: Auth | null = null;
@@ -23,42 +23,27 @@ export function initializeFirebase() {
   // Initialize Auth if it hasn't been already
   if (!authInstance) {
     authInstance = getAuth(firebaseApp);
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        connectAuthEmulator(authInstance, 'http://127.0.0.1:9099', { disableWarnings: true });
-      } catch (e) {
-        // console.error('Error connecting to auth emulator:', e);
-      }
-    }
   }
 
   // Initialize Firestore if it hasn't been already
   if (!firestoreInstance) {
     firestoreInstance = getFirestore(firebaseApp);
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        connectFirestoreEmulator(firestoreInstance, '127.0.0.1', 8080);
-      } catch (e) {
-        // console.error('Error connecting to firestore emulator:', e);
-      }
+    if (!persistenceEnabled) {
+        persistenceEnabled = true;
+        enableIndexedDbPersistence(firestoreInstance).catch((err) => {
+            if (err.code == 'failed-precondition') {
+                // Multiple tabs open, persistence can only be enabled
+                // in one tab at a time.
+                console.warn('Firestore persistence failed: failed-precondition. Multiple tabs open?');
+            } else if (err.code == 'unimplemented') {
+                // The current browser does not support all of the
+                // features required to enable persistence
+                console.warn('Firestore persistence failed: unimplemented.');
+            }
+        });
     }
   }
   
-  if (!persistenceEnabled) {
-      persistenceEnabled = true;
-      enableIndexedDbPersistence(firestoreInstance).catch((err) => {
-          if (err.code == 'failed-precondition') {
-              // Multiple tabs open, persistence can only be enabled
-              // in one tab at a time.
-              console.warn('Firestore persistence failed: failed-precondition. Multiple tabs open?');
-          } else if (err.code == 'unimplemented') {
-              // The current browser does not support all of the
-              // features required to enable persistence
-              console.warn('Firestore persistence failed: unimplemented.');
-          }
-      });
-  }
-
   return {
     firebaseApp: firebaseApp,
     auth: authInstance,
