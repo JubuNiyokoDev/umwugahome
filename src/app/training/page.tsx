@@ -1,36 +1,52 @@
 'use client';
 
-import { TrainingCenterCard } from "@/components/training-center-card";
+import { CourseCard } from "@/components/course-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { TrainingCenter } from "@/lib/types";
+import { Course, TrainingCenter } from "@/lib/types";
 import { collection } from "firebase/firestore";
 import { Search } from "lucide-react";
 import { useState, useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 export default function TrainingPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [province, setProvince] = useState('all');
   const firestore = useFirestore();
 
-  const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-  const { data: allTrainingCenters, isLoading } = useCollection<TrainingCenter>(trainingCentersRef);
+  const coursesRef = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
+  const { data: allCourses, isLoading: isLoadingCourses } = useCollection<Course>(coursesRef);
 
-  const filteredTrainingCenters = useMemo(() => {
-    if (!allTrainingCenters) return [];
-    return allTrainingCenters.filter(center => {
-      const matchesSearch = center.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesProvince = province === 'all' || center.province === province;
+  const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
+  const { data: allTrainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
+  
+  const centersById = useMemo(() => {
+    if (!allTrainingCenters) return new Map();
+    return allTrainingCenters.reduce((acc, center) => {
+      acc.set(center.id, center);
+      return acc;
+    }, new Map<string, TrainingCenter>());
+  }, [allTrainingCenters]);
+
+  const filteredCourses = useMemo(() => {
+    if (!allCourses || !allTrainingCenters) return [];
+    return allCourses.filter(course => {
+      const center = centersById.get(course.centerId);
+      const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesProvince = province === 'all' || (center && center.province === province);
       return matchesSearch && matchesProvince;
     });
-  }, [allTrainingCenters, searchTerm, province]);
+  }, [allCourses, allTrainingCenters, searchTerm, province, centersById]);
   
   const provinces = useMemo(() => {
     if (!allTrainingCenters) return [];
     return [...new Set(allTrainingCenters.map(c => c.province))].sort();
   }, [allTrainingCenters]);
+
+  const isLoading = isLoadingCourses || isLoadingCenters;
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
@@ -47,7 +63,7 @@ export default function TrainingPage() {
             <div className="md:col-span-2 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input 
-                placeholder="Rechercher une formation ou un centre..." 
+                placeholder="Rechercher une formation..." 
                 className="pl-10" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -70,17 +86,27 @@ export default function TrainingPage() {
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {Array.from({ length: 6 }).map((_, i) => <TrainingCenterCard key={i} center={null} />)}
+            {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} className="flex flex-col overflow-hidden h-full">
+                    <Skeleton className="h-40 w-full" />
+                    <CardHeader><Skeleton className="h-6 w-3/4" /></CardHeader>
+                    <CardContent className="flex-grow space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-2/3" />
+                    </CardContent>
+                    <CardFooter><Skeleton className="h-10 w-full" /></CardFooter>
+                </Card>
+            ))}
         </div>
-      ) : filteredTrainingCenters.length > 0 ? (
+      ) : filteredCourses.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {filteredTrainingCenters.map(center => (
-            <TrainingCenterCard key={center.id} center={center} />
+          {filteredCourses.map(course => (
+            <CourseCard key={course.id} course={course} />
           ))}
         </div>
       ) : (
         <div className="text-center py-16 text-muted-foreground">
-          <p>Aucun centre de formation ne correspond à votre recherche.</p>
+          <p>Aucune formation ne correspond à votre recherche.</p>
         </div>
       )}
     </div>

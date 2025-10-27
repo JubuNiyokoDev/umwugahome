@@ -1,11 +1,11 @@
 "use client";
 
-import type { Course } from "@/lib/types";
+import type { Course, TrainingCenter } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "./ui/button";
-import { Clock, BookOpen } from "lucide-react";
+import { Clock, BookOpen, School } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Accordion,
@@ -13,6 +13,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
+import Link from "next/link";
 
 
 interface CourseCardProps {
@@ -22,6 +25,10 @@ interface CourseCardProps {
 export function CourseCard({ course }: CourseCardProps) {
   const image = PlaceHolderImages.find(p => p.id === course.imageId);
   const { toast } = useToast();
+  const firestore = useFirestore();
+
+  const centerRef = useMemoFirebase(() => firestore ? doc(firestore, 'training-centers', course.centerId) : null, [firestore, course.centerId]);
+  const { data: center } = useDoc<TrainingCenter>(centerRef);
 
   const handleEnroll = () => {
     toast({
@@ -44,7 +51,7 @@ export function CourseCard({ course }: CourseCardProps) {
         </div>
       }
       <CardHeader>
-        <CardTitle className="font-headline">{course.title}</CardTitle>
+        <CardTitle className="font-headline text-lg">{course.title}</CardTitle>
         <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
             <div className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
@@ -52,12 +59,18 @@ export function CourseCard({ course }: CourseCardProps) {
             </div>
              <div className="flex items-center gap-1.5">
                 <BookOpen className="h-4 w-4" />
-                <span>Prérequis: {course.prerequisites}</span>
+                <span>{course.prerequisites}</span>
             </div>
         </div>
+         {center && (
+          <Link href={`/training/${center.id}`} className="group inline-flex items-center gap-1.5 text-sm text-muted-foreground pt-1 hover:text-primary transition-colors">
+            <School className="h-4 w-4" />
+            <span className="group-hover:underline">{center.name}</span>
+          </Link>
+        )}
       </CardHeader>
       <CardContent className="flex-grow">
-         <Accordion type="single" collapsible>
+         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
             <AccordionTrigger>Description</AccordionTrigger>
             <AccordionContent>
