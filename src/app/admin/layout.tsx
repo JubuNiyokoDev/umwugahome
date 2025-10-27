@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Logo } from "@/components/logo";
@@ -12,6 +13,9 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarInset,
+  SidebarSeparator,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { useUser, useAuth } from "@/firebase";
 import {
@@ -21,6 +25,7 @@ import {
   School,
   Settings,
   Users,
+  Bug,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -115,6 +120,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
+
+          <SidebarSeparator />
+          
+          <SidebarGroup>
+            <SidebarGroupLabel>Développement</SidebarGroupLabel>
+            <SidebarMenu>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/admin/debug")}
+                  tooltip="Debug"
+                >
+                  <Link href="/admin/debug">
+                    <Bug />
+                    <span>Debug & Seed</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+
         </SidebarContent>
         {user && (
           <SidebarFooter>

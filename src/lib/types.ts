@@ -1,3 +1,4 @@
+
 export type Artisan = {
   id: string;
   userId: string; // Link to UserProfile
@@ -47,4 +48,10 @@ export type UserProfile = {
   interests?: string[];
 };
 
-    
+export type SeedData = {
+    users: UserProfile[],
+    artisans: Artisan[],
+    trainingCenters: TrainingCenter[],
+    products: Product[],
+    courses: Course[]
+}
