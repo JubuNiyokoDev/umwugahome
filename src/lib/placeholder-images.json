@@ -2,152 +2,152 @@
   "placeholderImages": [
     {
       "id": "artisan-1",
-      "description": "Portrait of a Burundian basket weaver.",
-      "imageUrl": "https://images.unsplash.com/photo-1536243696867-c8cec3c7d5d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "artisan portrait"
+      "description": "Portrait d'une artisane burundaise tissant un panier.",
+      "imageUrl": "https://images.unsplash.com/photo-1536243696867-c8cec3c7d5d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhZnJpY2FuJTIwYXJ0aXNhbiUyMHdvbWFufGVufDB8fHx8MTc2MjE5MjI3OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "african artisan"
     },
     {
       "id": "artisan-2",
-      "description": "Portrait of a Burundian leatherworker.",
-      "imageUrl": "https://images.unsplash.com/photo-1749706075417-5998b38e352f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "artisan portrait"
+      "description": "Portrait d'un artisan maroquinier africain dans son atelier.",
+      "imageUrl": "https://images.unsplash.com/photo-1601925698381-3d5f41935b80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwbGVhdGhlcndvcmtlcnxlbnwwfHx8fDE3NjIxOTIzNTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "african leatherworker"
     },
     {
       "id": "artisan-3",
-      "description": "Portrait of a Burundian potter.",
-      "imageUrl": "https://images.unsplash.com/photo-1703420371268-85d78cfdc5cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "potter portrait"
+      "description": "Portrait d'une potière africaine façonnant de l'argile.",
+      "imageUrl": "https://images.unsplash.com/photo-1578840212423-45f061e5a593?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwcG90dGVyeXxlbnwwfHx8fDE3NjIxOTI0NDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "african pottery"
     },
     {
       "id": "artisan-4",
-      "description": "Portrait of a Burundian wood carver.",
+      "description": "Portrait d'un sculpteur sur bois burundais.",
       "imageUrl": "https://images.unsplash.com/photo-1621992162986-effd83a178c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8YWZyaWNhbiUyMG1hbiUyMGNhcnBlbnRlcnxlbnwwfHx8fDE3NjE3NDU5NTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "wood carver"
     },
     {
       "id": "product-1",
-      "description": "Handwoven Burundian basket.",
+      "description": "Panier coloré tressé à la main au Burundi.",
       "imageUrl": "https://images.unsplash.com/photo-1611987583184-1ddc69fbd5ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d292ZW4lMjBiYXNrZXR8ZW58MHx8fHwxNzYxNTM0MDQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woven basket"
     },
     {
       "id": "product-2",
-      "description": "Handmade clay pottery.",
+      "description": "Poterie artisanale en argile faite main.",
       "imageUrl": "https://images.unsplash.com/photo-1595446472901-b0988e150f9c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjbGF5JTIwcG90dGVyeXxlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "clay pottery"
     },
     {
       "id": "product-3",
-      "description": "Handmade leather bag.",
+      "description": "Sac en cuir fait main avec des motifs africains.",
       "imageUrl": "https://images.unsplash.com/photo-1591561959340-1ce8259e319a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsZWF0aGVyJTIwYmFnfGVufDB8fHx8MTc2MTc0NjI0MHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "leather bag"
     },
     {
       "id": "product-4",
-      "description": "Carved wooden figurine.",
+      "description": "Figurine en bois sculptée représentant la faune africaine.",
       "imageUrl": "https://images.unsplash.com/photo-1663862831395-bf1bbc83834f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b29kZW4lMjBzY3VscHR1cmV8ZW58MHx8fHwxNzYxNDcwMzY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "wooden sculpture"
     },
     {
       "id": "product-5",
-      "description": "Woven placemats.",
+      "description": "Sets de table tissés.",
       "imageUrl": "https://images.unsplash.com/photo-1605400262179-8873d9d309e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b3ZlbiUyMHBsYWNlbWF0fGVufDB8fHx8MTc2MTc0NjQyNnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woven placemat"
     },
     {
       "id": "product-6",
-      "description": "Leather sandals.",
+      "description": "Sandales en cuir africain.",
       "imageUrl": "https://images.unsplash.com/photo-1603486002664-a73197245ce3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxsZWF0aGVyJTIwc2FuZGFsc3xlbnwwfHx8fDE3NjE3NDY0OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "leather sandals"
     },
     {
       "id": "product-7",
-      "description": "Painted clay bowl.",
+      "description": "Bol en argile peint à la main.",
       "imageUrl": "https://images.unsplash.com/photo-1565080411514-e532a7638048?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwYWludGVkJTIwYm93bHxlbnwwfHx8fDE3NjE3NDY1NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "painted bowl"
     },
     {
       "id": "product-8",
-      "description": "Wooden mask sculpture.",
+      "description": "Masque africain traditionnel en bois.",
       "imageUrl": "https://images.unsplash.com/photo-1533939947264-099a4c56e297?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b29kZW4lMjBtYXNrfGVufDB8fHx8MTc2MTc0NjY3OHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "wooden mask"
     },
     {
       "id": "training-center-1",
-      "description": "A modern training facility for technical skills.",
+      "description": "Des étudiants africains dans une salle de formation technique.",
       "imageUrl": "https://images.unsplash.com/photo-1620743364356-950592d0178b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmFpbmluZyUyMGNlbnRlcnxlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "training center"
     },
     {
       "id": "training-center-2",
-      "description": "A workshop for learning crafts.",
+      "description": "Un atelier d'artisanat animé au Burundi.",
       "imageUrl": "https://images.unsplash.com/photo-1500472141701-084e6fa44840?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcnRpc2FuJTIwd29ya3Nob3B8ZW58MHx8fHwxNzYxNTQ4NjEyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "artisan workshop"
     },
     {
       "id": "course-1",
-      "description": "Students learning woodworking.",
+      "description": "Un groupe de personnes apprenant la menuiserie en Afrique.",
       "imageUrl": "https://images.unsplash.com/photo-1613629954659-10064a737317?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b29kd29ya2luZyUyMGNsYXNzfGVufDB8fHx8MTc2MTU0ODYxMnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woodworking class"
     },
     {
       "id": "course-2",
-      "description": "Students in a tailoring class.",
-      "imageUrl": "https://images.unsplash.com/photo-1640875130365-a812ea942881?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzZXdpbmclMjBjbGFzc3xlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Des femmes africaines dans un cours de couture.",
+      "imageUrl": "https://images.unsplash.com/photo-1640875130365-a812ea942881?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhZnJpY2FuJTIwc2V3aW5nJTIwY2xhc3N8ZW58MHx8fHwxNzYyMTkyNzk5fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "sewing class"
     },
     {
       "id": "course-3",
-      "description": "Students learning graphic design.",
+      "description": "Des étudiants africains suivant un cours de design sur ordinateurs.",
       "imageUrl": "https://images.unsplash.com/photo-1626785774573-4b799315345d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmFwaGljJTIwZGVzaWduJTIwY2xhc3N8ZW58MHx8fHwxNzYxNzQ2ODkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "design class"
     },
     {
       "id": "course-4",
-      "description": "Students in a social media marketing class.",
+      "description": "Des professionnels africains lors d'un séminaire sur le marketing.",
       "imageUrl": "https://images.unsplash.com/photo-1554672408-730436b60dde?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYXJrZXRpbmclMjBjbGFzc3xlbnwwfHx8fDE3NjE3NDY5NTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "marketing class"
     },
     {
       "id": "hero-background",
-      "description": "A vibrant background of Burundian craftsmanship.",
+      "description": "Un arrière-plan vibrant d'artisanat africain.",
       "imageUrl": "https://images.unsplash.com/photo-1758188408858-0f5389c35f50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhZnJpY2FuJTIwY3JhZnR8ZW58MHx8fHwxNzYxNTQ4NjEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "african craft"
     },
     {
       "id": "map-burundi",
-      "description": "A map of Burundi.",
+      "description": "Une carte du Burundi.",
       "imageUrl": "https://images.unsplash.com/photo-1588551385347-4bacb1e18f22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXJ1bmRpJTIwbWFwfGVufDB8fHx8MTc2MTU0ODYxMnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "burundi map"
     },
     {
       "id": "student-profile-1",
-      "description": "Profile picture of a student.",
-      "imageUrl": "https://images.unsplash.com/photo-1517256673644-36ad11246d21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTIyMDY4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Portrait d'une jeune étudiante africaine.",
+      "imageUrl": "https://images.unsplash.com/photo-1594367064223-3f16d542a127?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwc3R1ZGVudCUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MjE5MjkxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "student portrait"
     },
     {
       "id": "student-profile-2",
-      "description": "Profile picture of a young male student.",
+      "description": "Portrait d'un jeune étudiant africain souriant.",
       "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGFmcmljYW4lMjBtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNzQ3MjMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "student portrait"
     },
     {
       "id": "mentor-profile-1",
-      "description": "Profile picture of an experienced mentor.",
-      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE3NDcyOTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Portrait d'un mentor africain expérimenté.",
+      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhZnJpY2FuJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkyOTc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "mentor portrait"
     },
     {
       "id": "mentor-profile-2",
-      "description": "Profile picture of a female business mentor.",
-      "imageUrl": "https://images.unsplash.com/photo-1582233479526-d9a0a049969d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxmZW1hbGUlMjBtZW50b3IlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE3NDczNDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Portrait d'une femme d'affaires africaine servant de mentor.",
+      "imageUrl": "https://images.unsplash.com/photo-1582233479526-d9a0a049969d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhZnJpY2FuJTIwZmVtYWxlJTIwbWVudG9yJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYyMTkzMDI1fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "mentor portrait"
     },
     {
       "id": "admin-profile",
-      "description": "Profile picture for an admin user.",
-      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXNpbmVzcyUyMHBlcnNvbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2MTc0NzQxNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Portrait d'un administrateur africain.",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhZnJpY2FuJTIwYnVzaW5lc3MlMjBwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIxOTMwNjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "admin portrait"
     }
   ]
