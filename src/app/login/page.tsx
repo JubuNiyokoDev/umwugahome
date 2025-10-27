@@ -16,8 +16,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Loader2, User } from "lucide-react";
-import { doc, setDoc, getFirestore, getDoc } from "firebase/firestore";
+import { Loader2 } from "lucide-react";
+import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserProfile } from "@/lib/types";
 
@@ -53,8 +53,10 @@ export default function LoginPage() {
             role: selectedRole,
             profileImageId: 'student-profile-1', // default image
             interests: []
-        }, { merge: true });
+        });
     }
+    // Return true to indicate success
+    return true;
   };
 
   const handleAuthAction = async () => {
@@ -62,14 +64,14 @@ export default function LoginPage() {
     try {
       if (isSigningUp) {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        // This is a critical step. If it fails, the user has an auth account but no profile.
         await createProfileIfNotExists(userCred, role);
         toast({ title: "Compte créé", description: "Vous êtes maintenant connecté." });
+        // The useEffect will handle the redirect now that the user object is available
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: "Connexion réussie", description: "Bienvenue !" });
+        // The useEffect will handle the redirect
       }
-      router.push('/profile');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -86,11 +88,9 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     try {
       const userCred = await signInWithPopup(auth, provider);
-      // For Google sign-in, we can't ask for a role beforehand in this simple form.
-      // We'll default to 'student' and they can change it in their profile later.
-      await createProfileIfNotExists(userCred, 'student');
+      await createProfileIfNotExists(userCred, 'student'); // Default role for Google sign-in
       toast({ title: "Connexion réussie", description: "Bienvenue !" });
-      router.push('/profile');
+      // The useEffect will handle the redirect
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -103,7 +103,12 @@ export default function LoginPage() {
   };
 
   if (isUserLoading || user) {
-    return <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">Chargement...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="mt-4 text-muted-foreground">Chargement...</p>
+      </div>
+    );
   }
 
   return (
