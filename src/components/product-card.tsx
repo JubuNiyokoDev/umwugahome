@@ -5,14 +5,32 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "./ui/skeleton";
 
 interface ProductCardProps {
-  product: Product;
+  product: Product | null;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const image = PlaceHolderImages.find(p => p.id === product.imageId);
   const { toast } = useToast();
+
+  if (!product) {
+    return (
+       <Card className="flex flex-col overflow-hidden h-full">
+        <Skeleton className="h-48 w-full" />
+        <CardContent className="flex-grow p-4 space-y-2">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-5 w-1/3" />
+        </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <Skeleton className="h-10 w-full" />
+        </CardFooter>
+      </Card>
+    )
+  }
+
+  const image = PlaceHolderImages.find(p => p.id === product.imageId);
 
   const handleAddToCart = () => {
     toast({
@@ -36,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <CardContent className="p-4">
         <h4 className="font-headline font-semibold truncate">{product.name}</h4>
-        <p className="text-sm text-muted-foreground mt-1">{product.description}</p>
+        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{product.description}</p>
         <p className="font-bold text-lg mt-2 text-primary">{product.price.toLocaleString('fr-FR')} FBU</p>
       </CardContent>
       <CardFooter className="p-4 pt-0">

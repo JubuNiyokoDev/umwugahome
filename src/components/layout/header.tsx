@@ -27,6 +27,7 @@ import { doc } from "firebase/firestore";
 
 const navLinks = [
   { href: "/marketplace", label: "Marketplace" },
+  { href: "/e-market", label: "Boutique" },
   { href: "/training", label: "Formations" },
 ];
 
