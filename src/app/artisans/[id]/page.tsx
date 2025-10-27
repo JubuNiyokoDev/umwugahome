@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useDoc, useCollection, useFirestore, useMemoFirebase, useUser, updateDocumentNonBlocking } from "@/firebase";
+import { useUser } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan, Order, Product } from "@/lib/types";
-import { collection, doc, query, where, Timestamp } from "firebase/firestore";
 import { MapPin, MessageCircle, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,26 +19,33 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
 
 function ArtisanOrders({ artisanId }: { artisanId: string }) {
   const { user } = useUser();
-  const firestore = useFirestore();
   const { toast } = useToast();
-  const ordersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'orders'), where('artisanId', '==', artisanId)) : null, [firestore, artisanId]);
-  const { data: orders, isLoading: isLoadingOrders } = useCollection<Order>(ordersQuery);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const artisanOrders = seedData.orders?.filter(o => o.artisanId === artisanId) || [];
+    setOrders(artisanOrders);
+    setIsLoading(false);
+  }, [artisanId]);
+
 
   const isOwner = user?.uid === artisanId;
 
   const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
-      if (!firestore) return;
-      const orderRef = doc(firestore, 'orders', orderId);
-      updateDocumentNonBlocking(orderRef, { status: newStatus });
+      // This is a mock update for demo mode
+      setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {...o, status: newStatus} : o));
       toast({
-          title: "Statut de la commande mis à jour",
+          title: "Statut de la commande mis à jour (Démo)",
       });
   };
 
-  if (isLoadingOrders) {
+  if (isLoading) {
     return <p>Chargement des commandes...</p>
   }
 
@@ -73,7 +79,7 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
                 let formattedDate = 'Date invalide';
                 if (order.orderDate) {
                      try {
-                        const date = (order.orderDate as any).toDate ? (order.orderDate as any).toDate() : new Date(order.orderDate);
+                        const date = new Date(order.orderDate);
                         formattedDate = format(date, 'd MMM yyyy', { locale: fr });
                      } catch (e) {
                         console.error("Error formatting date: ", order.orderDate)
@@ -113,15 +119,23 @@ function ArtisanOrders({ artisanId }: { artisanId: string }) {
 
 
 export default function ArtisanProfilePage({ params }: { params: { id: string } }) {
-  const firestore = useFirestore();
+  const [artisan, setArtisan] = useState<Artisan | null | undefined>(undefined);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const artisanRef = useMemoFirebase(() => firestore ? doc(firestore, 'artisans', params.id) : null, [firestore, params.id]);
-  const { data: artisan, isLoading: isLoadingArtisan } = useDoc<Artisan>(artisanRef);
+  useEffect(() => {
+    const foundArtisan = seedData.artisans.find(a => a.id === params.id);
+    setArtisan(foundArtisan);
 
-  const productsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'products'), where('artisanId', '==', params.id)) : null, [firestore, params.id]);
-  const { data: products, isLoading: isLoadingProducts } = useCollection<Product>(productsQuery);
+    if(foundArtisan) {
+        const artisanProducts = seedData.products.filter(p => p.artisanId === foundArtisan.id);
+        setProducts(artisanProducts);
+    }
+    setIsLoading(false);
+  }, [params.id]);
 
-  if (isLoadingArtisan) {
+
+  if (isLoading) {
     return <div className="container mx-auto px-4 py-8 md:px-6 md:py-12 text-center">Chargement du profil...</div>
   }
 
@@ -185,21 +199,19 @@ export default function ArtisanProfilePage({ params }: { params: { id: string } 
       <div className="mt-8">
         <Tabs defaultValue="shop">
           <TabsList className="grid grid-cols-4 w-full max-w-lg mx-auto">
-            <TabsTrigger value="shop">Boutique ({isLoadingProducts ? '...' : products?.length || 0})</TabsTrigger>
+            <TabsTrigger value="shop">Boutique ({products.length || 0})</TabsTrigger>
             <TabsTrigger value="orders">Commandes</TabsTrigger>
             <TabsTrigger value="about">À Propos</TabsTrigger>
             <TabsTrigger value="reviews">Avis</TabsTrigger>
           </TabsList>
           <TabsContent value="shop" className="mt-6">
-            {isLoadingProducts && <p>Chargement des produits...</p>}
-            {!isLoadingProducts && products && (
+            {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {products.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
-            )}
-            {!isLoadingProducts && (!products || products.length === 0) && (
+            ) : (
                 <Card className="text-center py-12 text-muted-foreground">
                    <CardContent>
                     <p>Cette boutique est vide pour le moment.</p>

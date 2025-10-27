@@ -8,9 +8,10 @@ import { Button } from "./ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
-import { useAuth, useFirestore, useUser, addDocumentNonBlocking, useDoc, useMemoFirebase } from "@/firebase";
-import { collection, doc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
+import { useUser } from "@/firebase";
 
 interface ProductCardProps {
   product: Product | null;
@@ -18,12 +19,17 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
-  const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
 
-  const artisanRef = useMemoFirebase(() => (firestore && product) ? doc(firestore, 'artisans', product.artisanId) : null, [firestore, product]);
-  const { data: artisan } = useDoc<Artisan>(artisanRef);
+  const [artisan, setArtisan] = useState<Artisan | undefined>(undefined);
+
+  useEffect(() => {
+    if(product){
+        const foundArtisan = seedData.artisans.find(a => a.id === product.artisanId);
+        setArtisan(foundArtisan);
+    }
+  }, [product]);
 
   if (!product) {
     return (
@@ -46,28 +52,15 @@ export function ProductCard({ product }: ProductCardProps) {
       toast({
         variant: "destructive",
         title: "Connexion requise",
-        description: "Vous devez être connecté et avoir un nom de profil pour passer une commande.",
+        description: "La commande n'est pas disponible en mode démo. Vous devez être connecté pour commander.",
       });
       if(!user) router.push('/login');
       return;
     }
-    if (!firestore || !artisan) return;
-
-    const ordersRef = collection(firestore, 'orders');
-    addDocumentNonBlocking(ordersRef, {
-        artisanId: product.artisanId,
-        artisanName: artisan.name,
-        productId: product.id,
-        productName: product.name,
-        customerId: user.uid,
-        customerName: user.displayName,
-        orderDate: serverTimestamp(),
-        status: 'pending'
-    });
 
     toast({
-      title: "Commande passée !",
-      description: `Votre commande pour "${product.name}" a été transmise à l'artisan.`,
+      title: "Commande passée (Démo)!",
+      description: `Votre commande pour "${product.name}" a été enregistrée.`,
     });
   };
 
@@ -100,5 +93,3 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
-
-    

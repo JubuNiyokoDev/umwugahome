@@ -1,3 +1,4 @@
+
 'use client'
 
 import { ArtisanCard } from "@/components/artisan-card";
@@ -5,36 +6,41 @@ import { MapPlaceholder } from "@/components/map-placeholder";
 import { StatCard } from "@/components/stat-card";
 import { TrainingCenterCard } from "@/components/training-center-card";
 import { Button } from "@/components/ui/button";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Artisan, Course, TrainingCenter } from "@/lib/types";
 import { Award, Briefcase, School, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { collection, limit, query } from "firebase/firestore";
+import { seedData } from "@/lib/seed";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
-  const firestore = useFirestore();
+  
+  const [artisans, setArtisans] = useState<Artisan[]>([]);
+  const [trainingCenters, setTrainingCenters] = useState<TrainingCenter[]>([]);
+  const [stats, setStats] = useState({
+    artisans: 0,
+    courses: 0,
+    centers: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Queries for featured items
-  const artisansQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'artisans'), limit(4)) : null, [firestore]);
-  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansQuery);
-
-  const trainingCentersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'training-centers'), limit(2)) : null, [firestore]);
-  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersQuery);
-
-  // Queries for stats
-  const allArtisansQuery = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
-  const { data: allArtisans, isLoading: isLoadingAllArtisans } = useCollection<Artisan>(allArtisansQuery);
-
-  const allCentersQuery = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-  const { data: allCenters, isLoading: isLoadingAllCenters } = useCollection<TrainingCenter>(allCentersQuery);
-
-  const allCoursesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
-  const { data: allCourses, isLoading: isLoadingAllCourses } = useCollection<Course>(allCoursesQuery);
-
+  useEffect(() => {
+    // Simulate fetching data from the local seed file
+    const featuredArtisans = seedData.artisans.slice(0, 4);
+    const featuredCenters = seedData.trainingCenters.slice(0, 2);
+    
+    setArtisans(featuredArtisans);
+    setTrainingCenters(featuredCenters);
+    setStats({
+      artisans: seedData.artisans.length,
+      courses: seedData.courses.length,
+      centers: seedData.trainingCenters.length,
+    });
+    setIsLoading(false);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -56,9 +62,6 @@ export default function Home() {
       },
     },
   };
-
-  const isLoadingStats = isLoadingAllArtisans || isLoadingAllCenters || isLoadingAllCourses;
-
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -108,9 +111,9 @@ export default function Home() {
       >
         <div className="container px-4 md:px-6">
           <motion.div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8" variants={containerVariants}>
-            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoadingStats ? '...' : (allArtisans?.length ?? 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoadingStats ? '...' : (allCourses?.length ?? 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
-            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoadingStats ? '...' : (allCenters?.length ?? 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Artisans" value={isLoading ? '...' : stats.artisans.toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Formations" value={isLoading ? '...' : stats.courses.toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} /></motion.div>
+            <motion.div variants={itemVariants}><StatCard title="Centres" value={isLoading ? '...' : stats.centers.toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} /></motion.div>
             <motion.div variants={itemVariants}><StatCard title="Lauréats Umwuga Award" value="30+" icon={<Award className="h-4 w-4 text-muted-foreground" />} /></motion.div>
           </motion.div>
         </div>
@@ -132,10 +135,10 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {isLoadingArtisans ? (
+            {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => <motion.div key={i} variants={itemVariants}><ArtisanCard artisan={null} /></motion.div>)
             ) : (
-              artisans?.map(artisan => (
+              artisans.map(artisan => (
                 <motion.div key={artisan.id} variants={itemVariants}>
                   <ArtisanCard artisan={artisan} />
                 </motion.div>
@@ -174,10 +177,10 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 lg:grid-cols-2" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {isLoadingCenters ? (
+            {isLoading ? (
               Array.from({ length: 2 }).map((_, i) => <motion.div key={i} variants={itemVariants}><TrainingCenterCard center={null} /></motion.div>)
             ) : (
-              trainingCenters?.map(center => (
+              trainingCenters.map(center => (
                 <motion.div key={center.id} variants={itemVariants}>
                   <TrainingCenterCard center={center} />
                 </motion.div>

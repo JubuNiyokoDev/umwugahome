@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Course, TrainingCenter } from "@/lib/types";
@@ -13,9 +14,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc } from "firebase/firestore";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { seedData } from "@/lib/seed";
 
 
 interface CourseCardProps {
@@ -25,10 +26,13 @@ interface CourseCardProps {
 export function CourseCard({ course }: CourseCardProps) {
   const image = PlaceHolderImages.find(p => p.id === course.imageId);
   const { toast } = useToast();
-  const firestore = useFirestore();
+  
+  const [center, setCenter] = useState<TrainingCenter | undefined>(undefined);
 
-  const centerRef = useMemoFirebase(() => firestore ? doc(firestore, 'training-centers', course.centerId) : null, [firestore, course.centerId]);
-  const { data: center } = useDoc<TrainingCenter>(centerRef);
+  useEffect(() => {
+    const foundCenter = seedData.trainingCenters.find(c => c.id === course.centerId);
+    setCenter(foundCenter);
+  }, [course.centerId]);
 
   const handleEnroll = () => {
     toast({

@@ -1,25 +1,27 @@
+
 'use client';
 
 import { ProductCard } from "@/components/product-card";
 import { Artisan, Product } from "@/lib/types";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { seedData } from "@/lib/seed";
 
 export default function EMarketPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
-  const firestore = useFirestore();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [allArtisans, setAllArtisans] = useState<Artisan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const productsRef = useMemoFirebase(() => firestore ? collection(firestore, 'products') : null, [firestore]);
-  const { data: allProducts, isLoading: isLoadingProducts } = useCollection<Product>(productsRef);
-
-  const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
-  const { data: allArtisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
+  useEffect(() => {
+    setAllProducts(seedData.products);
+    setAllArtisans(seedData.artisans);
+    setIsLoading(false);
+  }, []);
 
   const artisansById = useMemo(() => {
     if (!allArtisans) return new Map();
@@ -43,8 +45,6 @@ export default function EMarketPage() {
     if (!allArtisans) return [];
     return [...new Set(allArtisans.map(a => a.craft))].sort();
   }, [allArtisans]);
-
-  const isLoading = isLoadingProducts || isLoadingArtisans;
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
