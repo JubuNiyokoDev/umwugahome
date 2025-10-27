@@ -111,27 +111,23 @@ export default function AwardPage() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-12 max-w-4xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto"
           >
             {laureates.map((laureate, index) => {
               const profileImage = PlaceHolderImages.find(p => p.id === laureate.profileImageId);
               return (
                 <motion.div key={index} variants={itemVariants}>
-                  <Card className="overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
-                    <CardHeader>
-                        <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-                            <Avatar className="w-24 h-24 border-4 border-primary">
-                                {profileImage && <AvatarImage src={profileImage.imageUrl} alt={laureate.name} />}
-                                <AvatarFallback className="text-3xl">{laureate.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <p className="font-semibold text-primary">{laureate.year} - {laureate.category}</p>
-                                <CardTitle className="text-3xl font-headline mt-1">{laureate.name}</CardTitle>
-                            </div>
-                        </div>
+                  <Card className="overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow duration-300 h-full flex flex-col">
+                    <CardHeader className="flex flex-col items-center text-center p-6">
+                        <Avatar className="w-24 h-24 border-4 border-primary mb-4">
+                            {profileImage && <AvatarImage src={profileImage.imageUrl} alt={laureate.name} />}
+                            <AvatarFallback className="text-3xl">{laureate.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <p className="font-semibold text-primary">{laureate.year} - {laureate.category}</p>
+                        <CardTitle className="text-2xl font-headline mt-1">{laureate.name}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground">
+                    <CardContent className="flex-grow">
+                      <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground text-sm">
                         {laureate.achievement}
                       </blockquote>
                     </CardContent>
