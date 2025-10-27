@@ -37,7 +37,9 @@ export default function ProfilePage() {
 
     if (!user) {
         // This should be handled by a route guard in a real app, but for now, redirect.
-        router.push('/login');
+        if (typeof window !== 'undefined') {
+            router.push('/login');
+        }
         return null;
     }
     
@@ -46,7 +48,7 @@ export default function ProfilePage() {
         return (
             <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 <p className="ml-4">Finalisation de la configuration du profil...</p>
+                 <p className="ml-4">Profil non trouvé. Veuillez compléter votre inscription.</p>
             </div>
         );
     }

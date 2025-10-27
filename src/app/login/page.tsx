@@ -16,14 +16,15 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import { doc, setDoc, getFirestore } from "firebase/firestore";
+import { Loader2, User } from "lucide-react";
+import { doc, setDoc, getFirestore, getDoc } from "firebase/firestore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
@@ -39,14 +40,18 @@ export default function LoginPage() {
   const createProfileIfNotExists = async (userCred: UserCredential) => {
     const user = userCred.user;
     const userRef = doc(firestore, "users", user.uid);
-    await setDoc(userRef, {
-      id: user.uid,
-      name: user.displayName || user.email?.split('@')[0] || "Nouvel utilisateur",
-      email: user.email,
-      role: 'student', // default role
-      profileImageId: 'student-profile-1', // default image
-      interests: []
-    }, { merge: true });
+    const docSnap = await getDoc(userRef);
+
+    if (!docSnap.exists()) {
+        await setDoc(userRef, {
+            id: user.uid,
+            name: user.displayName || user.email?.split('@')[0] || "Nouvel utilisateur",
+            email: user.email,
+            role: 'student', // default role
+            profileImageId: 'student-profile-1', // default image
+            interests: []
+        }, { merge: true });
+    }
   };
 
   const handleAuthAction = async () => {
@@ -75,20 +80,20 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-    setIsLoading(true);
+    setIsGoogleLoading(true);
     try {
       const userCred = await signInWithPopup(auth, provider);
       await createProfileIfNotExists(userCred);
       toast({ title: "Connexion réussie", description: "Bienvenue !" });
       router.push('/profile');
-    } catch (error: any) => {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erreur de connexion Google",
         description: error.message,
       });
     } finally {
-      setIsLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -108,7 +113,7 @@ export default function LoginPage() {
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@exemple.com" required value={email} onChange={e => setEmail(e.target.value)} disabled={isLoading} />
+            <Input id="email" type="email" placeholder="m@exemple.com" required value={email} onChange={e => setEmail(e.target.value)} disabled={isLoading || isGoogleLoading} />
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
@@ -119,20 +124,20 @@ export default function LoginPage() {
                 </Link>
               )}
             </div>
-            <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading} />
+            <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading || isGoogleLoading} />
           </div>
-          <Button onClick={handleAuthAction} className="w-full" disabled={isLoading}>
+          <Button onClick={handleAuthAction} className="w-full" disabled={isLoading || isGoogleLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSigningUp ? "S'inscrire" : "Se connecter"}
           </Button>
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isGoogleLoading}>
+             {isGoogleLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Se connecter avec Google
           </Button>
         </CardContent>
         <div className="mt-4 p-6 pt-0 text-center text-sm">
           {isSigningUp ? "Vous avez déjà un compte?" : "Vous n'avez pas de compte?"}{" "}
-          <button onClick={() => setIsSigningUp(!isSigningUp)} className="underline" disabled={isLoading}>
+          <button onClick={() => setIsSigningUp(!isSigningUp)} className="underline" disabled={isLoading || isGoogleLoading}>
             {isSigningUp ? "Se connecter" : "S'inscrire"}
           </button>
         </div>
