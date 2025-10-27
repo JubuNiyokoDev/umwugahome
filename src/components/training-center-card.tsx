@@ -8,12 +8,29 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { Skeleton } from "./ui/skeleton";
 
 interface TrainingCenterCardProps {
-  center: TrainingCenter;
+  center: TrainingCenter | null;
 }
 
 export function TrainingCenterCard({ center }: TrainingCenterCardProps) {
+  if (!center) {
+    return (
+      <Card className="flex flex-col overflow-hidden h-full shadow-lg">
+        <Skeleton className="h-48 w-full" />
+        <CardContent className="flex-grow p-4 space-y-2">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-12 w-full" />
+        </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <Skeleton className="h-10 w-full" />
+        </CardFooter>
+      </Card>
+    )
+  }
+
   const image = PlaceHolderImages.find(p => p.id === center.imageId);
 
   return (

@@ -12,17 +12,17 @@ import { Award, Briefcase, School, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { collection } from "firebase/firestore";
+import { collection, limit, query } from "firebase/firestore";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
   const firestore = useFirestore();
 
-  const artisansCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
-  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansCollectionRef);
+  const artisansQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'artisans'), limit(4)) : null, [firestore]);
+  const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansQuery);
 
-  const trainingCentersCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
-  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersCollectionRef);
+  const trainingCentersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'training-centers'), limit(2)) : null, [firestore]);
+  const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersQuery);
 
 
   const containerVariants = {
@@ -119,11 +119,15 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {artisans?.slice(0, 4).map(artisan => (
-              <motion.div key={artisan.id} variants={itemVariants}>
-                <ArtisanCard artisan={artisan} />
-              </motion.div>
-            ))}
+            {isLoadingArtisans ? (
+              Array.from({ length: 4 }).map((_, i) => <motion.div key={i} variants={itemVariants}><ArtisanCard artisan={null} /></motion.div>)
+            ) : (
+              artisans?.map(artisan => (
+                <motion.div key={artisan.id} variants={itemVariants}>
+                  <ArtisanCard artisan={artisan} />
+                </motion.div>
+              ))
+            )}
           </motion.div>
           <div className="flex justify-center">
             <Button asChild variant="outline">
@@ -157,11 +161,15 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div className="mx-auto grid grid-cols-1 gap-6 py-12 sm:grid-cols-2 lg:grid-cols-2" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {trainingCenters?.slice(0, 2).map(center => (
-              <motion.div key={center.id} variants={itemVariants}>
-                <TrainingCenterCard center={center} />
-              </motion.div>
-            ))}
+            {isLoadingCenters ? (
+              Array.from({ length: 2 }).map((_, i) => <motion.div key={i} variants={itemVariants}><TrainingCenterCard center={null} /></motion.div>)
+            ) : (
+              trainingCenters?.map(center => (
+                <motion.div key={center.id} variants={itemVariants}>
+                  <TrainingCenterCard center={center} />
+                </motion.div>
+              ))
+            )}
           </motion.div>
            <div className="flex justify-center">
             <Button asChild variant="outline">

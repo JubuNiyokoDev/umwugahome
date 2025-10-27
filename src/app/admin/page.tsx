@@ -12,6 +12,7 @@ import { Artisan, TrainingCenter, UserProfile } from "@/lib/types";
 import { collection } from "firebase/firestore";
 import { Users } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const chartData = [
   { month: "Janvier", users: 186 },
@@ -32,13 +33,13 @@ const chartConfig = {
 export default function AdminDashboardPage() {
   const firestore = useFirestore();
 
-  const usersRef = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
+  const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
   const { data: users, isLoading: isLoadingUsers } = useCollection<UserProfile>(usersRef);
 
-  const artisansRef = useMemoFirebase(() => collection(firestore, 'artisans'), [firestore]);
+  const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
   const { data: artisans, isLoading: isLoadingArtisans } = useCollection<Artisan>(artisansRef);
 
-  const trainingCentersRef = useMemoFirebase(() => collection(firestore, 'training-centers'), [firestore]);
+  const trainingCentersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training-centers') : null, [firestore]);
   const { data: trainingCenters, isLoading: isLoadingCenters } = useCollection<TrainingCenter>(trainingCentersRef);
 
   return (
@@ -86,13 +87,24 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {isLoadingUsers ? <p>Chargement...</p> : users?.slice(0, 5).map((user) => {
+              {isLoadingUsers ? 
+                Array.from({length: 5}).map((_, i) => (
+                    <div key={i} className="flex items-center gap-4">
+                        <Skeleton className="h-9 w-9 rounded-full" />
+                        <div className="flex-1 space-y-1">
+                            <Skeleton className="h-4 w-3/4" />
+                            <Skeleton className="h-3 w-1/2" />
+                        </div>
+                        <Skeleton className="h-6 w-16 rounded-full" />
+                    </div>
+                ))
+               : users?.slice(0, 5).map((user) => {
                   const userImage = PlaceHolderImages.find(img => img.id === user.profileImageId);
                   return (
                     <div key={user.id} className="flex items-center gap-4">
                       <Avatar className="h-9 w-9">
                         {userImage && <AvatarImage src={userImage?.imageUrl} alt="Avatar" />}
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <p className="text-sm font-medium leading-none">{user.name}</p>

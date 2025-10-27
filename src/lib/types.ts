@@ -39,7 +39,7 @@ export type Course = {
 export type UserProfile = {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   role: 'artisan' | 'student' | 'mentor' | 'admin';
   profileImageId: string;
   interests: string[];

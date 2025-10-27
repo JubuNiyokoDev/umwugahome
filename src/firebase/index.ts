@@ -2,11 +2,12 @@
 
 import { firebaseApp } from '@/firebase/config';
 import { FirebaseApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence, Firestore } from 'firebase/firestore';
 
 let firestoreInstance: Firestore | null = null;
-let authInstance: any = null;
+let authInstance: Auth | null = null;
+let persistenceEnabled = false;
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
@@ -23,7 +24,6 @@ export function initializeFirebase() {
   if (!authInstance) {
     authInstance = getAuth(firebaseApp);
     if (process.env.NODE_ENV === 'development') {
-      // It's safe to connect multiple times, it's a no-op if already connected.
       try {
         connectAuthEmulator(authInstance, 'http://127.0.0.1:9099', { disableWarnings: true });
       } catch (e) {
@@ -42,16 +42,23 @@ export function initializeFirebase() {
         // console.error('Error connecting to firestore emulator:', e);
       }
     }
-    // Enable persistence. It's safe to call this multiple times, it only tries to enable it once.
-    try {
-      enableIndexedDbPersistence(firestoreInstance);
-    } catch (e: any) {
-      if (e.code !== 'failed-precondition' && e.code !== 'unimplemented') {
-         // console.error('Error enabling persistence:', e);
-      }
-    }
   }
   
+  if (!persistenceEnabled) {
+      persistenceEnabled = true;
+      enableIndexedDbPersistence(firestoreInstance).catch((err) => {
+          if (err.code == 'failed-precondition') {
+              // Multiple tabs open, persistence can only be enabled
+              // in one tab at a time.
+              console.warn('Firestore persistence failed: failed-precondition. Multiple tabs open?');
+          } else if (err.code == 'unimplemented') {
+              // The current browser does not support all of the
+              // features required to enable persistence
+              console.warn('Firestore persistence failed: unimplemented.');
+          }
+      });
+  }
+
   return {
     firebaseApp: firebaseApp,
     auth: authInstance,

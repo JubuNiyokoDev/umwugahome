@@ -44,7 +44,7 @@ export default function MarketplacePage() {
   const provinces = useMemo(() => {
     const artisanProvinces = allArtisans?.map(a => a.province) || [];
     const centerProvinces = allTrainingCenters?.map(c => c.province) || [];
-    return [...new Set([...artisanProvinces, ...centerProvinces])];
+    return [...new Set([...artisanProvinces, ...centerProvinces])].sort();
   }, [allArtisans, allTrainingCenters]);
 
   const isLoading = isLoadingArtisans || isLoadingCenters;
@@ -87,11 +87,14 @@ export default function MarketplacePage() {
 
       <Tabs defaultValue="artisans" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="artisans">Artisans ({isLoading ? '...' : filteredArtisans.length})</TabsTrigger>
-          <TabsTrigger value="centers">Centres de Formation ({isLoading ? '...' : filteredTrainingCenters.length})</TabsTrigger>
+          <TabsTrigger value="artisans">Artisans ({isLoadingArtisans ? '...' : filteredArtisans.length})</TabsTrigger>
+          <TabsTrigger value="centers">Centres de Formation ({isLoadingCenters ? '...' : filteredTrainingCenters.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="artisans">
-          {isLoading ? <div className="text-center py-16">Chargement des artisans...</div> : 
+          {isLoadingArtisans ? 
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+              {Array.from({ length: 8 }).map((_, i) => <ArtisanCard key={i} artisan={null} />)}
+            </div> : 
            filteredArtisans.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
               {filteredArtisans.map(artisan => (
@@ -105,7 +108,10 @@ export default function MarketplacePage() {
           )}
         </TabsContent>
         <TabsContent value="centers">
-           {isLoading ? <div className="text-center py-16">Chargement des centres...</div> :
+           {isLoadingCenters ? 
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                {Array.from({ length: 6 }).map((_, i) => <TrainingCenterCard key={i} center={null} />)}
+            </div> :
             filteredTrainingCenters.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
               {filteredTrainingCenters.map(center => (
