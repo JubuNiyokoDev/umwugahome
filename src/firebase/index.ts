@@ -1,35 +1,61 @@
 'use client';
 
-import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence } from 'firebase/firestore'
+import { firebaseApp } from '@/firebase/config';
+import { FirebaseApp } from 'firebase/app';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence, Firestore } from 'firebase/firestore';
+
+let firestoreInstance: Firestore | null = null;
+let authInstance: any = null;
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  const firestore = getFirestore(app);
-
-  if (process.env.NODE_ENV === 'development') {
-    // Connect to emulator BEFORE any other Firestore operations
-    connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+  if (typeof window === 'undefined') {
+    // During server-side rendering, return null or minimal instances.
+    return {
+      firebaseApp: firebaseApp, // app instance is safe
+      auth: null,
+      firestore: null,
+    };
   }
 
-  // Enable persistence must be called after emulator connection but before other operations.
-  // We'll wrap it in a try-catch to avoid errors if it has already been enabled.
-  try {
-    enableIndexedDbPersistence(firestore);
-  } catch (e: any) {
-    if (e.code !== 'failed-precondition') {
-      // This can happen if persistence is enabled in another tab.
-      // It's safe to ignore.
+  // Initialize Auth if it hasn't been already
+  if (!authInstance) {
+    authInstance = getAuth(firebaseApp);
+    if (process.env.NODE_ENV === 'development') {
+      // It's safe to connect multiple times, it's a no-op if already connected.
+      try {
+        connectAuthEmulator(authInstance, 'http://127.0.0.1:9099', { disableWarnings: true });
+      } catch (e) {
+        // console.error('Error connecting to auth emulator:', e);
+      }
+    }
+  }
+
+  // Initialize Firestore if it hasn't been already
+  if (!firestoreInstance) {
+    firestoreInstance = getFirestore(firebaseApp);
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        connectFirestoreEmulator(firestoreInstance, '127.0.0.1', 8080);
+      } catch (e) {
+        // console.error('Error connecting to firestore emulator:', e);
+      }
+    }
+    // Enable persistence. It's safe to call this multiple times, it only tries to enable it once.
+    try {
+      enableIndexedDbPersistence(firestoreInstance);
+    } catch (e: any) {
+      if (e.code !== 'failed-precondition' && e.code !== 'unimplemented') {
+         // console.error('Error enabling persistence:', e);
+      }
     }
   }
   
   return {
-    firebaseApp: app,
-    auth: getAuth(app),
-    firestore: firestore,
+    firebaseApp: firebaseApp,
+    auth: authInstance,
+    firestore: firestoreInstance,
   };
 }
 

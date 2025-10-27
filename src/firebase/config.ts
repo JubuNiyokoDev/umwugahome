@@ -10,20 +10,12 @@ export const firebaseConfig = {
   "messagingSenderId": "977404918447"
 };
 
-let firebaseApp: any;
-if (!getApps().length) {
-  firebaseApp = initializeApp(firebaseConfig);
-} else {
-  firebaseApp = getApp();
+function initializeFirebaseApp() {
+  if (getApps().length) {
+    return getApp();
+  }
+  return initializeApp(firebaseConfig);
 }
 
-const firestore = getFirestore(firebaseApp);
-
-export { firebaseApp, firestore };
-
-export function initializeFirebase() {
-  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  const firestore = getFirestore(app);
-  // ... any other initialization
-  return { firebaseApp: app, auth: {} as any, firestore };
-}
+export const firebaseApp = initializeFirebaseApp();
+export const firestore = getFirestore(firebaseApp);

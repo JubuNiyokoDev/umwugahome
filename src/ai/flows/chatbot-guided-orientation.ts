@@ -11,14 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { getFirestore, collection, getDocs, query, where, DocumentData } from 'firebase/firestore';
-import { initializeFirebase } from '@/firebase/config'; // Assuming you have a way to get firestore instance
+import { firebaseApp } from '@/firebase/config'; 
 
 
 // Helper to get Firestore instance
 function getDb() {
-  // This is a simplification. In a real app, you'd want to manage the instance properly.
-  const { firestore } = initializeFirebase();
-  return firestore;
+  return getFirestore(firebaseApp);
 }
 
 const searchArtisansTool = ai.defineTool(
