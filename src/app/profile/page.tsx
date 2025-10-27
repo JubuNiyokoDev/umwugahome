@@ -14,7 +14,6 @@ import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 
 function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<typeof useUser>['user']>, role: UserProfile['role'] }) {
     const firestore = useFirestore();
@@ -141,7 +140,7 @@ function ProfileDashboard({ userProfile }: { userProfile: UserProfile }) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <p>Gérez votre boutique, vos produits et votre profil public.</p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Button onClick={() => router.push(`/artisans/${userProfile.id}`)}>Voir mon profil public</Button>
                         <Button variant="outline" onClick={() => router.push(`/artisans/${userProfile.id}/edit`)}>
                             <Edit className="mr-2 h-4 w-4"/>
@@ -161,7 +160,7 @@ function ProfileDashboard({ userProfile }: { userProfile: UserProfile }) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <p>Gérez vos informations, vos programmes et vos inscriptions.</p>
-                     <div className="flex gap-2">
+                     <div className="flex flex-wrap gap-2">
                         <Button onClick={() => router.push(`/training/${userProfile.id}`)}>Voir le profil public</Button>
                         <Button variant="outline" onClick={() => router.push(`/training/${userProfile.id}/edit`)}>
                             <Edit className="mr-2 h-4 w-4"/>
