@@ -1,3 +1,5 @@
+'use client';
+
 import type { Artisan } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import Image from "next/image";
@@ -6,6 +8,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { motion } from 'framer-motion';
 
 interface ArtisanCardProps {
   artisan: Artisan;
@@ -15,17 +18,20 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
   const profileImage = PlaceHolderImages.find(p => p.id === artisan.profileImageId);
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <motion.div whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }} transition={{ duration: 0.3 }}>
+    <Card className="flex flex-col overflow-hidden h-full">
       <CardHeader className="p-0">
-        <div className="relative h-48 w-full">
+        <div className="relative h-48 w-full overflow-hidden">
           {profileImage && (
-            <Image
-              src={profileImage.imageUrl}
-              alt={artisan.name}
-              fill
-              className="object-cover"
-              data-ai-hint={profileImage.imageHint}
-            />
+            <motion.div className="h-full w-full" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+              <Image
+                src={profileImage.imageUrl}
+                alt={artisan.name}
+                fill
+                className="object-cover"
+                data-ai-hint={profileImage.imageHint}
+              />
+            </motion.div>
           )}
         </div>
       </CardHeader>
@@ -44,5 +50,6 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
         </Button>
       </CardFooter>
     </Card>
+    </motion.div>
   )
 }
