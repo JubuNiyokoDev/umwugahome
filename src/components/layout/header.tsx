@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Logo } from "@/components/logo";
@@ -29,6 +30,7 @@ const navLinks = [
   { href: "/marketplace", label: "Marketplace" },
   { href: "/e-market", label: "Boutique" },
   { href: "/training", label: "Formations" },
+  { href: "/mentors", label: "Mentors" },
 ];
 
 export function Header() {

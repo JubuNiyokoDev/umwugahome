@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -5,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser, useFirestore, useDoc, useAuth, useMemoFirebase } from "@/firebase";
-import { Artisan, TrainingCenter, UserProfile } from "@/lib/types";
-import { BookMarked, LogOut, User as UserIcon, Loader2, Save, Building, Paintbrush, Edit } from "lucide-react";
+import { Artisan, Mentor, TrainingCenter, UserProfile } from "@/lib/types";
+import { BookMarked, LogOut, User as UserIcon, Loader2, Save, Building, Paintbrush, Edit, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { doc, setDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -70,6 +71,19 @@ function ProfileCompletionForm({ user, role }: { user: NonNullable<ReturnType<ty
                     imageId: 'training-center-1'
                 };
                 await setDoc(centerRef, newCenter);
+            } else if (role === 'mentor') {
+                const mentorRef = doc(firestore, "mentors", user.uid);
+                const newMentor: Mentor = {
+                    id: user.uid,
+                    userId: user.uid,
+                    name: name.trim(),
+                    expertise: "À définir",
+                    province: "À définir",
+                    bio: "Bio à compléter.",
+                    rating: 0,
+                    profileImageId: 'student-profile-1'
+                };
+                await setDoc(mentorRef, newMentor);
             }
             
             toast({ title: "Profil créé !", description: "Bienvenue sur UmwugaHome." });
@@ -171,8 +185,27 @@ function ProfileDashboard({ userProfile }: { userProfile: UserProfile }) {
             </Card>
         )
     }
+     if (userProfile.role === 'mentor') {
+        return (
+             <Card className="bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline flex items-center gap-2"><Shield/> Tableau de bord Mentor</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <p>Gérez vos disponibilités, vos mentorés et votre profil public.</p>
+                     <div className="flex flex-wrap gap-2">
+                        <Button onClick={() => router.push(`/mentors/${userProfile.id}`)}>Voir mon profil public</Button>
+                        <Button variant="outline" onClick={() => router.push(`/mentors/${userProfile.id}/edit`)}>
+                            <Edit className="mr-2 h-4 w-4"/>
+                            Modifier mon profil
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
 
-    // Default for student/mentor
+    // Default for student
     return (
         <>
             <Card className="bg-card/80 backdrop-blur-sm">

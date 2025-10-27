@@ -373,6 +373,12 @@
         },
         "description": "Stores training center profile information."
       },
+      "mentors": {
+        "schema": {
+          "$ref": "#/entities/Mentor"
+        },
+        "description": "Stores mentor profile information."
+      },
       "products": {
         "schema": {
           "$ref": "#/entities/Product"
@@ -394,5 +400,3 @@
     }
   }
 }
-
-    

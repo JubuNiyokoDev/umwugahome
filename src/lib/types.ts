@@ -1,9 +1,21 @@
 
+
 export type Artisan = {
   id: string;
   userId: string; // Link to UserProfile
   name: string;
   craft: string;
+  province: string;
+  bio: string;
+  profileImageId?: string;
+  rating: number;
+};
+
+export type Mentor = {
+  id: string;
+  userId: string; // Link to UserProfile
+  name: string;
+  expertise: string;
   province: string;
   bio: string;
   profileImageId?: string;
@@ -53,5 +65,6 @@ export type SeedData = {
     artisans: Artisan[],
     trainingCenters: TrainingCenter[],
     products: Product[],
-    courses: Course[]
+    courses: Course[],
+    mentors: Mentor[]
 }

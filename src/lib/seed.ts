@@ -1,5 +1,5 @@
 
-import type { SeedData } from './types';
+import type { SeedData, Mentor } from './types';
 
 export const seedData: SeedData = {
     users: [
@@ -10,7 +10,9 @@ export const seedData: SeedData = {
         { id: 'user-center-1', name: 'Centre de Formation Gira', email: 'contact@gira.bi', role: 'training_center' },
         { id: 'user-center-2', name: 'Bujumbura Creative Hub', email: 'info@bujacreative.org', role: 'training_center' },
         { id: 'user-admin-1', name: 'Admin Umwuga', email: 'admin@umwuga.com', role: 'admin' },
-        { id: 'user-student-1', name: 'Eliane Nshimirimana', email: 'eliane.n@gmail.com', role: 'student' }
+        { id: 'user-student-1', name: 'Eliane Nshimirimana', email: 'eliane.n@gmail.com', role: 'student' },
+        { id: 'user-mentor-1', name: 'Charlotte Niyongere', email: 'c.niyongere@umwuga.com', role: 'mentor' },
+        { id: 'user-mentor-2', name: 'Olivier Munezero', email: 'o.munezero@umwuga.com', role: 'mentor' }
     ],
     artisans: [
         {
@@ -118,6 +120,28 @@ export const seedData: SeedData = {
             prerequisites: 'Compte Facebook/Instagram',
             imageId: 'training-center-2',
             centerId: 'user-center-2'
+        }
+    ],
+    mentors: [
+        {
+            id: 'user-mentor-1',
+            userId: 'user-mentor-1',
+            name: 'Charlotte Niyongere',
+            expertise: 'Business Development & Export',
+            province: 'Bujumbura Mairie',
+            bio: 'Avec plus de 15 ans d\'expérience dans le commerce international, j\'aide les artisans à structurer leur activité, à fixer leurs prix et à trouver des débouchés à l\'étranger.',
+            profileImageId: 'artisan-2', // Placeholder
+            rating: 5.0
+        },
+        {
+            id: 'user-mentor-2',
+            userId: 'user-mentor-2',
+            name: 'Olivier Munezero',
+            expertise: 'Techniques de Production & Qualité',
+            province: 'Gitega',
+            bio: 'Ingénieur de formation et passionné d\'artisanat, j\'accompagne les artisans dans l\'amélioration de leurs processus de production, le contrôle qualité et l\'innovation technique.',
+            profileImageId: 'artisan-4', // Placeholder
+            rating: 4.9
         }
     ]
 };

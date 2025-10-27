@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,12 @@ export default function AdminDebugPage() {
                 batch.set(centerRef, center);
             });
 
+             // Seed Mentors
+            seedData.mentors.forEach(mentor => {
+                const mentorRef = doc(firestore, 'mentors', mentor.id);
+                batch.set(mentorRef, mentor);
+            });
+
             // Seed Products
             seedData.products.forEach(product => {
                 // Let firestore generate the ID
@@ -62,7 +69,7 @@ export default function AdminDebugPage() {
 
             toast({
                 title: "Base de données initialisée !",
-                description: `${seedData.users.length} utilisateurs, ${seedData.artisans.length} artisans, ${seedData.products.length} produits, ${seedData.trainingCenters.length} centres et ${seedData.courses.length} cours ont été ajoutés.`
+                description: `${seedData.users.length} utilisateurs, ${seedData.artisans.length} artisans, ${seedData.products.length} produits, ${seedData.trainingCenters.length} centres, ${seedData.courses.length} cours et ${seedData.mentors.length} mentors ont été ajoutés.`
             });
 
         } catch (error: any) {

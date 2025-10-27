@@ -121,6 +121,30 @@ const searchProductsTool = ai.defineTool(
     }
 );
 
+const searchMentorsTool = ai.defineTool(
+    {
+        name: 'searchMentors',
+        description: 'Search for mentors based on their expertise.',
+        inputSchema: z.object({
+            expertise: z.string().describe('The area of expertise to search for.'),
+        }),
+        outputSchema: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            expertise: z.string(),
+            province: z.string(),
+        })),
+    },
+    async ({ expertise }) => {
+        console.log(`Searching mentors with expertise: ${expertise}`);
+        const db = getDb();
+        const mentorsRef = collection(db, 'mentors');
+        const q = query(mentorsRef, where('expertise', '>=', expertise), where('expertise', '<=', expertise + '\uf8ff'));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+    }
+);
+
 
 const ChatbotGuidedOrientationInputSchema = z.object({
   query: z.string().describe('The user query or question for the chatbot.'),
@@ -140,11 +164,11 @@ const chatbotGuidedOrientationPrompt = ai.definePrompt({
   name: 'chatbotGuidedOrientationPrompt',
   input: {schema: ChatbotGuidedOrientationInputSchema},
   output: {schema: ChatbotGuidedOrientationOutputSchema},
-  tools: [searchArtisansTool, searchTrainingCentersTool, searchProductsTool],
+  tools: [searchArtisansTool, searchTrainingCentersTool, searchProductsTool, searchMentorsTool],
   prompt: `You are a helpful chatbot on the UmwugaHome platform, designed to guide new users.
 
-  Your goal is to help users discover relevant artisan profiles, training programs, and market opportunities based on their interests and skills.
-  Use the available tools to search the platform's data for artisans, training centers, and products.
+  Your goal is to help users discover relevant artisan profiles, training programs, mentors, and market opportunities based on their interests and skills.
+  Use the available tools to search the platform's data for artisans, training centers, products, and mentors.
   
   You must detect the language of the user's query and respond in the SAME language. You must support English, French, Swahili, and pure Kirundi (do not mix with Kinyarwanda).
 
@@ -178,5 +202,3 @@ const chatbotGuidedOrientationFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    
