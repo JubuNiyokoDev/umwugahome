@@ -1,3 +1,94 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "artisan-1",
+      "description": "Portrait of a Burundian artisan.",
+      "imageUrl": "https://images.unsplash.com/photo-1749706075417-5998b38e352f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan portrait"
+    },
+    {
+      "id": "artisan-2",
+      "description": "Portrait of a Burundian craftswoman.",
+      "imageUrl": "https://images.unsplash.com/photo-1703420371268-85d78cfdc5cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan portrait"
+    },
+    {
+      "id": "artisan-3",
+      "description": "Portrait of a young Burundian technician.",
+      "imageUrl": "https://images.unsplash.com/photo-1749706075417-5998b38e352f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan portrait"
+    },
+    {
+      "id": "artisan-4",
+      "description": "Portrait of a Burundian weaver.",
+      "imageUrl": "https://images.unsplash.com/photo-1536243696867-c8cec3c7d5d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnRpc2FuJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTQ2Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan portrait"
+    },
+    {
+      "id": "product-1",
+      "description": "Handwoven Burundian basket.",
+      "imageUrl": "https://images.unsplash.com/photo-1611987583184-1ddc69fbd5ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d292ZW4lMjBiYXNrZXR8ZW58MHx8fHwxNzYxNTM0MDQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woven basket"
+    },
+    {
+      "id": "product-2",
+      "description": "Handmade clay pottery.",
+      "imageUrl": "https://images.unsplash.com/photo-1595446472901-b0988e150f9c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjbGF5JTIwcG90dGVyeXxlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "clay pottery"
+    },
+    {
+      "id": "product-3",
+      "description": "Colorful traditional fabric.",
+      "imageUrl": "https://images.unsplash.com/photo-1686504219836-f9bed554886f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx0cmFkaXRpb25hbCUyMGZhYnJpY3xlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "traditional fabric"
+    },
+    {
+      "id": "product-4",
+      "description": "Carved wooden figurine.",
+      "imageUrl": "https://images.unsplash.com/photo-1663862831395-bf1bbc83834f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b29kZW4lMjBzY3VscHR1cmV8ZW58MHx8fHwxNzYxNDcwMzY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wooden sculpture"
+    },
+    {
+      "id": "training-center-1",
+      "description": "A modern training facility for technical skills.",
+      "imageUrl": "https://images.unsplash.com/photo-1620743364356-950592d0178b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0cmFpbmluZyUyMGNlbnRlcnxlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "training center"
+    },
+    {
+      "id": "training-center-2",
+      "description": "A workshop for learning crafts.",
+      "imageUrl": "https://images.unsplash.com/photo-1500472141701-084e6fa44840?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcnRpc2FuJTIwd29ya3Nob3B8ZW58MHx8fHwxNzYxNTQ4NjEyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan workshop"
+    },
+    {
+      "id": "course-1",
+      "description": "Students learning woodworking.",
+      "imageUrl": "https://images.unsplash.com/photo-1613629954659-10064a737317?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b29kd29ya2luZyUyMGNsYXNzfGVufDB8fHx8MTc2MTU0ODYxMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woodworking class"
+    },
+    {
+      "id": "course-2",
+      "description": "Students in a tailoring class.",
+      "imageUrl": "https://images.unsplash.com/photo-1640875130365-a812ea942881?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzZXdpbmclMjBjbGFzc3xlbnwwfHx8fDE3NjE1NDg2MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sewing class"
+    },
+    {
+      "id": "hero-background",
+      "description": "A vibrant background of Burundian craftsmanship.",
+      "imageUrl": "https://images.unsplash.com/photo-1758188408858-0f5389c35f50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhZnJpY2FuJTIwY3JhZnR8ZW58MHx8fHwxNzYxNTQ4NjEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "african craft"
+    },
+    {
+      "id": "map-burundi",
+      "description": "A map of Burundi.",
+      "imageUrl": "https://images.unsplash.com/photo-1588551385347-4bacb1e18f22?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxidXJ1bmRpJTIwbWFwfGVufDB8fHx8MTc2MTU0ODYxMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "burundi map"
+    },
+    {
+      "id": "student-profile-1",
+      "description": "Profile picture of a student.",
+      "imageUrl": "https://images.unsplash.com/photo-1517256673644-36ad11246d21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MHx8fHwxNzYxNTIyMDY4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student portrait"
+    }
+  ]
 }
