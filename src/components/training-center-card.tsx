@@ -35,7 +35,7 @@ export function TrainingCenterCard({ center }: TrainingCenterCardProps) {
 
   return (
     <motion.div whileHover={{ y: -8, boxShadow: "var(--tw-shadow-xl)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 h-full shadow-lg">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 h-full shadow-lg bg-card/80 backdrop-blur-sm">
        <CardHeader className="p-0">
         <div className="relative h-48 w-full">
           {image && (
