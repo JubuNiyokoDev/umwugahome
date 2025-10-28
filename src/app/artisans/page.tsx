@@ -1,15 +1,14 @@
 
+
 'use client';
 
 import { ArtisanCard } from "@/components/artisan-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Artisan, TrainingCenter } from "@/lib/types";
+import { Artisan } from "@/lib/types";
 import { Search } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
-import { TrainingCenterCard } from "@/components/training-center-card";
 import { seedData } from "@/lib/seed";
 
 export default function ArtisansPage() {
@@ -17,12 +16,10 @@ export default function ArtisansPage() {
   const [province, setProvince] = useState('all');
   
   const [allArtisans, setAllArtisans] = useState<Artisan[]>([]);
-  const [allTrainingCenters, setAllTrainingCenters] = useState<TrainingCenter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setAllArtisans(seedData.artisans);
-    setAllTrainingCenters(seedData.trainingCenters);
     setIsLoading(false);
   }, []);
 
@@ -35,28 +32,20 @@ export default function ArtisansPage() {
     });
   }, [allArtisans, searchTerm, province]);
 
-  const filteredTrainingCenters = useMemo(() => {
-    if (!allTrainingCenters) return [];
-    return allTrainingCenters.filter(center => {
-      const matchesSearch = center.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesProvince = province === 'all' || center.province === province;
-      return matchesSearch && matchesProvince;
-    });
-  }, [allTrainingCenters, searchTerm, province]);
   
   const provinces = useMemo(() => {
+    if (!allArtisans) return [];
     const artisanProvinces = allArtisans?.map(a => a.province) || [];
-    const centerProvinces = allTrainingCenters?.map(c => c.province) || [];
-    const uniqueProvinces = [...new Set([...artisanProvinces, ...centerProvinces])].sort();
+    const uniqueProvinces = [...new Set(artisanProvinces)].sort();
     return uniqueProvinces.filter(p => p && p !== "À définir");
-  }, [allArtisans, allTrainingCenters]);
+  }, [allArtisans]);
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
       <div className="space-y-4 text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline">Espace Artisans & Centres</h1>
+        <h1 className="text-4xl md:text-5xl font-bold font-headline">Nos Artisans</h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Trouvez des artisans qualifiés et des centres de formation pour développer vos compétences.
+          Découvrez le talent et le savoir-faire des artisans du Burundi.
         </p>
       </div>
 
@@ -87,12 +76,7 @@ export default function ArtisansPage() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="artisans" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="artisans">Artisans ({isLoading ? '...' : filteredArtisans.length})</TabsTrigger>
-          <TabsTrigger value="centers">Centres de Formation ({isLoading ? '...' : filteredTrainingCenters.length})</TabsTrigger>
-        </TabsList>
-        <TabsContent value="artisans">
+      
           {isLoading ? 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
               {Array.from({ length: 12 }).map((_, i) => <ArtisanCard key={i} artisan={null} />)}
@@ -108,27 +92,6 @@ export default function ArtisansPage() {
               <p>Aucun artisan ne correspond à votre recherche.</p>
             </div>
           )}
-        </TabsContent>
-        <TabsContent value="centers">
-           {isLoading ? 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                {Array.from({ length: 6 }).map((_, i) => <TrainingCenterCard key={i} center={null} />)}
-            </div> :
-            filteredTrainingCenters.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-              {filteredTrainingCenters.map(center => (
-                <TrainingCenterCard key={center.id} center={center} />
-              ))}
-            </div>
-          ) : (
-             <div className="text-center py-16 text-muted-foreground">
-              <p>Aucun centre de formation ne correspond à votre recherche.</p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
-
-    

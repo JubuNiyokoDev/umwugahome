@@ -29,7 +29,7 @@ import { Suspense } from "react";
 
 const navLinks = [
   { href: "/", label: "Accueil", exact: true },
-  { href: "/marketplace", label: "Artisans" },
+  { href: "/artisans", label: "Artisans" },
   { href: "/e-market", label: "Boutique" },
   { href: "/training", label: "Formations" },
   { href: "/mentors", label: "Mentors" },
@@ -113,14 +113,13 @@ function UserNav() {
 
 export function Header() {
   const pathname = usePathname();
-    const { user } = useUser();
+  const { user } = useUser();
   
   const checkIsActive = (href: string, exact = false) => {
+    if (href === '/marketplace' && pathname.startsWith('/artisans')) return true;
     if (exact) {
       return pathname === href;
     }
-    // Make sure /artisans also matches /marketplace
-    if (href === '/marketplace' && pathname.startsWith('/artisans')) return true;
     return pathname.startsWith(href);
   };
 
