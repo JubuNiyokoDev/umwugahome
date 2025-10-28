@@ -24,6 +24,7 @@ import {
 import { User as UserIcon } from "lucide-react";
 import type { UserProfile } from "@/lib/types";
 import { doc } from "firebase/firestore";
+import { Suspense } from "react";
 
 
 const navLinks = [
@@ -35,21 +36,84 @@ const navLinks = [
   { href: "/award", label: "Umwuga Award" },
 ];
 
-export function Header() {
-  const pathname = usePathname();
+
+function UserNav() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
 
   const userProfileRef = useMemoFirebase(() => (firestore && user) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
-  const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
 
   const handleSignOut = async () => {
     if (!auth) return;
     await signOut(auth);
     router.push('/');
   };
+
+  if (isUserLoading || (user && isProfileLoading)) {
+    return (
+      <div className="h-10 w-10 flex items-center justify-center">
+        <Loader2 className="h-5 w-5 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Button asChild variant="outline" className="hidden md:flex gap-2">
+        <Link href="/login">
+          <User className="h-4 w-4"/>
+          Connexion
+        </Link>
+      </Button>
+    );
+  }
+
+  return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
+                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+              <AvatarFallback>
+                {userProfile ? userProfile.name.charAt(0) : <UserIcon className="h-5 w-5 text-muted-foreground" />}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{userProfile?.name || user.displayName || 'Utilisateur'}</p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+              <Link href="/profile"><User className="mr-2 h-4 w-4" />Profil</Link>
+          </DropdownMenuItem>
+            {userProfile?.role === 'admin' && (
+            <DropdownMenuItem asChild>
+              <Link href="/admin"><ShieldCheck className="mr-2 h-4 w-4" />Admin</Link>
+            </DropdownMenuItem>
+            )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleSignOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Se déconnecter
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+  )
+}
+
+export function Header() {
+  const pathname = usePathname();
+    const { user } = useUser();
   
   const checkIsActive = (href: string, exact = false) => {
     if (exact) {
@@ -82,55 +146,9 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
-          {isUserLoading ? (
-            <div className="h-10 w-10 flex items-center justify-center">
-              <Loader2 className="h-5 w-5 animate-spin" />
-            </div>
-          ) : user ? (
-             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                     <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
-                    <AvatarFallback>
-                      <UserIcon className="h-5 w-5 text-muted-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName || 'Utilisateur'}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                   <Link href="/profile"><User className="mr-2 h-4 w-4" />Profil</Link>
-                </DropdownMenuItem>
-                 {userProfile?.role === 'admin' && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin"><ShieldCheck className="mr-2 h-4 w-4" />Admin</Link>
-                  </DropdownMenuItem>
-                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Se déconnecter
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button asChild variant="outline" className="hidden md:flex gap-2">
-              <Link href="/login">
-                <User className="h-4 w-4"/>
-                Connexion
-              </Link>
-            </Button>
-          )}
+           <Suspense fallback={<div className="h-10 w-10 flex items-center justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>}>
+              <UserNav />
+           </Suspense>
 
           <Sheet>
             <SheetTrigger asChild>
