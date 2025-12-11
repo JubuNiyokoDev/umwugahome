@@ -8,20 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Artisan } from "@/lib/types";
 import { Search } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
-import { seedData } from "@/lib/seed";
+import { useState, useMemo } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 export default function ArtisansPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [province, setProvince] = useState('all');
   
-  const [allArtisans, setAllArtisans] = useState<Artisan[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setAllArtisans(seedData.artisans);
-    setIsLoading(false);
-  }, []);
+  const firestore = useFirestore();
+  const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
+  const { data: allArtisans, isLoading } = useCollection<Artisan>(artisansRef);
 
   const filteredArtisans = useMemo(() => {
     if (!allArtisans) return [];

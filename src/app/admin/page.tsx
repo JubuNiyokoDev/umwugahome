@@ -1,19 +1,19 @@
 
 'use client'
 
-import { StatCard } from "@/components/stat-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { UserProfile, Artisan, TrainingCenter } from "@/lib/types";
-import { Briefcase, School, Users, Wallet } from "lucide-react";
+import { UserProfile } from "@/lib/types";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMemo, useEffect, useState } from "react";
-import { seedData } from "@/lib/seed";
+import { useMemo } from "react";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { RealTimeStats } from "@/components/admin/real-time-stats";
 
 const chartData = [
   { month: "Janvier", users: 186 },
@@ -32,17 +32,10 @@ const chartConfig = {
 };
 
 export default function AdminDashboardPage() {
-    const [users, setUsers] = useState<UserProfile[]>([]);
-    const [artisans, setArtisans] = useState<Artisan[]>([]);
-    const [centers, setCenters] = useState<TrainingCenter[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-      setUsers(seedData.users);
-      setArtisans(seedData.artisans);
-      setCenters(seedData.trainingCenters);
-      setIsLoading(false);
-    }, []);
+    const firestore = useFirestore();
+    
+    const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
+    const { data: users, isLoading } = useCollection<UserProfile>(usersRef);
 
     const recentUsers = useMemo(() => {
         if (!users) return [];
@@ -54,12 +47,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold font-headline">Tableau de Bord Administrateur</h1>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Utilisateurs" value={isLoading ? '...' : (users?.length || 0).toString()} icon={<Users className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Artisans" value={isLoading ? '...' : (artisans?.length || 0).toString()} icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Total Centres" value={isLoading ? '...' : (centers?.length || 0).toString()} icon={<School className="h-4 w-4 text-muted-foreground" />} />
-        <StatCard title="Revenu (30j)" value="1,250,000 FBU" icon={<Wallet className="h-4 w-4 text-muted-foreground" />} description="+5% vs mois dernier"/>
-      </div>
+      <RealTimeStats />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <Card className="lg:col-span-4">
@@ -107,11 +95,10 @@ export default function AdminDashboardPage() {
                     </div>
                 ))
                : recentUsers?.map((user) => {
-                  const userImage = PlaceHolderImages.find(img => img.id === user.profileImageId);
                   return (
                     <div key={user.id} className="flex items-center gap-4">
                       <Avatar className="h-9 w-9">
-                        {userImage && <AvatarImage src={userImage?.imageUrl} alt="Avatar" />}
+                        {user.profileImageId && <AvatarImage src={user.profileImageId} alt="Avatar" />}
                         <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 overflow-hidden">

@@ -53,18 +53,15 @@ export function ProductCard({ product }: ProductCardProps) {
     });
   };
 
-  const image = PlaceHolderImages.find(p => p.id === product.imageId);
-
   return (
     <Card className="overflow-hidden group bg-card/80 backdrop-blur-sm">
       <div className="relative h-48 w-full bg-muted">
-        {image && (
+        {product.imageId && (
           <Image
-            src={image.imageUrl}
+            src={product.imageId}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={image.imageHint}
           />
         )}
       </div>

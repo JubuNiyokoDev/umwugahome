@@ -4,9 +4,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LineChart, Line, PieChart, Pie, Cell } from "recharts";
-import { seedData } from "@/lib/seed";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { UserProfile } from "@/lib/types";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from "firebase/firestore";
 
 const salesData = [
   { month: "Jan", sales: 120000 },
@@ -44,13 +45,10 @@ const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3
 
 
 export default function AdminAnalyticsPage() {
-    const [users, setUsers] = useState<UserProfile[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setUsers(seedData.users);
-        setIsLoading(false);
-    }, []);
+    const firestore = useFirestore();
+    
+    const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
+    const { data: users, isLoading } = useCollection<UserProfile>(usersRef);
 
     const userRolesData = useMemo(() => {
         if (isLoading || !users) return [];

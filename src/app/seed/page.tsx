@@ -48,7 +48,7 @@ export default function SeedPage() {
 
             // Seed Training Centers
             seedData.trainingCenters.forEach(center => {
-                const centerRef = doc(firestore, 'training-centers', center.id);
+                const centerRef = doc(firestore, 'training_centers', center.id);
                 batch.set(centerRef, center);
             });
 

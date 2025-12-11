@@ -8,20 +8,58 @@ import { Course, TrainingCenter } from "@/lib/types";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { seedData } from "@/lib/seed";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, doc, deleteDoc } from "firebase/firestore";
+import { CourseFormDialog } from "@/components/admin/course-form-dialog";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminTrainingPage() {
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [centers, setCenters] = useState<TrainingCenter[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setCourses(seedData.courses);
-        setCenters(seedData.trainingCenters);
-        setIsLoading(false);
-    }, []);
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+    const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
+    
+    const coursesRef = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
+    const centersRef = useMemoFirebase(() => firestore ? collection(firestore, 'training_centers') : null, [firestore]);
+    
+    const { data: courses, isLoading: coursesLoading } = useCollection<Course>(coursesRef);
+    const { data: centers, isLoading: centersLoading } = useCollection<TrainingCenter>(centersRef);
+    
+    const isLoading = coursesLoading || centersLoading;
+    
+    const handleEditCourse = (course: Course) => {
+        setSelectedCourse(course);
+        setDialogMode('edit');
+        setDialogOpen(true);
+    };
+    
+    const handleDeleteCourse = async (course: Course) => {
+        if (!firestore) return;
+        
+        try {
+            await deleteDoc(doc(firestore, 'courses', course.id));
+            toast({
+                title: "Formation supprimée",
+                description: `${course.title} a été supprimée avec succès.`,
+            });
+        } catch (error) {
+            toast({
+                title: "Erreur",
+                description: "Impossible de supprimer la formation.",
+                variant: "destructive"
+            });
+        }
+    };
+    
+    const handleAddCourse = () => {
+        setSelectedCourse(null);
+        setDialogMode('create');
+        setDialogOpen(true);
+    };
 
     const centersById = useMemo(() => {
         if (!centers) return new Map();
@@ -35,7 +73,7 @@ export default function AdminTrainingPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold font-headline">Gestion des Formations</h1>
-                 <Button disabled>
+                 <Button onClick={handleAddCourse}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Ajouter une formation
                 </Button>
@@ -86,9 +124,12 @@ export default function AdminTrainingPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem disabled>Modifier</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleEditCourse(course)}>Modifier</DropdownMenuItem>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" disabled>
+                                                        <DropdownMenuItem 
+                                                            className="text-destructive focus:text-destructive focus:bg-destructive/10" 
+                                                            onClick={() => handleDeleteCourse(course)}
+                                                        >
                                                             Supprimer
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
@@ -102,6 +143,14 @@ export default function AdminTrainingPage() {
                     </Table>
                 </CardContent>
             </Card>
+            
+            <CourseFormDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                course={selectedCourse}
+                mode={dialogMode}
+                centers={centers || []}
+            />
         </div>
     );
 }

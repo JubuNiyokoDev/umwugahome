@@ -32,21 +32,18 @@ export function ArtisanCard({ artisan }: ArtisanCardProps) {
     )
   }
   
-  const profileImage = PlaceHolderImages.find(p => p.id === artisan.profileImageId);
-
   return (
     <motion.div whileHover={{ y: -8, boxShadow: "var(--tw-shadow-xl)" }} transition={{ duration: 0.3, ease: 'easeOut' }}>
       <Card className="flex flex-col overflow-hidden h-full shadow-lg bg-card/80 backdrop-blur-sm">
         <CardHeader className="p-0">
           <div className="relative h-48 w-full overflow-hidden">
-            {profileImage && (
+            {artisan.profileImageId && (
               <motion.div className="h-full w-full" whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
                 <Image
-                  src={profileImage.imageUrl}
+                  src={artisan.profileImageId}
                   alt={artisan.name}
                   fill
                   className="object-cover"
-                  data-ai-hint={profileImage.imageHint}
                 />
               </motion.div>
             )}

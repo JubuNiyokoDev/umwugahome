@@ -13,31 +13,56 @@ import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import { seedData } from "@/lib/seed";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, doc, deleteDoc } from "firebase/firestore";
+import { UserFormDialog } from "@/components/admin/user-form-dialog";
+import { useState } from "react";
 
 export default function AdminUsersPage() {
     const { toast } = useToast();
-    const [users, setUsers] = useState<UserProfile[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setUsers(seedData.users);
-        setIsLoading(false);
-    }, []);
+    const firestore = useFirestore();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+    const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
+    
+    const usersRef = useMemoFirebase(() => firestore ? collection(firestore, 'users') : null, [firestore]);
+    const { data: users, isLoading } = useCollection<UserProfile>(usersRef);
 
     const handleDeleteUser = async (user: UserProfile) => {
-        toast({
-            title: "Action non disponible (Démo)",
-            description: `La suppression de ${user.name} n'est pas activée.`,
-        });
+        if (!firestore) return;
+        
+        try {
+            await deleteDoc(doc(firestore, 'users', user.id));
+            toast({
+                title: "Utilisateur supprimé",
+                description: `${user.name} a été supprimé avec succès.`,
+            });
+        } catch (error) {
+            toast({
+                title: "Erreur",
+                description: "Impossible de supprimer l'utilisateur.",
+                variant: "destructive"
+            });
+        }
+    };
+
+    const handleEditUser = (user: UserProfile) => {
+        setSelectedUser(user);
+        setDialogMode('edit');
+        setDialogOpen(true);
+    };
+
+    const handleAddUser = () => {
+        setSelectedUser(null);
+        setDialogMode('create');
+        setDialogOpen(true);
     };
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold font-headline">Gestion des Utilisateurs</h1>
-                <Button disabled>
+                <Button onClick={handleAddUser}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Ajouter un utilisateur
                 </Button>
@@ -76,13 +101,12 @@ export default function AdminUsersPage() {
                                 ))
                             ) : (
                                 users?.map(user => {
-                                     const userImage = user.profileImageId ? PlaceHolderImages.find(img => img.id === user.profileImageId) : null;
                                     return (
                                         <TableRow key={user.id}>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
                                                     <Avatar>
-                                                        {userImage && <AvatarImage src={userImage.imageUrl} />}
+                                                        {user.profileImageId && <AvatarImage src={user.profileImageId} />}
                                                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
@@ -104,7 +128,7 @@ export default function AdminUsersPage() {
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem disabled>Modifier</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleEditUser(user)}>Modifier</DropdownMenuItem>
                                                             <DropdownMenuSeparator />
                                                             <AlertDialogTrigger asChild>
                                                                 <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
@@ -136,6 +160,13 @@ export default function AdminUsersPage() {
                     </Table>
                 </CardContent>
             </Card>
+            
+            <UserFormDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                user={selectedUser}
+                mode={dialogMode}
+            />
         </div>
     );
 }

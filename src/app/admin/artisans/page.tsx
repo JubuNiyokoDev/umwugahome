@@ -12,24 +12,58 @@ import { Artisan } from "@/lib/types";
 import { MoreHorizontal, PlusCircle, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { seedData } from "@/lib/seed";
+import { useToast } from "@/hooks/use-toast";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, doc, deleteDoc } from "firebase/firestore";
+import { ArtisanFormDialog } from "@/components/admin/artisan-form-dialog";
+import { useState } from "react";
 
 export default function AdminArtisansPage() {
-    const [artisans, setArtisans] = useState<Artisan[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
+    const firestore = useFirestore();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedArtisan, setSelectedArtisan] = useState<Artisan | null>(null);
+    const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
+    
+    const artisansRef = useMemoFirebase(() => firestore ? collection(firestore, 'artisans') : null, [firestore]);
+    const { data: artisans, isLoading } = useCollection<Artisan>(artisansRef);
 
-    useEffect(() => {
-        setArtisans(seedData.artisans);
-        setIsLoading(false);
-    }, []);
+    const handleEditArtisan = (artisan: Artisan) => {
+        setSelectedArtisan(artisan);
+        setDialogMode('edit');
+        setDialogOpen(true);
+    };
+
+    const handleDeleteArtisan = async (artisan: Artisan) => {
+        if (!firestore) return;
+        
+        try {
+            await deleteDoc(doc(firestore, 'artisans', artisan.id));
+            toast({
+                title: "Artisan supprimé",
+                description: `${artisan.name} a été supprimé avec succès.`,
+            });
+        } catch (error) {
+            toast({
+                title: "Erreur",
+                description: "Impossible de supprimer l'artisan.",
+                variant: "destructive"
+            });
+        }
+    };
+
+    const handleAddArtisan = () => {
+        setSelectedArtisan(null);
+        setDialogMode('create');
+        setDialogOpen(true);
+    };
 
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold font-headline">Gestion des Artisans</h1>
-                <Button disabled>
+                <Button onClick={handleAddArtisan}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Ajouter un artisan
                 </Button>
@@ -68,13 +102,12 @@ export default function AdminArtisansPage() {
                                 ))
                             ) : (
                                 artisans?.map(artisan => {
-                                     const userImage = artisan.profileImageId ? PlaceHolderImages.find(img => img.id === artisan.profileImageId) : null;
                                     return (
                                         <TableRow key={artisan.id}>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
                                                     <Avatar>
-                                                        {userImage && <AvatarImage src={userImage.imageUrl} />}
+                                                        {artisan.profileImageId && <AvatarImage src={artisan.profileImageId} />}
                                                         <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <p className="font-medium">{artisan.name}</p>
@@ -102,9 +135,12 @@ export default function AdminArtisansPage() {
                                                         <DropdownMenuItem asChild>
                                                             <Link href={`/artisans/${artisan.id}`}>Voir le profil</Link>
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem disabled>Modifier</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleEditArtisan(artisan)}>Modifier</DropdownMenuItem>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" disabled>
+                                                        <DropdownMenuItem 
+                                                            className="text-destructive focus:text-destructive focus:bg-destructive/10" 
+                                                            onClick={() => handleDeleteArtisan(artisan)}
+                                                        >
                                                             Supprimer
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
@@ -118,6 +154,13 @@ export default function AdminArtisansPage() {
                     </Table>
                 </CardContent>
             </Card>
+            
+            <ArtisanFormDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                artisan={selectedArtisan}
+                mode={dialogMode}
+            />
         </div>
     );
 }
